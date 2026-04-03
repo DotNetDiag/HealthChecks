@@ -11,6 +11,7 @@ jobs:
   build:
     env:
       BUILD_CONFIG: Release
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -91,13 +92,13 @@ jobs:
               --skip-duplicate
           done
       - name: Publish UI packages to NuGet.org
-        if: ${{ secrets.NUGET_API_KEY != '' }}
+        if: ${{ env.NUGET_API_KEY != '' }}
         shell: bash
         run: |
           shopt -s nullglob
           for package in ./artifacts/Aspire.HealthChecks.UI*.nupkg; do
             dotnet nuget push "$package" \
-              --api-key "${{ secrets.NUGET_API_KEY }}" \
+              --api-key "$NUGET_API_KEY" \
               --source "https://api.nuget.org/v3/index.json" \
               --skip-duplicate
           done
