@@ -1,5 +1,10 @@
 name: HealthChecks Oracle CI
 
+permissions:
+  contents: read
+  packages: write
+
+
 on:
   workflow_dispatch:
   push:
@@ -12,9 +17,8 @@ on:
       - Directory.Build.props
       - Directory.Build.targets
       - Directory.Packages.props
-    tags-ignore:
-      - release-*
-      - preview-*
+    tags:
+      - v*
 
   pull_request:
     branches: [ master ]
@@ -28,7 +32,47 @@ on:
       - Directory.Packages.props
 
 jobs:
+  release-scope:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.scope.outputs.should_run }}
+      is_tag: ${{ steps.scope.outputs.is_tag }}
+      package_version: ${{ steps.scope.outputs.package_version }}
+      previous_tag: ${{ steps.scope.outputs.previous_tag }}
+      release_mode: ${{ steps.scope.outputs.release_mode }}
+      release_reason: ${{ steps.scope.outputs.release_reason }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Determine release scope
+        id: scope
+        shell: pwsh
+        run: |
+          ./.github/scripts/get-release-scope.ps1 -ProjectPath './src/HealthChecks.Oracle/HealthChecks.Oracle.csproj'
+      - name: Summarize tag release scope
+        if: ${{ steps.scope.outputs.is_tag == 'true' }}
+        shell: bash
+        run: |
+          previous_tag='${{ steps.scope.outputs.previous_tag }}'
+          if [ -z "$previous_tag" ]; then
+            previous_tag='<none>'
+          fi
+
+          {
+            echo "## Project CI Tag Scope"
+            echo
+            echo "- Project: ./src/HealthChecks.Oracle/HealthChecks.Oracle.csproj"
+            echo "- Previous tag: $previous_tag"
+            echo "- Package version: ${{ steps.scope.outputs.package_version }}"
+            echo "- Release mode: ${{ steps.scope.outputs.release_mode }}"
+            echo "- Should run: ${{ steps.scope.outputs.should_run }}"
+            echo "- Reason: ${{ steps.scope.outputs.release_reason }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
   build:
+    needs: release-scope
+    if: ${{ needs.release-scope.outputs.is_tag != 'true' || needs.release-scope.outputs.should_run == 'true' }}
     runs-on: ubuntu-latest
     services:
       oracle:
@@ -72,3 +116,15 @@ jobs:
         with:
           flags: Oracle
           directory: .coverage
+  publish:
+    needs:
+      - release-scope
+      - build
+    if: ${{ needs.release-scope.outputs.is_tag == 'true' && needs.release-scope.outputs.should_run == 'true' }}
+    uses: ./.github/workflows/reusable_cd_workflow.yml
+    secrets: inherit
+    with:
+      BUILD_CONFIG: Release
+      PROJECT_PATH: ./src/HealthChecks.Oracle/HealthChecks.Oracle.csproj
+      PACKAGE_NAME: HealthChecks.Oracle
+      PACKAGE_VERSION: ${{ needs.release-scope.outputs.package_version }}

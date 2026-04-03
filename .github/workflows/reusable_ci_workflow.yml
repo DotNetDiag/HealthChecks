@@ -1,5 +1,9 @@
 name: Reusable CI workflow
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   workflow_call:
     inputs:
@@ -12,42 +16,131 @@ on:
       CODECOV_FLAGS:
         required: true
         type: string
+    secrets:
+      NUGET_API_KEY:
+        required: false
 
 jobs:
   build:
+    env:
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
             8.0.x
             10.0.x
+      - name: Determine release scope
+        id: release_scope
+        shell: pwsh
+        run: |
+          ./.github/scripts/get-release-scope.ps1 -ProjectPath "${{ inputs.PROJECT_PATH }}"
+      - name: Summarize tag release scope
+        if: ${{ steps.release_scope.outputs.is_tag == 'true' }}
+        shell: bash
+        run: |
+          previous_tag='${{ steps.release_scope.outputs.previous_tag }}'
+          if [ -z "$previous_tag" ]; then
+            previous_tag='<none>'
+          fi
+
+          {
+            echo "## Project CI Tag Scope"
+            echo
+            echo "- Project: \`${{ inputs.PROJECT_PATH }}\`"
+            echo "- Previous tag: \`$previous_tag\`"
+            echo "- Package version: \`${{ steps.release_scope.outputs.package_version }}\`"
+            echo "- Release mode: \`${{ steps.release_scope.outputs.release_mode }}\`"
+            echo "- Should run: \`${{ steps.release_scope.outputs.should_run }}\`"
+            echo "- Reason: ${{ steps.release_scope.outputs.release_reason }}"
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Restore
+        if: ${{ steps.release_scope.outputs.is_tag != 'true' || steps.release_scope.outputs.should_run == 'true' }}
         run: |
           dotnet restore ${{inputs.PROJECT_PATH}} &&
           dotnet restore ${{inputs.TEST_PROJECT_PATH}}
       - name: Check formatting
+        if: ${{ steps.release_scope.outputs.is_tag != 'true' || steps.release_scope.outputs.should_run == 'true' }}
         run: |
           dotnet format --no-restore --verify-no-changes --severity warn ${{inputs.PROJECT_PATH}} || (echo "Run 'dotnet format' to fix issues" && exit 1) &&
           dotnet format --no-restore --verify-no-changes --severity warn ${{inputs.TEST_PROJECT_PATH}} || (echo "Run 'dotnet format' to fix issues" && exit 1)
       - name: Build
+        if: ${{ steps.release_scope.outputs.is_tag != 'true' || steps.release_scope.outputs.should_run == 'true' }}
+        shell: bash
         run: |
-          dotnet build --no-restore ${{inputs.PROJECT_PATH}}
-          dotnet build --no-restore ${{inputs.TEST_PROJECT_PATH}}
+          project_args=()
+          test_args=()
+
+          if [ '${{ steps.release_scope.outputs.is_tag }}' = 'true' ]; then
+            project_args+=('-c' 'Release' '-p:PackageVersion=${{ steps.release_scope.outputs.package_version }}')
+            test_args+=('-c' 'Release')
+          fi
+
+          dotnet build --no-restore '${{ inputs.PROJECT_PATH }}' "${project_args[@]}"
+          dotnet build --no-restore '${{ inputs.TEST_PROJECT_PATH }}' "${test_args[@]}"
       - name: Test
-        run: >
-          dotnet test
-          ${{inputs.TEST_PROJECT_PATH}}
-          --no-restore
-          --no-build
-          --collect "XPlat Code Coverage"
-          --results-directory .coverage
-          --
-          DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+        if: ${{ steps.release_scope.outputs.is_tag != 'true' || steps.release_scope.outputs.should_run == 'true' }}
+        shell: bash
+        run: |
+          test_args=()
+
+          if [ '${{ steps.release_scope.outputs.is_tag }}' = 'true' ]; then
+            test_args+=('-c' 'Release')
+          fi
+
+          dotnet test '${{ inputs.TEST_PROJECT_PATH }}' \
+            --no-restore \
+            --no-build \
+            --collect 'XPlat Code Coverage' \
+            --results-directory .coverage \
+            "${test_args[@]}" \
+            -- \
+            DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
       - name: Upload Coverage
+        if: ${{ steps.release_scope.outputs.is_tag != 'true' || steps.release_scope.outputs.should_run == 'true' }}
         uses: codecov/codecov-action@v5
         with:
           flags: ${{inputs.CODECOV_FLAGS}}
           directory: .coverage
+      - name: Resolve package metadata
+        if: ${{ steps.release_scope.outputs.is_tag == 'true' && steps.release_scope.outputs.should_run == 'true' }}
+        id: package
+        shell: bash
+        run: |
+          package_id=$(dotnet msbuild '${{ inputs.PROJECT_PATH }}' -nologo -getProperty:PackageId | tail -n 1)
+          echo "id=$package_id" >> "$GITHUB_OUTPUT"
+      - name: Pack
+        if: ${{ steps.release_scope.outputs.is_tag == 'true' && steps.release_scope.outputs.should_run == 'true' }}
+        shell: bash
+        run: |
+          dotnet pack --no-build '${{ inputs.PROJECT_PATH }}' \
+            -c Release \
+            -p:PackageVersion='${{ steps.release_scope.outputs.package_version }}' \
+            -o ./artifacts
+      - name: Publish to GitHub Packages
+        if: ${{ steps.release_scope.outputs.is_tag == 'true' && steps.release_scope.outputs.should_run == 'true' }}
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for package in ./artifacts/${{ steps.package.outputs.id }}.*.nupkg; do
+            dotnet nuget push "$package" \
+              --api-key "${{ github.token }}" \
+              --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+              --skip-duplicate
+          done
+      - name: Publish to NuGet.org
+        if: ${{ steps.release_scope.outputs.is_tag == 'true' && steps.release_scope.outputs.should_run == 'true' && env.NUGET_API_KEY != '' }}
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for package in ./artifacts/${{ steps.package.outputs.id }}.*.nupkg; do
+            dotnet nuget push "$package" \
+              --api-key "$NUGET_API_KEY" \
+              --source "https://api.nuget.org/v3/index.json" \
+              --skip-duplicate
+          done

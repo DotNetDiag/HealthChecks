@@ -1,5 +1,10 @@
 name: HealthChecks Aws Sns CI
 
+permissions:
+  contents: read
+  packages: write
+
+
 on:
   workflow_dispatch:
   push:
@@ -12,9 +17,8 @@ on:
      - .github/workflows/reusable_ci_workflow.yml
      - Directory.Build.props
      - Directory.Build.targets
-   tags-ignore:
-     - release-*
-     - preview-*
+   tags:
+     - v*
 
   pull_request:
     branches: [ master ]
@@ -31,6 +35,7 @@ on:
 jobs:
   build:
     uses: ./.github/workflows/reusable_ci_workflow.yml
+    secrets: inherit
     with:
       PROJECT_PATH: ./src/HealthChecks.Aws.Sns/HealthChecks.Aws.Sns.csproj
       TEST_PROJECT_PATH: ./test/HealthChecks.Aws.Sns.Tests/HealthChecks.Aws.Sns.Tests.csproj

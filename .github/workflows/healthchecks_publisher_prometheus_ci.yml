@@ -1,5 +1,10 @@
 name: HealthChecks Publisher.Prometheus CI
 
+permissions:
+  contents: read
+  packages: write
+
+
 on:
   workflow_dispatch:
   push:
@@ -13,9 +18,8 @@ on:
       - Directory.Build.props
       - Directory.Build.targets
       - Directory.Packages.props
-    tags-ignore:
-      - release-*
-      - preview-*
+    tags:
+      - v*
 
   pull_request:
     branches: [ master ]
@@ -32,6 +36,7 @@ on:
 jobs:
   build:
     uses: ./.github/workflows/reusable_ci_workflow.yml
+    secrets: inherit
     with:
       PROJECT_PATH: ./src/HealthChecks.Publisher.Prometheus/HealthChecks.Publisher.Prometheus.csproj
       TEST_PROJECT_PATH: ./test/HealthChecks.Publisher.Prometheus.Tests/HealthChecks.Publisher.Prometheus.Tests.csproj

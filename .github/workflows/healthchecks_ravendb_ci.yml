@@ -1,5 +1,10 @@
 name: HealthChecks RavenDb CI
 
+permissions:
+  contents: read
+  packages: write
+
+
 on:
   workflow_dispatch:
   push:
@@ -12,9 +17,8 @@ on:
       - Directory.Build.props
       - Directory.Build.targets
       - Directory.Packages.props
-    tags-ignore:
-      - release-*
-      - preview-*
+    tags:
+      - v*
 
   pull_request:
     branches: [ master ]
@@ -30,6 +34,7 @@ on:
 jobs:
   build:
     uses: ./.github/workflows/reusable_ci_workflow.yml
+    secrets: inherit
     with:
       PROJECT_PATH: ./src/HealthChecks.RavenDB/HealthChecks.RavenDB.csproj
       TEST_PROJECT_PATH: ./test/HealthChecks.RavenDb.Tests/HealthChecks.RavenDb.Tests.csproj

@@ -1,0 +1,113 @@
+name: Reusable UI CD Workflow
+
+permissions:
+  contents: read
+  packages: write
+
+on:
+  workflow_call:
+    inputs:
+      PACKAGE_VERSION:
+        required: false
+        type: string
+    secrets:
+      NUGET_API_KEY:
+        required: false
+
+jobs:
+  build:
+    env:
+      BUILD_CONFIG: Release
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - name: Restore UI projects
+        shell: bash
+        run: |
+          projects=(
+            './src/HealthChecks.UI/HealthChecks.UI.csproj'
+            './src/HealthChecks.UI.Client/HealthChecks.UI.Client.csproj'
+            './src/HealthChecks.UI.Core/HealthChecks.UI.Core.csproj'
+            './src/HealthChecks.UI.Data/HealthChecks.UI.Data.csproj'
+            './src/HealthChecks.UI.InMemory.Storage/HealthChecks.UI.InMemory.Storage.csproj'
+            './src/HealthChecks.UI.MySql.Storage/HealthChecks.UI.MySql.Storage.csproj'
+            './src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj'
+            './src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj'
+            './src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj'
+            './src/HealthChecks.UI.K8s.Operator/HealthChecks.UI.K8s.Operator.csproj'
+          )
+
+          for project in "${projects[@]}"; do
+            dotnet restore "$project"
+          done
+      - name: Build UI projects
+        shell: bash
+        run: |
+          projects=(
+            './src/HealthChecks.UI/HealthChecks.UI.csproj'
+            './src/HealthChecks.UI.Client/HealthChecks.UI.Client.csproj'
+            './src/HealthChecks.UI.Core/HealthChecks.UI.Core.csproj'
+            './src/HealthChecks.UI.Data/HealthChecks.UI.Data.csproj'
+            './src/HealthChecks.UI.InMemory.Storage/HealthChecks.UI.InMemory.Storage.csproj'
+            './src/HealthChecks.UI.MySql.Storage/HealthChecks.UI.MySql.Storage.csproj'
+            './src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj'
+            './src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj'
+            './src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj'
+            './src/HealthChecks.UI.K8s.Operator/HealthChecks.UI.K8s.Operator.csproj'
+          )
+
+          for project in "${projects[@]}"; do
+            dotnet build --no-restore "$project" -c "$BUILD_CONFIG"
+          done
+      - name: Pack UI packages
+        shell: bash
+        run: |
+          projects=(
+            './src/HealthChecks.UI/HealthChecks.UI.csproj'
+            './src/HealthChecks.UI.Client/HealthChecks.UI.Client.csproj'
+            './src/HealthChecks.UI.Core/HealthChecks.UI.Core.csproj'
+            './src/HealthChecks.UI.Data/HealthChecks.UI.Data.csproj'
+            './src/HealthChecks.UI.InMemory.Storage/HealthChecks.UI.InMemory.Storage.csproj'
+            './src/HealthChecks.UI.MySql.Storage/HealthChecks.UI.MySql.Storage.csproj'
+            './src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj'
+            './src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj'
+            './src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj'
+            './src/HealthChecks.UI.K8s.Operator/HealthChecks.UI.K8s.Operator.csproj'
+          )
+          version_args=()
+
+          if [ -n "${{ inputs.PACKAGE_VERSION }}" ]; then
+            version_args+=("-p:PackageVersion=${{ inputs.PACKAGE_VERSION }}")
+          fi
+
+          for project in "${projects[@]}"; do
+            dotnet pack --no-build "$project" -c "$BUILD_CONFIG" -o ./artifacts "${version_args[@]}"
+          done
+      - name: Publish UI packages to GitHub Packages
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for package in ./artifacts/Aspire.HealthChecks.UI*.nupkg; do
+            dotnet nuget push "$package" \
+              --api-key "${{ github.token }}" \
+              --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+              --skip-duplicate
+          done
+      - name: Publish UI packages to NuGet.org
+        if: ${{ env.NUGET_API_KEY != '' }}
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for package in ./artifacts/Aspire.HealthChecks.UI*.nupkg; do
+            dotnet nuget push "$package" \
+              --api-key "$NUGET_API_KEY" \
+              --source "https://api.nuget.org/v3/index.json" \
+              --skip-duplicate
+          done

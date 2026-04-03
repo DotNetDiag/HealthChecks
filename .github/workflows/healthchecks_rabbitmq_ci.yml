@@ -1,5 +1,10 @@
 name: HealthChecks RabbitMQ CI
 
+permissions:
+  contents: read
+  packages: write
+
+
 on:
   workflow_dispatch:
   push:
@@ -14,9 +19,8 @@ on:
       - Directory.Build.props
       - Directory.Build.targets
       - Directory.Packages.props
-    tags-ignore:
-      - release-*
-      - preview-*
+    tags:
+      - v*
 
   pull_request:
     branches: [ master ]
@@ -34,12 +38,14 @@ on:
 jobs:
   build:
     uses: ./.github/workflows/reusable_ci_workflow.yml
+    secrets: inherit
     with:
       PROJECT_PATH: ./src/HealthChecks.Rabbitmq/HealthChecks.Rabbitmq.csproj
       TEST_PROJECT_PATH: ./test/HealthChecks.RabbitMQ.Tests/HealthChecks.RabbitMQ.Tests.csproj
       CODECOV_FLAGS: RabbitMQ
   build-v6:
     uses: ./.github/workflows/reusable_ci_workflow.yml
+    secrets: inherit
     with:
       PROJECT_PATH: ./src/HealthChecks.Rabbitmq.v6/HealthChecks.Rabbitmq.v6.csproj
       TEST_PROJECT_PATH: ./test/HealthChecks.RabbitMQ.v6.Tests/HealthChecks.RabbitMQ.v6.Tests.csproj

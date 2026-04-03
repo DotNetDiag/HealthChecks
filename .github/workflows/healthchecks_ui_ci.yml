@@ -1,5 +1,10 @@
 name: HealthChecks UI CI
 
+permissions:
+  contents: read
+  packages: write
+
+
 on:
   workflow_dispatch:
   push:
@@ -15,9 +20,8 @@ on:
       - Directory.Build.targets
       - Directory.Packages.props
       - build/docker-images/HealthChecks.UI.Image/**
-    tags-ignore:
-      - release-*
-      - preview-*
+    tags:
+      - v*
 
   pull_request:
     branches: [ master ]
@@ -34,7 +38,59 @@ on:
       - build/docker-images/HealthChecks.UI.Image/**
 
 jobs:
+  release-scope:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.scope.outputs.should_run }}
+      is_tag: ${{ steps.scope.outputs.is_tag }}
+      package_version: ${{ steps.scope.outputs.package_version }}
+      previous_tag: ${{ steps.scope.outputs.previous_tag }}
+      release_mode: ${{ steps.scope.outputs.release_mode }}
+      release_reason: ${{ steps.scope.outputs.release_reason }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Determine release scope
+        id: scope
+        shell: pwsh
+        run: |
+          ./.github/scripts/get-release-scope.ps1 `
+            -ProjectPath './src/HealthChecks.UI/HealthChecks.UI.csproj' `
+            -AdditionalProjectPaths @(
+              './src/HealthChecks.UI.Client/HealthChecks.UI.Client.csproj',
+              './src/HealthChecks.UI.Core/HealthChecks.UI.Core.csproj',
+              './src/HealthChecks.UI.Data/HealthChecks.UI.Data.csproj',
+              './src/HealthChecks.UI.InMemory.Storage/HealthChecks.UI.InMemory.Storage.csproj',
+              './src/HealthChecks.UI.MySql.Storage/HealthChecks.UI.MySql.Storage.csproj',
+              './src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj',
+              './src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj',
+              './src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj',
+              './src/HealthChecks.UI.K8s.Operator/HealthChecks.UI.K8s.Operator.csproj'
+            )
+      - name: Summarize tag release scope
+        if: ${{ steps.scope.outputs.is_tag == 'true' }}
+        shell: bash
+        run: |
+          previous_tag='${{ steps.scope.outputs.previous_tag }}'
+          if [ -z "$previous_tag" ]; then
+            previous_tag='<none>'
+          fi
+
+          {
+            echo "## UI CI Tag Scope"
+            echo
+            echo "- Project group: UI"
+            echo "- Previous tag: \`$previous_tag\`"
+            echo "- Package version: \`${{ steps.scope.outputs.package_version }}\`"
+            echo "- Release mode: \`${{ steps.scope.outputs.release_mode }}\`"
+            echo "- Should run: \`${{ steps.scope.outputs.should_run }}\`"
+            echo "- Reason: ${{ steps.scope.outputs.release_reason }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
   build:
+    needs: release-scope
+    if: ${{ needs.release-scope.outputs.is_tag != 'true' || needs.release-scope.outputs.should_run == 'true' }}
     runs-on: ubuntu-latest
     services:
       sqlserver:
@@ -156,3 +212,13 @@ jobs:
         with:
           flags: UI
           directory: .coverage
+
+  publish:
+    needs:
+      - release-scope
+      - build
+    if: ${{ needs.release-scope.outputs.is_tag == 'true' && needs.release-scope.outputs.should_run == 'true' }}
+    uses: ./.github/workflows/reusable_ui_cd_workflow.yml
+    secrets: inherit
+    with:
+      PACKAGE_VERSION: ${{ needs.release-scope.outputs.package_version }}
