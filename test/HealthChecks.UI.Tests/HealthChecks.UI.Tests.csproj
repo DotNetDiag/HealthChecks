@@ -1,5 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <TestTfmsInParallel>false</TestTfmsInParallel>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Include="Functional\Configuration\appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
