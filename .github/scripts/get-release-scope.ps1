@@ -96,6 +96,7 @@ function Get-ReferencedProjectPaths {
 function Write-OutputVariable {
     param(
         [Parameter(Mandatory = $true)][string]$Name,
+        [AllowEmptyString()]
         [Parameter(Mandatory = $true)][string]$Value,
         [string]$OutputPath
     )
