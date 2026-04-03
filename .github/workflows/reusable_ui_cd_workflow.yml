@@ -101,7 +101,7 @@ jobs:
         shell: bash
         run: |
           shopt -s nullglob
-          packages=(./artifacts/Aspire.HealthChecks.UI*.nupkg)
+            packages=(./artifacts/DotNetDiag.HealthChecks.UI*.nupkg)
 
           if [ ${#packages[@]} -eq 0 ]; then
             echo "No UI nupkg artifacts were produced." >&2
