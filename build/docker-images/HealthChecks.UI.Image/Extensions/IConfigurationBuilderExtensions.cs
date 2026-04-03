@@ -11,7 +11,7 @@ public static class IConfigurationBuilderExtensions
         Action<AzureAppConfigurationOptions> setupConfig = AzureAppConfiguration.UseConnectionString switch
         {
             true => options => options.Connect(AzureAppConfiguration.ConnectionString),
-            false => options => options.Connect(new Uri(AzureAppConfiguration.ManagedIdentityEndpoint!), new ManagedIdentityCredential())
+            false => options => options.Connect(new Uri(AzureAppConfiguration.ManagedIdentityEndpoint!), new ManagedIdentityCredential(new ManagedIdentityCredentialOptions()))
         };
 
         builder.AddAzureAppConfiguration(options =>

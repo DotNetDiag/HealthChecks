@@ -226,6 +226,7 @@ public class redis_healthcheck_should(RedisContainerFixture redisContainerFixtur
     private sealed class NotConnectionMultiplexer : IConnectionMultiplexer
     {
         // it returns an empty array of endpoints, so nothing should get checked and OK should be returned by the health check
+        public void AddLibraryNameSuffix(string suffix) => throw new NotImplementedException();
         public EndPoint[] GetEndPoints(bool configuredOnly = false) => [];
 
 #pragma warning disable CS0067
@@ -257,6 +258,7 @@ public class redis_healthcheck_should(RedisContainerFixture redisContainerFixtur
         public ServerCounters GetCounters() => throw new NotImplementedException();
         public IDatabase GetDatabase(int db = -1, object? asyncState = null) => throw new NotImplementedException();
         public int GetHashSlot(RedisKey key) => throw new NotImplementedException();
+        public IServer GetServer(RedisKey key, object? asyncState = null, CommandFlags flags = CommandFlags.None) => throw new NotImplementedException();
         public IServer GetServer(string host, int port, object? asyncState = null) => throw new NotImplementedException();
         public IServer GetServer(string hostAndPort, object? asyncState = null) => throw new NotImplementedException();
         public IServer GetServer(IPAddress host, int port) => throw new NotImplementedException();
