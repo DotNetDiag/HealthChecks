@@ -10,4 +10,4 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Azure.Storage.Files.Shares/HealthChecks.Azure.Storage.Files.Shares.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.Azure.Storage.Files.Shares
+      PACKAGE_NAME: NetDiag.HealthChecks.Azure.Storage.Files.Shares

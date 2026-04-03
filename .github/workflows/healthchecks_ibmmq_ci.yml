@@ -130,5 +130,5 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.IbmMQ/HealthChecks.IbmMQ.csproj
-      PACKAGE_NAME: HealthChecks.IbmMQ
+      PACKAGE_NAME: NetDiag.HealthChecks.IbmMQ
       PACKAGE_VERSION: ${{ needs.release-scope.outputs.package_version }}

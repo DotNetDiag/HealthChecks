@@ -151,5 +151,5 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Network/HealthChecks.Network.csproj
-      PACKAGE_NAME: HealthChecks.Network
+      PACKAGE_NAME: NetDiag.HealthChecks.Network
       PACKAGE_VERSION: ${{ needs.release-scope.outputs.package_version }}

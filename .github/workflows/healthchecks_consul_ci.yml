@@ -125,5 +125,5 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Consul/HealthChecks.Consul.csproj
-      PACKAGE_NAME: HealthChecks.Consul
+      PACKAGE_NAME: NetDiag.HealthChecks.Consul
       PACKAGE_VERSION: ${{ needs.release-scope.outputs.package_version }}

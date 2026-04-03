@@ -3,7 +3,7 @@
   <Import Project="..\Directory.Build.props" />
   
   <PropertyGroup>
-    <PackageId>Aspire.$(MSBuildProjectName)</PackageId>
+    <PackageId>NetDiag.$(MSBuildProjectName)</PackageId>
     <PackageIcon>icon.png</PackageIcon>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>

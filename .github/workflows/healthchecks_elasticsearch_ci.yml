@@ -127,5 +127,5 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Elasticsearch/HealthChecks.Elasticsearch.csproj
-      PACKAGE_NAME: HealthChecks.Elasticsearch
+      PACKAGE_NAME: NetDiag.HealthChecks.Elasticsearch
       PACKAGE_VERSION: ${{ needs.release-scope.outputs.package_version }}
