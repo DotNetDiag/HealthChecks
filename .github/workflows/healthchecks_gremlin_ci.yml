@@ -127,5 +127,4 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Gremlin/HealthChecks.Gremlin.csproj
-      PACKAGE_NAME: HealthChecks.Gremlin
       PACKAGE_VERSION: ${{ needs.release-scope.outputs.package_version }}

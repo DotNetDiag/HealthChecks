@@ -16,9 +16,6 @@ on:
       PROJECT_PATH:
         required: true
         type: string
-      PACKAGE_NAME:
-        required: true
-        type: string
     secrets:
       NUGET_API_KEY:
         required: false

@@ -121,7 +121,7 @@ jobs:
         shell: bash
         run: |
           shopt -s nullglob
-          for package in ./artifacts/Aspire.HealthChecks.UI*.nupkg; do
+          for package in ./artifacts/DotNetDiag.HealthChecks.UI*.nupkg; do
             dotnet nuget push "$package" \
               --api-key "${{ github.token }}" \
               --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
@@ -132,7 +132,7 @@ jobs:
         shell: bash
         run: |
           shopt -s nullglob
-          for package in ./artifacts/Aspire.HealthChecks.UI*.nupkg; do
+          for package in ./artifacts/DotNetDiag.HealthChecks.UI*.nupkg; do
             dotnet nuget push "$package" \
               --api-key "$NUGET_API_KEY" \
               --source "https://api.nuget.org/v3/index.json" \
