@@ -6,15 +6,14 @@ namespace HealthChecks.Network.Core;
 internal class SmtpConnection : MailConnection
 {
     private readonly SmtpConnectionOptions _options;
-    private SmtpConnectionType _connectionType;
 
     public SmtpConnectionType ConnectionType
     {
-        get => _connectionType;
+        get;
 
         private set
         {
-            _connectionType = value;
+            field = value;
             UseSSL = ConnectionType == SmtpConnectionType.SSL ? true : false;
         }
     }
@@ -62,7 +61,7 @@ internal class SmtpConnection : MailConnection
             cancellationToken).ConfigureAwait(false);
     }
 
-    private bool ShouldUpgradeConnection => !UseSSL && _connectionType != SmtpConnectionType.PLAIN;
+    private bool ShouldUpgradeConnection => !UseSSL && ConnectionType != SmtpConnectionType.PLAIN;
 
     private void ComputeDefaultValues()
     {

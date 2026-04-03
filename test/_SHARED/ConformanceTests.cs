@@ -1,6 +1,4 @@
 using System.Net;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 
 public abstract class ConformanceTests<TClient, THealthCheck, THealthCheckOptions>

@@ -26,7 +26,7 @@ public static class IConfigurationBuilderExtensions
             if (AzureAppConfiguration.UseLabel)
             {
                 options.Select(KeyFilter.Any, AzureAppConfiguration.Label);
-            };
+            }
 
         });
 

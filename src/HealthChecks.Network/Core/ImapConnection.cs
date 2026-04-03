@@ -10,16 +10,14 @@ internal class ImapConnection : MailConnection
 
     public ImapConnectionType ConnectionType
     {
-        get => _connectionType;
+        get;
 
         private set
         {
-            _connectionType = value;
+            field = value;
             UseSSL = ConnectionType == ImapConnectionType.SSL_TLS ? true : false;
         }
     }
-
-    private ImapConnectionType _connectionType;
 
     internal ImapConnection(ImapConnectionOptions options)
         : base(options.Host, options.Port, true, options.AllowInvalidRemoteCertificates)

@@ -39,7 +39,7 @@
     <PackageVersion Include="Hangfire.Core" Version="1.8.23" />
     <PackageVersion Include="IBMMQDotnetClient" Version="9.4.5" />
     <PackageVersion Include="InfluxDB.Client" Version="4.18.0" />
-    <PackageVersion Include="KubernetesClient" Version="15.0.1" />
+    <PackageVersion Include="KubernetesClient" Version="17.0.14" />
     <PackageVersion Include="Microsoft.ApplicationInsights" Version="2.21.0" />
     <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />

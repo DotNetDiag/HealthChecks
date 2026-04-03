@@ -8,10 +8,11 @@ namespace Microsoft.AspNetCore.Builder;
 
 public static class IEndpointRouteBuilderExtensions
 {
-    public static IEndpointConventionBuilder MapHealthChecksUI(this IEndpointRouteBuilder builder,
+    public static IEndpointConventionBuilder MapHealthChecksUI(
+        this IEndpointRouteBuilder builder,
         IConfiguration configuration)
     {
-        if (bool.TryParse(configuration[PushServiceKeys.Enabled], out bool enabled) && enabled)
+        if (bool.TryParse(configuration[PushServiceKeys.ENABLED], out bool enabled) && enabled)
         {
             builder.MapHealthCheckPushEndpoint(/*configuration*/);
         }
@@ -20,9 +21,9 @@ public static class IEndpointRouteBuilderExtensions
         {
             setup.ConfigureStylesheet(configuration);
             setup.ConfigurePaths(configuration);
-
         });
     }
+
     private static void MapHealthCheckPushEndpoint(this IEndpointRouteBuilder builder/*, IConfiguration configuration*/)
     {
         var logger = builder.ServiceProvider.GetRequiredService<ILogger<Program>>();
@@ -45,15 +46,15 @@ public static class IEndpointRouteBuilderExtensions
                 {
                     var pushService = context.RequestServices.GetRequiredService<HealthChecksPushService>();
 
-                    if (type == PushServiceKeys.ServiceAdded)
+                    if (type == PushServiceKeys.SERVICE_ADDED)
                     {
                         await pushService.AddAsync(name, uri).ConfigureAwait(false);
                     }
-                    else if (type == PushServiceKeys.ServiceRemoved)
+                    else if (type == PushServiceKeys.SERVICE_REMOVED)
                     {
                         await pushService.RemoveAsync(name).ConfigureAwait(false);
                     }
-                    else if (type == PushServiceKeys.ServiceUpdated)
+                    else if (type == PushServiceKeys.SERVICE_UPDATED)
                     {
                         await pushService.UpdateAsync(name, uri).ConfigureAwait(false);
                     }
