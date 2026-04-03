@@ -36,6 +36,12 @@ jobs:
           dotnet-version: |
             8.0.x
             10.0.x
+      - name: Validate tag package version input
+        if: ${{ github.ref_type == 'tag' && inputs.PACKAGE_VERSION == '' }}
+        shell: bash
+        run: |
+          echo "Tag-triggered releases must pass PACKAGE_VERSION. Re-running an old GitHub Actions job uses the workflow snapshot from the original run, so trigger a fresh run from the current CI workflow instead." >&2
+          exit 1
       - name: Resolve package metadata
         id: package
         shell: bash
@@ -62,6 +68,25 @@ jobs:
           fi
 
           dotnet pack --no-build "${{ inputs.PROJECT_PATH }}" -c "${{ inputs.BUILD_CONFIG }}" -o ./artifacts "${version_args[@]}"
+      - name: Validate packaged artifacts
+        shell: bash
+        run: |
+          shopt -s nullglob
+          packages=(./artifacts/${{ steps.package.outputs.id }}.*.nupkg)
+
+          if [ ${#packages[@]} -eq 0 ]; then
+            echo "No nupkg artifact was produced for ${{ steps.package.outputs.id }}." >&2
+            exit 1
+          fi
+
+          if [ -n "${{ inputs.PACKAGE_VERSION }}" ]; then
+            expected_package="./artifacts/${{ steps.package.outputs.id }}.${{ inputs.PACKAGE_VERSION }}.nupkg"
+            if [ ! -f "$expected_package" ]; then
+              echo "Expected package '$expected_package', but the produced artifacts were:" >&2
+              printf '  %s\n' "${packages[@]}" >&2
+              exit 1
+            fi
+          fi
       - name: Publish to GitHub Packages
         shell: bash
         run: |
@@ -82,4 +107,37 @@ jobs:
               --api-key "$NUGET_API_KEY" \
               --source "https://api.nuget.org/v3/index.json" \
               --skip-duplicate
+          done
+      - name: Verify package availability on NuGet.org
+        if: ${{ env.NUGET_API_KEY != '' }}
+        shell: bash
+        run: |
+          shopt -s nullglob
+          packages=(./artifacts/${{ steps.package.outputs.id }}.*.nupkg)
+
+          for package in "${packages[@]}"; do
+            filename=$(basename "$package")
+            package_id='${{ steps.package.outputs.id }}'
+            package_version="${filename#${package_id}.}"
+            package_version="${package_version%.nupkg}"
+            package_id_lower=$(echo "$package_id" | tr '[:upper:]' '[:lower:]')
+            package_url="https://api.nuget.org/v3-flatcontainer/${package_id_lower}/index.json"
+
+            verified=false
+            for attempt in {1..18}; do
+              response=$(curl -fsS "$package_url" || true)
+              if echo "$response" | grep -Fqi "\"$package_version\""; then
+                echo "Verified $package_id $package_version on NuGet.org."
+                verified=true
+                break
+              fi
+
+              echo "Waiting for $package_id $package_version to appear on NuGet.org (attempt $attempt/18)..."
+              sleep 10
+            done
+
+            if [ "$verified" != 'true' ]; then
+              echo "Package $package_id $package_version was not visible on NuGet.org after push." >&2
+              exit 1
+            fi
           done

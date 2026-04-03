@@ -122,6 +122,24 @@ jobs:
             -c Release \
             -p:PackageVersion='${{ steps.release_scope.outputs.package_version }}' \
             -o ./artifacts
+      - name: Validate packed package version
+        if: ${{ steps.release_scope.outputs.is_tag == 'true' && steps.release_scope.outputs.should_run == 'true' }}
+        shell: bash
+        run: |
+          shopt -s nullglob
+          expected_package="./artifacts/${{ steps.package.outputs.id }}.${{ steps.release_scope.outputs.package_version }}.nupkg"
+          packages=(./artifacts/${{ steps.package.outputs.id }}.*.nupkg)
+
+          if [ ${#packages[@]} -eq 0 ]; then
+            echo "No nupkg artifact was produced for ${{ steps.package.outputs.id }}." >&2
+            exit 1
+          fi
+
+          if [ ! -f "$expected_package" ]; then
+            echo "Expected package '$expected_package', but the produced artifacts were:" >&2
+            printf '  %s\n' "${packages[@]}" >&2
+            exit 1
+          fi
       - name: Publish to GitHub Packages
         if: ${{ steps.release_scope.outputs.is_tag == 'true' && steps.release_scope.outputs.should_run == 'true' }}
         shell: bash
@@ -144,3 +162,25 @@ jobs:
               --source "https://api.nuget.org/v3/index.json" \
               --skip-duplicate
           done
+      - name: Verify package availability on NuGet.org
+        if: ${{ steps.release_scope.outputs.is_tag == 'true' && steps.release_scope.outputs.should_run == 'true' && env.NUGET_API_KEY != '' }}
+        shell: bash
+        run: |
+          package_id='${{ steps.package.outputs.id }}'
+          package_id_lower=$(echo "$package_id" | tr '[:upper:]' '[:lower:]')
+          package_version='${{ steps.release_scope.outputs.package_version }}'
+          package_url="https://api.nuget.org/v3-flatcontainer/${package_id_lower}/index.json"
+
+          for attempt in {1..18}; do
+            response=$(curl -fsS "$package_url" || true)
+            if echo "$response" | grep -Fqi "\"$package_version\""; then
+              echo "Verified $package_id $package_version on NuGet.org."
+              exit 0
+            fi
+
+            echo "Waiting for $package_id $package_version to appear on NuGet.org (attempt $attempt/18)..."
+            sleep 10
+          done
+
+          echo "Package $package_id $package_version was not visible on NuGet.org after push." >&2
+          exit 1

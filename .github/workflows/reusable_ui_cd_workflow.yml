@@ -28,6 +28,12 @@ jobs:
           dotnet-version: |
             8.0.x
             10.0.x
+      - name: Validate tag package version input
+        if: ${{ github.ref_type == 'tag' && inputs.PACKAGE_VERSION == '' }}
+        shell: bash
+        run: |
+          echo "Tag-triggered UI releases must pass PACKAGE_VERSION. Re-running an old GitHub Actions job uses the workflow snapshot from the original run, so trigger a fresh run from the current UI CI workflow instead." >&2
+          exit 1
       - name: Restore UI projects
         shell: bash
         run: |
@@ -89,6 +95,27 @@ jobs:
 
           for project in "${projects[@]}"; do
             dotnet pack --no-build "$project" -c "$BUILD_CONFIG" -o ./artifacts "${version_args[@]}"
+          done
+      - name: Validate packed UI package versions
+        if: ${{ inputs.PACKAGE_VERSION != '' }}
+        shell: bash
+        run: |
+          shopt -s nullglob
+          packages=(./artifacts/Aspire.HealthChecks.UI*.nupkg)
+
+          if [ ${#packages[@]} -eq 0 ]; then
+            echo "No UI nupkg artifacts were produced." >&2
+            exit 1
+          fi
+
+          for package in "${packages[@]}"; do
+            filename=$(basename "$package")
+            expected_suffix=".${{ inputs.PACKAGE_VERSION }}.nupkg"
+
+            if [[ "$filename" != *"$expected_suffix" ]]; then
+              echo "Expected UI artifact version '${{ inputs.PACKAGE_VERSION }}', but found '$filename'." >&2
+              exit 1
+            fi
           done
       - name: Publish UI packages to GitHub Packages
         shell: bash
