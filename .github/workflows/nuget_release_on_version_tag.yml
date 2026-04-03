@@ -1,0 +1,137 @@
+name: NuGet Release on Version Tag
+
+on:
+  push:
+    tags:
+      - v*
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  detect-packages:
+    runs-on: ubuntu-latest
+    outputs:
+      has_packages: ${{ steps.detect.outputs.has_packages }}
+      matrix: ${{ steps.detect.outputs.matrix }}
+      package_version: ${{ steps.version.outputs.package_version }}
+      previous_tag: ${{ steps.previous.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - name: Validate version tag
+        id: version
+        shell: bash
+        run: |
+          tag_name="${GITHUB_REF_NAME}"
+          if [[ ! "$tag_name" =~ ^v([0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?)$ ]]; then
+            echo "Tag '$tag_name' is not a supported semantic version tag." >&2
+            exit 1
+          fi
+
+          echo "package_version=${tag_name#v}" >> "$GITHUB_OUTPUT"
+      - name: Resolve previous version tag
+        id: previous
+        shell: bash
+        run: |
+          previous_tag=$(git tag --merged HEAD --list 'v*' --sort=-v:refname | grep -Fvx "${GITHUB_REF_NAME}" | head -n 1 || true)
+          echo "tag=$previous_tag" >> "$GITHUB_OUTPUT"
+      - name: Detect changed packages
+        id: detect
+        shell: bash
+        env:
+          PREVIOUS_TAG: ${{ steps.previous.outputs.tag }}
+        run: |
+          set -euo pipefail
+
+          global_files=(
+            "Directory.Build.props"
+            "Directory.Build.targets"
+            "Directory.Packages.props"
+            "build/versions.props"
+            "src/Directory.Build.props"
+            "src/ApiMarker.cs"
+            "src/CallerArgumentExpressionAttribute.cs"
+          )
+
+          if [ -n "$PREVIOUS_TAG" ]; then
+            mapfile -t changed_files < <(git diff --name-only "$PREVIOUS_TAG" HEAD)
+          else
+            mapfile -t changed_files < <(git ls-files)
+          fi
+
+          build_all=false
+          if [ -z "$PREVIOUS_TAG" ]; then
+            build_all=true
+          fi
+
+          global_changed=false
+          if [ "$build_all" = false ]; then
+            for global_file in "${global_files[@]}"; do
+              if printf '%s\n' "${changed_files[@]}" | grep -Fxq "$global_file"; then
+                global_changed=true
+                break
+              fi
+            done
+          fi
+
+          entries=()
+          while IFS= read -r project_path; do
+            [ -z "$project_path" ] && continue
+
+            project_dir=$(dirname "$project_path")
+            project_changed=false
+
+            if [ "$build_all" = true ] || [ "$global_changed" = true ]; then
+              project_changed=true
+            else
+              for changed_file in "${changed_files[@]}"; do
+                if [[ "$changed_file" == "$project_dir/"* ]]; then
+                  project_changed=true
+                  break
+                fi
+              done
+            fi
+
+            if [ "$project_changed" = true ]; then
+              package_id=$(dotnet msbuild "$project_path" -nologo -getProperty:PackageId | tail -n 1)
+              entries+=("{\"project_path\":\"./$project_path\",\"package_id\":\"$package_id\"}")
+            fi
+          done < <(find src -name '*.csproj' | sort)
+
+          if [ ${#entries[@]} -eq 0 ]; then
+            echo 'has_packages=false' >> "$GITHUB_OUTPUT"
+            echo 'matrix=[]' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          matrix_json="[$(IFS=,; echo "${entries[*]}")]"
+          echo 'has_packages=true' >> "$GITHUB_OUTPUT"
+          echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
+
+  publish-packages:
+    name: Publish ${{ matrix.package.package_id }}
+    needs: detect-packages
+    if: ${{ needs.detect-packages.outputs.has_packages == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.detect-packages.outputs.matrix) }}
+    uses: ./.github/workflows/reusable_cd_workflow.yml
+    permissions:
+      contents: read
+      packages: write
+    with:
+      BUILD_CONFIG: Release
+      PROJECT_PATH: ${{ matrix.package.project_path }}
+      PACKAGE_NAME: ${{ matrix.package.package_id }}
+      PACKAGE_VERSION: ${{ needs.detect-packages.outputs.package_version }}
+    secrets: inherit

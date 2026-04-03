@@ -1,5 +1,9 @@
 name: Reusable Preview CD Workflow
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   workflow_call:
     inputs:
@@ -27,11 +31,36 @@ jobs:
           dotnet-version: |
             8.0.x
             10.0.x
+      - name: Resolve package metadata
+        id: package
+        shell: bash
+        run: |
+          package_id=$(dotnet msbuild "${{ inputs.PROJECT_PATH }}" -nologo -getProperty:PackageId | tail -n 1)
+          echo "id=$package_id" >> "$GITHUB_OUTPUT"
       - name: Restore
         run: dotnet restore ${{inputs.PROJECT_PATH}}
       - name: Build
         run: dotnet build --no-restore ${{inputs.PROJECT_PATH}} -c ${{inputs.BUILD_CONFIG}}
       - name: Pack
         run: dotnet pack --no-build ${{inputs.PROJECT_PATH}} --version-suffix ${{inputs.VERSION_SUFFIX_PREFIX}}.${{ github.run_number }} -c ${{inputs.BUILD_CONFIG}} -o ./artifacts
-      - name: Publish
-        run: dotnet nuget push ./artifacts/${{inputs.PACKAGE_NAME}}.*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Publish to GitHub Packages
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for package in ./artifacts/${{ steps.package.outputs.id }}.*.nupkg; do
+            dotnet nuget push "$package" \
+              --api-key "${{ github.token }}" \
+              --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+              --skip-duplicate
+          done
+      - name: Publish to NuGet.org
+        if: ${{ secrets.NUGET_API_KEY != '' }}
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for package in ./artifacts/${{ steps.package.outputs.id }}.*.nupkg; do
+            dotnet nuget push "$package" \
+              --api-key "${{ secrets.NUGET_API_KEY }}" \
+              --source "https://api.nuget.org/v3/index.json" \
+              --skip-duplicate
+          done
