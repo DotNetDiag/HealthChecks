@@ -10,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Prometheus.Metrics/HealthChecks.Prometheus.Metrics.csproj
-      PACKAGE_NAME: DotNetDiag.HealthChecks.Prometheus.Metrics

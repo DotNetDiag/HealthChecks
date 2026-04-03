@@ -121,5 +121,4 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Publisher.CloudWatch/HealthChecks.Publisher.CloudWatch.csproj
-      PACKAGE_NAME: DotNetDiag.HealthChecks.Publisher.CloudWatch
       PACKAGE_VERSION: ${{ needs.release-scope.outputs.package_version }}

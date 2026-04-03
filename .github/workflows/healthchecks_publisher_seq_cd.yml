@@ -10,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Publisher.Seq/HealthChecks.Publisher.Seq.csproj
-      PACKAGE_NAME: DotNetDiag.HealthChecks.Publisher.Seq

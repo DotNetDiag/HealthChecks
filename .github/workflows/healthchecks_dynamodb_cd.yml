@@ -10,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.DynamoDb/HealthChecks.DynamoDb.csproj
-      PACKAGE_NAME: DotNetDiag.HealthChecks.DynamoDb

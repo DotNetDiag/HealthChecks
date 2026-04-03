@@ -127,5 +127,4 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.EventStore.gRPC/HealthChecks.EventStore.gRPC.csproj
-      PACKAGE_NAME: DotNetDiag.HealthChecks.EventStore.gRPC
       PACKAGE_VERSION: ${{ needs.release-scope.outputs.package_version }}

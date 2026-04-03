@@ -180,6 +180,5 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ${{ matrix.package.project_path }}
-      PACKAGE_NAME: ${{ matrix.package.package_id }}
       PACKAGE_VERSION: ${{ needs.detect-packages.outputs.package_version }}
     secrets: inherit

@@ -10,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Publisher.ApplicationInsights/HealthChecks.Publisher.ApplicationInsights.csproj
-      PACKAGE_NAME: DotNetDiag.HealthChecks.Publisher.ApplicationInsights

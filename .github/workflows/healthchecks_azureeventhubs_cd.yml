@@ -10,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Azure.Messaging.EventHubs/HealthChecks.Azure.Messaging.EventHubs.csproj
-      PACKAGE_NAME: DotNetDiag.HealthChecks.Azure.Messaging.EventHubs

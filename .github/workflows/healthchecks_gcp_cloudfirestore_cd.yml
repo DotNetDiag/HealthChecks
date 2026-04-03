@@ -10,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Gcp.CloudFirestore/HealthChecks.Gcp.CloudFirestore.csproj
-      PACKAGE_NAME: DotNetDiag.HealthChecks.Gcp.CloudFirestore

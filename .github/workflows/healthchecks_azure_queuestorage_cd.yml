@@ -10,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Azure.Storage.Queues/HealthChecks.Azure.Storage.Queues.csproj
-      PACKAGE_NAME: DotNetDiag.HealthChecks.Azure.Storage.Queues

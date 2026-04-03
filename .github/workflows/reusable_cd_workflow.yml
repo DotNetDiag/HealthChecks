@@ -13,9 +13,6 @@ on:
       PROJECT_PATH:
         required: true
         type: string
-      PACKAGE_NAME:
-        required: true
-        type: string
       PACKAGE_VERSION:
         required: false
         type: string

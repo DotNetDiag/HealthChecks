@@ -10,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Aws.SystemsManager/HealthChecks.Aws.SystemsManager.csproj
-      PACKAGE_NAME: DotNetDiag.HealthChecks.Aws.SystemsManager

@@ -10,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Uris/HealthChecks.Uris.csproj
-      PACKAGE_NAME: DotNetDiag.HealthChecks.Uris
