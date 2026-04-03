@@ -127,5 +127,4 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.InfluxDB/HealthChecks.InfluxDB.csproj
-      PACKAGE_NAME: HealthChecks.InfluxDB
       PACKAGE_VERSION: ${{ needs.release-scope.outputs.package_version }}

@@ -126,5 +126,4 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Oracle/HealthChecks.Oracle.csproj
-      PACKAGE_NAME: HealthChecks.Oracle
       PACKAGE_VERSION: ${{ needs.release-scope.outputs.package_version }}

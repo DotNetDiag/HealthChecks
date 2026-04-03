@@ -3,12 +3,12 @@
   <Import Project="..\Directory.Build.props" />
   
   <PropertyGroup>
-    <PackageId>Aspire.$(MSBuildProjectName)</PackageId>
+    <PackageId>DotNetDiag.$(MSBuildProjectName)</PackageId>
     <PackageIcon>icon.png</PackageIcon>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/AspireHealthChecks/Aspire.HealthChecks</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/AspireHealthChecks/Aspire.HealthChecks</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/DotNetDiag/HealthChecks</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/DotNetDiag/HealthChecks</RepositoryUrl>
     <Authors>Xabaril Contributors</Authors>
     <Company>Xabaril</Company>
     <RepositoryType>git</RepositoryType>

@@ -125,5 +125,4 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.ArangoDb/HealthChecks.ArangoDb.csproj
-      PACKAGE_NAME: HealthChecks.ArangoDb
       PACKAGE_VERSION: ${{ needs.release-scope.outputs.package_version }}
