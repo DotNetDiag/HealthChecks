@@ -16,6 +16,8 @@ title: HealthChecks UI Docker Image
 
 _HealthChecks_ is available as a docker image on [DockerHub](https://hub.docker.com/r/xabarilcoding/healthchecksui/). This image is a simple ASP.NET Core project with the _HealthCheckUI_ middleware.
 
+> Note: the currently published container image namespace remains `xabarilcoding/*`. The package catalog, repository links, and project documentation have moved to DotNetDiag.
+
 ```bash
 docker pull xabarilcoding/healthchecksui
 docker run --name ui -p 5000:80 -d xabarilcoding/healthchecksui:latest

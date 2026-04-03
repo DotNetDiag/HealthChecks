@@ -1,10 +1,10 @@
 ---
 layout: structured
-title: Aspire HealthChecks
+title: DotNetDiag HealthChecks
 hero:
   eyebrow: "ASP.NET Core"
   title: "Health checks for services, dashboards, and Kubernetes workloads"
-  lead: "Aspire.HealthChecks brings together a broad package catalog, the HealthChecks UI dashboard, and Kubernetes-focused tooling in one repository."
+  lead: "DotNetDiag HealthChecks is the actively maintained fork of AspNetCore.Diagnostics.HealthChecks, bringing together a broad package catalog, the HealthChecks UI dashboard, and Kubernetes-focused tooling in one repository."
   primary_label: "Browse documentation"
   primary_url: /guides/
   secondary_label: "Open the reference manual"
@@ -15,9 +15,9 @@ hero:
     - Docker
     - Kubernetes
   code_title: "Install a package"
-  code: "dotnet add package Aspire.HealthChecks.SqlServer"
-  note_title: "Site layout"
-  note_text: "The original repository articles now live under /docs and are published with GitHub Pages."
+  code: "dotnet add package DotNetDiag.HealthChecks.SqlServer"
+  note_title: "Maintenance notice"
+  note_text: "AspNetCore.Diagnostics.HealthChecks is no longer maintained. This repository is our fork, and we continue maintenance, fixes, and compatibility updates here."
 stats:
   - label: "Packages"
     value: "50+"
@@ -42,7 +42,11 @@ sections:
         url: /news/
 ---
 
-Aspire HealthChecks brings together a broad package catalog, the HealthChecks UI dashboard, and Kubernetes-focused tooling in one repository.
+DotNetDiag HealthChecks is the actively maintained fork of AspNetCore.Diagnostics.HealthChecks, bringing together a broad package catalog, the HealthChecks UI dashboard, and Kubernetes-focused tooling in one repository.
+
+## Maintenance notice
+
+AspNetCore.Diagnostics.HealthChecks is no longer maintained. We forked the project to continue maintenance, so new fixes, compatibility updates, and documentation changes will be published from this repository.
 
 ## Start here
 
@@ -53,7 +57,7 @@ Aspire HealthChecks brings together a broad package catalog, the HealthChecks UI
 ## Quick install
 
 ```bash
-dotnet add package Aspire.HealthChecks.SqlServer
+dotnet add package DotNetDiag.HealthChecks.SqlServer
 ```
 
 ## Coverage

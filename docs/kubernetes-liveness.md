@@ -21,9 +21,9 @@ services.AddHealthChecks()
 After this, we are going to install the health check packages for sql server and redis that will be the dependencies we use in our application. Open a terminal
 located where the csproj was created:
 
-`dotnet add package AspNetCore.HealthChecks.SqlServer`
+`dotnet add package DotNetDiag.HealthChecks.SqlServer`
 
-`dotnet add package AspNetCore.HealthChecks.Redis`
+`dotnet add package DotNetDiag.HealthChecks.Redis`
 
 Once you confirm the packages are installed, we are going to configure this two health checks under a tag called "services"
 

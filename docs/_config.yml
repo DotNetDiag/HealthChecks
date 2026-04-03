@@ -1,5 +1,5 @@
-title: Aspire HealthChecks
-description: Documentation, reference material, and changelog for AspNetCore.Diagnostics.HealthChecks.
+title: DotNetDiag HealthChecks
+description: Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.
 lang: en
 timezone: UTC
 url: https://dotnetdiag.github.io
@@ -39,7 +39,7 @@ defaults:
       ui_about_label: About
       ui_source_label: Source
       ui_switch_label: Language
-      ui_footer_intro: Official documentation for the Aspire.HealthChecks packages, HealthChecks UI, and Kubernetes integrations.
+      ui_footer_intro: Official documentation for the DotNetDiag HealthChecks packages, HealthChecks UI, and Kubernetes integrations.
       ui_footer_docs_title: Documentation
       ui_footer_project_title: Project
       ui_footer_doc_map_label: Documentation map

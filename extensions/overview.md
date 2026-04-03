@@ -9,7 +9,7 @@ More info on [**Release Gates for Azure DevOps**](https://docs.microsoft.com/en-
 ### Prerequisites
 To use this extension first you must configure **Asp.Net Core Health Checks** in your desired application, to install it follow this [walk-through](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-2.2)
 
-You also need the [**Health Check UI**](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks) as the Release Gate needs to call the endpoint returning the json information on Health Checks.
+You also need the [**Health Check UI**](https://github.com/DotNetDiag/HealthChecks) as the Release Gate needs to call the endpoint returning the json information on Health Checks.
 
 Once installed and deployed, you can start use this extenstion to use Health Checks as Release Gates
 
@@ -23,7 +23,7 @@ When using int the basic mode, the Release Gate just checks the HTTP 200 OK resu
  To configure the extension in its basic form,you need to provide following parameters:
  - *Display name*: Name for the Release Gate.
  - *Url for Asp.Net Core Health Check*: Full url for your Asp.Net Core Health Check (i.e.: https://mywebsite.com/health).
- - *Value of healthy response for the check to verify*: By default, when using [**Health Check UI**](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks) it is *Healthy*, but it can be changed in the [**Health Checks Response Writer**](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-2.2#customize-output) so review it when configuring it.
+ - *Value of healthy response for the check to verify*: By default, when using [**Health Check UI**](https://github.com/DotNetDiag/HealthChecks) it is *Healthy*, but it can be changed in the [**Health Checks Response Writer**](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-2.2#customize-output) so review it when configuring it.
 
 #### Filter by particular Health Check
 With this, we can filter out for a particular Health Check from the configured ones, but this requires a little bit more configuration both in the tasks and in your application code.
@@ -50,5 +50,5 @@ The tasks configuration will be like this:
  - *Display name*: Name for the Release Gate.
  - *Url for Asp.Net Core Health Check*: Full url for your Asp.Net Core Health Check (i.e.: https://mywebsite.com/health).
  - *Name of check to verify*: Name of the check configured in **Health Checks** to verify. (i.e.: sqlserver).
- - *Value of healthy response for the check to verify*: By default, when using [**Health Check UI**](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks) it is *Healthy*, but it can be changed in the [**Health Checks Response Writer**](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-2.2#customize-output) so review it when configuring it.
+ - *Value of healthy response for the check to verify*: By default, when using [**Health Check UI**](https://github.com/DotNetDiag/HealthChecks) it is *Healthy*, but it can be changed in the [**Health Checks Response Writer**](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-2.2#customize-output) so review it when configuring it.
 

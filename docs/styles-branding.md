@@ -68,4 +68,4 @@ rgba(255, 255, 255, 0.8)
 
 ## Source Sample
 
-[You can check here the dotnet custom branding sample](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/tree/master/samples/HealthChecks.UI.Branding)
+[You can check here the dotnet custom branding sample](https://github.com/DotNetDiag/HealthChecks/tree/master/samples/HealthChecks.UI.Branding)

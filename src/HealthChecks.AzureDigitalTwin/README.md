@@ -29,13 +29,13 @@ You can download the latest version from nuget packages:
 Through Visual Studio:
 
 ```
-Install-Package AspNetCore.HealthChecks.AzureDigitalTwin
+Install-Package DotNetDiag.HealthChecks.AzureDigitalTwin
 ```
 
 Or through CLI:
 
 ```
-dotnet add package AspNetCore.HealthChecks.AzureDigitalTwin
+dotnet add package DotNetDiag.HealthChecks.AzureDigitalTwin
 ```
 
 ---
