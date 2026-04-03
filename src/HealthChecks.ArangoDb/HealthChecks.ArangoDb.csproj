@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(DefaultLibraryTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);ArangoDb</PackageTags>
     <Description>HealthChecks.ArangoDb is the health check package for ArangoDb.</Description>
     <VersionPrefix>$(HealthCheckArangoDb)</VersionPrefix>

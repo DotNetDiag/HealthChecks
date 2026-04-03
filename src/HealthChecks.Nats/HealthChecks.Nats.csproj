@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(DefaultLibraryTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Nats</PackageTags>
     <Description>HealthChecks.Nats is the health check package for Nats.</Description>
     <VersionPrefix>$(HealthCheckNats)</VersionPrefix>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(DefaultLibraryTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Azure;Search</PackageTags>
     <Description>HealthChecks.AzureSearch is the health check package for Azure Search.</Description>
     <VersionPrefix>$(HealthCheckAzureSearch)</VersionPrefix>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(DefaultLibraryTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Azure;IoT Hub</PackageTags>
     <Description>HealthChecks.Azure.IoTHub is the health check package for Azure IoT Hub.</Description>
     <VersionPrefix>$(HealthCheckIoTHub)</VersionPrefix>

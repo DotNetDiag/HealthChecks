@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(DefaultLibraryTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Sqlite</PackageTags>
     <Description>HealthChecks.Sqlite is the health check package for Sqlite.</Description>
     <VersionPrefix>$(HealthCheckSqlite)</VersionPrefix>

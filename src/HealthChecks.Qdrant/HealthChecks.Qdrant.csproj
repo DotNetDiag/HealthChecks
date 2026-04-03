@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(DefaultLibraryTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Qdrant</PackageTags>
     <Description>HealthChecks.Qdrant is the health check package for Qdrant.</Description>
     <VersionPrefix>$(HealthCheckQdrant)</VersionPrefix>

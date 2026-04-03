@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(DefaultLibraryTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);solr</PackageTags>
     <Description>HealthChecks.solr is the health check package for solr.</Description>
     <VersionPrefix>$(HealthCheckSolr)</VersionPrefix>

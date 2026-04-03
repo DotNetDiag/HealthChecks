@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(DefaultNetCoreApp)</TargetFramework>
+    <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Dapr</PackageTags>
     <Description>HealthChecks.Dapr is the health check package for Dapr.</Description>
     <VersionPrefix>$(HealthCheckDapr)</VersionPrefix>

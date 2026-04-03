@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(DefaultLibraryTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Network;Sftp;Ftp;Tcp;DNS</PackageTags>
     <Description>HealthChecks.Network is the health check package for network services.</Description>
     <VersionPrefix>$(HealthCheckNetwork)</VersionPrefix>
@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="SSH.NET" />
-    <PackageReference Include="System.Buffers" />
+    <PackageReference Include="System.Buffers" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     <Compile Include="../HealthCheckResultTask.cs" />
   </ItemGroup>
 

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(DefaultNetCoreApp)</TargetFramework>
+    <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Kubernetes;k8s;Cluster</PackageTags>
     <Description>HealthChecks.HealthChecks is the health check package for Kubernetes clusters.</Description>
     <VersionPrefix>$(HealthCheckKubernetes)</VersionPrefix>

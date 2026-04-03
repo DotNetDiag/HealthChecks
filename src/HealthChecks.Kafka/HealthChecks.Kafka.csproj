@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(DefaultLibraryTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Kafka;Confluent</PackageTags>
     <Description>HealthChecks.Kafka is the health check package for Kafka.</Description>
     <VersionPrefix>$(HealthCheckKafka)</VersionPrefix>

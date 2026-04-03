@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(DefaultLibraryTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>HealthCheck;Health;InfluxDB</PackageTags>
     <Description>HealthChecks.InfluxDB is the health check package for InfluxDB.</Description>
     <VersionPrefix>$(HealthCheckInfluxDB)</VersionPrefix>

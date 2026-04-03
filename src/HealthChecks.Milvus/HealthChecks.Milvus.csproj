@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(DefaultLibraryTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Milvus</PackageTags>
     <Description>HealthChecks.Milvus is the health check package for Milvus.</Description>
     <VersionPrefix>$(HealthCheckMilvus)</VersionPrefix>
@@ -11,7 +11,7 @@
   <ItemGroup>
     <PackageReference Include="Milvus.Client" />
     <!-- the following dependency can be removed once Milvus.Client starts using newer STJ version -->
-    <PackageReference Include="System.Text.Json" />
+    <PackageReference Include="System.Text.Json" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
   </ItemGroup>
 
 </Project>

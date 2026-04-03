@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(DefaultLibraryTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Azure;CosmosDb</PackageTags>
     <Description>HealthChecks.CosmosDb is the health check package for Azure CosmosDb.</Description>
     <VersionPrefix>$(HealthCheckCosmosDb)</VersionPrefix>

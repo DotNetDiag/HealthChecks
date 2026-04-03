@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(DefaultNetCoreApp)</TargetFramework>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Core</PackageTags>
     <Description>HealthChecks.UI.Core package containing builder and model definitions</Description>
     <VersionPrefix>$(HealthCheckUICore)</VersionPrefix>
