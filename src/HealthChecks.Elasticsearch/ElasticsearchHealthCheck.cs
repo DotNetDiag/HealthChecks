@@ -71,7 +71,7 @@ public class ElasticsearchHealthCheck : IHealthCheck
                         {
                             throw new ArgumentNullException(nameof(_options.ApiKey));
                         }
-                        settings.Authentication(new ApiKey(_options.ApiKey));
+                        settings = settings.Authentication(new ApiKey(_options.ApiKey));
                     }
 
                     if (_options.CertificateValidationCallback != null)
