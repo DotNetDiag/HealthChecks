@@ -23,7 +23,7 @@ public class LocalStackContainerFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         Container = await CreateContainerAsync().ConfigureAwait(false);
-        await Container.ExecAsync(["awslocal", "sns", "create-topic", "--topic-name", "healthchecks"]).ConfigureAwait(false);
+        await Container.ExecAsync(["awslocal", "sns", "create-topic", "--region", "us-east-1", "--topic-name", "healthchecks"]).ConfigureAwait(false);
     }
 
     public Task DisposeAsync() => Container?.DisposeAsync().AsTask() ?? Task.CompletedTask;
