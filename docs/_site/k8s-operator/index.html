@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Health Checks Kubernetes Operator | DotNetDiag HealthChecks</title>
+    <meta name="description" content="Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork." />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="/">DotNetDiag HealthChecks</a>
+        <nav class="site-nav">
+            <a href="/guides/">Guides</a>
+            <a href="/reference/">使用手册</a>
+            <a href="/news/">News</a>
+            <a href="/about/">About</a>
+            <a href="https://github.com/DotNetDiag/HealthChecks">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>Health Checks Kubernetes Operator</h1>
+        
+    </section>
+    
+
+    <div class="page-content">
+        <p>This repository, offers a Kubernetes Operator that automatically deploys and configures the HealthChecks UI in k8s and also monitors labeled services that expose healthchecks in a given namespace.</p>
+<p>The operator also has a namespaced service watcher that can detect new services and report them back to the UI and also tracks services modifications and removals so the UI always represents the latest desired state.</p>
+<h2 id="installing-healthchecks-operator">Installing HealthChecks Operator</h2>
+<h3 id="intalling-with-the-installer-tool">Intalling with the installer tool</h3>
+<p>We offer a installer tool for windows and linux, that will install all necessary resources to have your operator up and running in seconds in the healthchecks namespace.</p>
+<p>You can download the differente releases from this links:</p>
+<ul>
+<li><a href="https://github.com/DotNetDiag/HealthChecks/raw/master/deploy/operator/installer/releases/operator-installer-win.exe">Windows Release</a></li>
+<li><a href="https://github.com/DotNetDiag/HealthChecks/raw/master/deploy/operator/installer/releases/operator-installer-linux">Linux Release</a></li>
+</ul>
+<p>Note: If you execute the tool with --delete parameters, a resource cleanup will be triggered and all the operator related resources including the crd will be removed.</p>
+<h3 id="installing-from-definition-files">Installing from definition files</h3>
+<p>You can deploy healthchecks operator in your cluster by cloning the repository and applying the yaml definition files:</p>
+<ul>
+<li><p>Apply the custom resource definition: <a href="https://github.com/DotNetDiag/HealthChecks/blob/master/deploy/operator/crd/healthcheck-crd.yaml">healthcheck-crd</a></p>
+<p><code>kubectl apply -f deploy/operator/crd/healthcheck-crd.yaml</code></p>
+</li>
+<li><p>Apply the rest of definition yamls</p>
+<p><code>kubectl apply -f ./deploy/operator</code></p>
+</li>
+</ul>
+<h2 id="creating-a-healthcheck-resource">Creating a HealthCheck Resource</h2>
+<p>The <a href="https://github.com/DotNetDiag/HealthChecks/blob/master/deploy/operator/crd/healthcheck-crd.yaml">HealthCheck operator definition</a>, has the following fields to be configured:</p>
+<h3 id="required-fields">Required fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td style="text-align: left;">Name of the healthcheck resource</td>
+</tr>
+<tr>
+<td>scope</td>
+<td style="text-align: left;">Cluster / Namespaced</td>
+</tr>
+<tr>
+<td>servicesLabel</td>
+<td style="text-align: left;">The label the operator service watcher will use to detected healthchecks endpoints</td>
+</tr>
+</tbody>
+</table>
+<h3 id="scope-definition-cluster-or-namespaced">Scope definition (Cluster or Namespaced)</h3>
+<p>The scope field (Cluster or Namespaced) is mandatory and will specify to the operator whether it should watch for healthchecks services in the
+same namespace where the UI resource is created or watch to all services in all namespaces.</p>
+<p>If you wan't to have different UI's for different namespaced services you should use <strong>Namespaced</strong></p>
+<p>If you wan't to have a single UI that monitors all the healthchecks from the cluster you should use <strong>Cluster</strong></p>
+<p>Note: The UI resources created by the operator (deployment, service, configmap, secret, etc) will always be created in the metadata specified namespace.</p>
+<h3 id="optional-fields">Optional fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th style="text-align: left;">Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>serviceType</td>
+<td style="text-align: left;">How the UI should be published (ClusterIP, LoadBalancer or NodePort)</td>
+<td>ClusterIP</td>
+</tr>
+<tr>
+<td>portNumber</td>
+<td style="text-align: left;">What port will be used to expose the UI service</td>
+<td>80</td>
+</tr>
+<tr>
+<td>uiPath</td>
+<td style="text-align: left;">Location where the UI frontend will be served</td>
+<td>/healthchecks</td>
+</tr>
+<tr>
+<td>uiApiPath</td>
+<td style="text-align: left;">Location where the UI backend API will be served</td>
+<td>UI defaults</td>
+</tr>
+<tr>
+<td>uiResourcesPath</td>
+<td style="text-align: left;">Location where the UI static files resources will be served</td>
+<td>UI defaults</td>
+</tr>
+<tr>
+<td>uiWebhooksPath</td>
+<td style="text-align: left;">Location where the Webhooks api</td>
+<td>UI defaults</td>
+</tr>
+<tr>
+<td>uiNoRelativePaths</td>
+<td style="text-align: left;">Disable UI front-end relative paths</td>
+<td>false</td>
+</tr>
+<tr>
+<td>healthChecksPath</td>
+<td style="text-align: left;">Path where the UI will collect health from endpoints</td>
+<td>/health (Can be overriden with a service annotation)</td>
+</tr>
+<tr>
+<td>healthChecksScheme</td>
+<td style="text-align: left;">Scheme to be used to collect health from endpoints</td>
+<td>http (Can be overriden with a service annotation)</td>
+</tr>
+<tr>
+<td>image</td>
+<td style="text-align: left;">Image to be used by the UI</td>
+<td>xabarilcoding/healthchecksui:latest</td>
+</tr>
+<tr>
+<td>imagePullPolicy</td>
+<td style="text-align: left;">Deployment image pull policy</td>
+<td>Always</td>
+</tr>
+<tr>
+<td>stylesheetContent</td>
+<td style="text-align: left;">css content used to brand the UI</td>
+<td>none</td>
+</tr>
+<tr>
+<td>serviceAnnotations</td>
+<td style="text-align: left;">name / value array to use custom annotations in UI service</td>
+<td>none</td>
+</tr>
+<tr>
+<td>deploymentAnnotations</td>
+<td style="text-align: left;">name / value array to use custom annotations in UI Deployment</td>
+<td>none</td>
+</tr>
+<tr>
+<td>webhooks</td>
+<td style="text-align: left;">webhook array object (name, uri, payload and restoredPayload)</td>
+<td>none</td>
+</tr>
+<tr>
+<td>tolerations</td>
+<td style="text-align: left;">toleration array object (key, operator, value, effect and seconds)</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<p>The container image examples in this section still use the currently published <code>xabarilcoding/*</code> namespace.</p>
+<h2 id="sample-healthchecks-operator-tutorial">Sample HealthChecks Operator Tutorial</h2>
+<p>Let's start by creating a demo namespace:</p>
+<p><code>kubectl create ns demo</code></p>
+<p>And then, create a healthchecks-ui.yaml file with the following contents:</p>
+<pre><code class="language-yaml">apiVersion: &quot;aspnetcore.ui/v1&quot;
+kind: HealthCheck
+metadata:
+  name: healthchecks-ui
+  namespace: demo
+spec:
+  name: healthchecks-ui
+  scope: Namespaced #The UI will be created at specified namespace (demo) and will watch healthchecks services in demo namespace only
+  #scope: Cluster The UI will be created at specified namespace (demo) but will watch healthcheck services across all namespaces
+  servicesLabel: HealthChecks
+  serviceType: LoadBalancer
+  stylesheetContent: &gt;
+    :root {    
+      --primaryColor: #2a3950;
+      --secondaryColor: #f4f4f4;  
+      --bgMenuActive: #e1b015;
+      --bgButton: #e1b015;
+      --logoImageUrl: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/WoW_icon.svg/1200px-WoW_icon.svg.png');
+      --bgAside: var(--primaryColor);   
+    }
+  serviceAnnotations:
+    - name: service.beta.kubernetes.io/azure-load-balancer-internal
+      value: &quot;true&quot;
+</code></pre>
+<p>Let's apply the HealthCheck definition with the created file:</p>
+<p><code>kubectl apply -f healthchecks-ui.yaml</code></p>
+<p>You can now check your created HealthCheck resource using:</p>
+<p><code>kubectl get healthcheck -n demo</code></p>
+<h3 id="operator-controller">Operator controller</h3>
+<p>Once you apply a HealthCheck kind resource, the operator will automatically create some resources in the namespace. The UI deployment and service to expose the dashboard, a secret that enables secure communication from the operator to the UI service, and an optional configmap volume source depending if you configured the stylesheetContent branding.</p>
+<p>All this resources are created using OwnerReferences so that means if you delete the HealthCheck resource, all the child resources will be automatically purged with it.</p>
+<p>The operator also starts services watchers per namespace that will monitor creation, modification of labels and annotations and also services themselves. If a monitored application is added or removed and has the HealthChecks label annotation, the UI will automatically react to this events.</p>
+<h2 id="deploying-an-application-with-healthchecks-to-be-monitored-automatically">Deploying an Application with HealthChecks to be monitored automatically</h2>
+<p>The next step is creating an AspNetCore core uses some HealthChecks. We are going to use a sample app that is already deployed in dockerhub (carloslanderas/hc-website) using the following code:</p>
+<pre><code class="language-csharp">using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+
+namespace hc_website
+{
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services
+                .AddRouting()
+                .AddHealthChecks()
+                .AddProcessAllocatedMemoryHealthCheck(maximumMegabytesAllocated: 50)
+                .AddCheck(&quot;self&quot;, () =&gt; HealthCheckResult.Healthy());
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            app.UseRouting();
+            app.UseEndpoints(endpoints =&gt;
+            {
+                endpoints.MapHealthChecks(&quot;/health&quot;, new HealthCheckOptions
+                {
+                    Predicate = r =&gt; true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+            });
+        }
+    }
+}
+
+</code></pre>
+<p>The next step, is deploying this application using a deployment yaml definition like this:</p>
+<pre><code class="language-yaml">apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hc-website-deploy
+  namespace: demo
+  labels:
+    app: hc-website
+spec:
+  selector:
+    matchLabels:
+      app: hc-website
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hc-website
+    spec:
+      containers:
+        - name: hc-website
+          image: carloslanderas/hc-website
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+          env:
+            - name: Logging__LogLevel__Default
+              value: Debug
+            - name: Logging__LogLevel__Microsoft
+              value: Warning
+            - name: Logging__LogLevel__hc_website
+              value: Debug
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: hc-website-svc
+  namespace: demo
+  labels:
+    HealthChecks: enabled
+spec:
+  selector:
+    app: hc-website
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+</code></pre>
+<p>Note the HealthChecks : enabled label to tell the operator this is a healthchecked application:</p>
+<pre><code class="language-yaml">labels:
+  HealthChecks: enabled
+</code></pre>
+<p>Create a <code>deployment.yaml</code> file with above contents and apply it:</p>
+<p><code>kubectl apply -f deployment.yaml</code></p>
+<h2 id="service-annotations">Service Annotations</h2>
+<p>You can use <code>HealthChecksPath</code> and <code>HealthChecksScheme</code> annotations in HealthChecks services to override the default Path and Scheme crd definition.</p>
+<h2 id="accessing-the-ui-service">Accessing the UI service</h2>
+<p>Once you applied the HealthCheck definition, the operator has automatically created some resources to setup your UI service and you can now access the healthchecks dashboard after inspecting it's address:</p>
+<p><code>kubectl get svc -n demo</code></p>
+<pre><code class="language-text">NAME                  TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)         AGE
+hc-website-svc        ClusterIP      10.0.145.224 &lt;none&gt;           80/TCP          16h
+healthchecks-ui-svc   LoadBalancer   10.0.20.73   51.138.24.168    80:31343/TCP    16h
+</code></pre>
+<p>Your UI endpoint will be listening in <a href="http://51.138.24.168/healthchecks">http://51.138.24.168/healthchecks</a> and the labeled service should appear automatically.</p>
+<p><img src="./images/ui-branding-2.jpg" alt="HealthChecksUIBranding" /></p>
+<h2 id="webhooks-configuration">Webhooks Configuration</h2>
+<p>You can configure webhook notifications by using the webhooks yaml array element. Each webhook definition requires a name, a uri and unhealthy notification and restore payloads.</p>
+<p>The UI hosted service will automatically trigger configured webhooks with the defined <code>payload</code> whenever a healthcheck reports unhealthy and will use <code>restoredPayload</code> to notify the healthcheck is up and running again.</p>
+<pre><code class="language-yaml">apiVersion: &quot;aspnetcore.ui/v1&quot;
+kind: HealthCheck
+metadata:
+  name: healthchecks-ui
+spec:
+  name: healthchecks-ui
+  servicesLabel: HealthChecks
+  stylesheetContent: &gt;
+    :root {
+      --primaryColor: #0f519f;
+      --secondaryColor: #f4f4f4;
+      --bgMenuActive: #0f519f;
+      --bgButton: #0f519f;
+      --bgAside: var(--primaryColor);
+    }
+  webhooks:
+    - name: requestcatcher1
+      uri: https://healthchecks.requestcatcher.com
+      payload: '{ message: &quot;Webhook report for [[LIVENESS]]: [[FAILURE]] - Description: [[DESCRIPTIONS]]&quot;}'
+      restoredPayload: '{ message: &quot;[[LIVENESS]] is back to life&quot;}'
+    - name: requestcatcher2
+      uri: https://healthchecks2.requestcatcher.com
+      payload: '{ message: &quot;Webhook report for [[LIVENESS]]: [[FAILURE]] - Description: [[DESCRIPTIONS]]&quot;}'
+      restoredPayload: '{ message: &quot;[[LIVENESS]] is back to life&quot;}'
+</code></pre>
+<p>Once your webhooks are specified in the yaml definition, you can check if they are correctly configured in the UI webhooks section:</p>
+<p><img src="./images/ui-webhooks2.png" alt="Webhooks" /></p>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.</p>
+        <p>Maintained by DotNetDiag Maintainers / Project documentation</p>
+    </div>
+</footer>
+</body>
+</html>

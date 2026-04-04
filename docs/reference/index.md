@@ -1,49 +1,68 @@
 ---
+layout: landing
 title: Reference Manual
+description: The primary manual for package selection, UI configuration, deployment, observability, and the generated README appendix.
 permalink: /reference/
+show_title: false
+hero_eyebrow: DotNetDiag HealthChecks
+hero_title: Reference Manual
+hero_subtitle: Start from a supported integration path, then open the README appendix when you need provider-specific defaults, overloads, or sample-specific setup notes.
+hero_primary_url: /reference/getting-started/
+hero_primary_label: Start Here
+hero_secondary_url: /reference/readmes/
+hero_secondary_label: Open README Appendix
+paths_kicker: Read by scenario
+paths_title: Supported integration paths
+paths_description: Follow the path that matches the rollout you are doing today, then branch into chapter or appendix detail only when needed.
+landing_paths:
+  - kicker: Minimal service
+    title: Health checks only
+    description: Register checks, choose provider packages, and expose health endpoints with the smallest footprint.
+    url: /reference/getting-started/
+  - kicker: Dashboard rollout
+    title: Add the UI
+    description: Configure dashboard storage, polling, notifications, branding, and runtime deployment.
+    url: /reference/ui-manual/
+  - kicker: Cluster rollout
+    title: Add Kubernetes
+    description: Combine probes, discovery, and operator-based deployment in cluster environments.
+    url: /reference/deployment-and-integrations/
+landing_sections:
+  - kicker: Core manual
+    title: Read by topic
+    description: These chapters form the main narrative path of the manual.
+    items:
+      - title: Getting Started
+        description: Minimal registration patterns, endpoint exposure, and the first package decision.
+        url: /reference/getting-started/
+      - title: Package Catalog
+        description: Choose the right package family before you drill into provider-specific README details.
+        url: /reference/package-catalog/
+      - title: Publishers and Metrics
+        description: Outbound publishing, Prometheus scraping, and observability-focused integrations.
+        url: /reference/publishers-and-metrics/
+      - title: HealthChecks UI Manual
+        description: Dashboard configuration, storage providers, polling cadence, and UI runtime behavior.
+        url: /reference/ui-manual/
+      - title: Deployment and Integrations
+        description: Kubernetes, Azure DevOps, Docker-adjacent deployment, and operational integration notes.
+        url: /reference/deployment-and-integrations/
+      - title: Tutorials and Samples
+        description: Walkthroughs and sample-oriented guidance for teams validating an adoption path.
+        url: /reference/tutorials/
+  - kicker: Appendix
+    title: README appendix and supporting material
+    description: The generated appendix keeps package, extension, and sample README content inside the manual without turning the navigation into a second top-level section.
+    items:
+      - title: README Appendix
+        description: Browse generated package and extension pages under stable docs URLs.
+        url: /reference/readmes/
+      - title: Guides
+        description: Operational articles for Docker, branding, webhooks, probes, discovery, and the operator.
+        url: /guides/
+      - title: Contributing
+        description: Contribution notes, repository expectations, and workflow guidance for changes.
+        url: /reference/contributing/
 ---
 
-The reference manual is now organized as themed chapters instead of mirroring the root README as one large page. Read it in order when you are onboarding a service, or jump directly to the area you are actively integrating.
-
-## Core chapters
-
-1. [Getting Started]({{ '/reference/getting-started/' | relative_url }})
-2. [Package Catalog]({{ '/reference/package-catalog/' | relative_url }})
-3. [Publishers And Metrics]({{ '/reference/publishers-and-metrics/' | relative_url }})
-4. [HealthChecks UI Manual]({{ '/reference/ui-manual/' | relative_url }})
-5. [Deployment And Integrations]({{ '/reference/deployment-and-integrations/' | relative_url }})
-6. [Tutorials And Samples]({{ '/reference/tutorials/' | relative_url }})
-7. [Contributing]({{ '/reference/contributing/' | relative_url }})
-
-## Supporting material
-
-- [Project READMEs]({{ '/reference/readmes/' | relative_url }}) contains generated pages for package, extension, and sample README files that live outside `docs/`.
-- [Documentation guides]({{ '/guides/' | relative_url }}) contains operational articles for Docker, webhooks, branding, and Kubernetes.
-
-## Scenario paths
-
-### Health Checks Only
-
-1. Start with [Getting Started]({{ '/reference/getting-started/' | relative_url }}) for the minimal registration pattern.
-2. Continue to [Package Catalog]({{ '/reference/package-catalog/' | relative_url }}) to choose the provider package you actually need.
-3. Use [Project READMEs]({{ '/reference/readmes/' | relative_url }}) when you need provider-specific defaults, overloads, or credential examples.
-4. Open [Publishers And Metrics]({{ '/reference/publishers-and-metrics/' | relative_url }}) only if this service also needs outbound telemetry or Prometheus scraping.
-
-### Add The UI
-
-1. Start with [Getting Started]({{ '/reference/getting-started/' | relative_url }}) if the service does not already expose a UI-compatible health endpoint.
-2. Move to [HealthChecks UI Manual]({{ '/reference/ui-manual/' | relative_url }}) for dashboard setup, storage, polling, and configuration.
-3. Use the operational guides for the next concern: [UI Docker image]({{ '/ui-docker/' | relative_url }}), [Webhooks and failure notifications]({{ '/webhooks/' | relative_url }}), [Interface styling and branding]({{ '/styles-branding/' | relative_url }}).
-4. Use [Project READMEs]({{ '/reference/readmes/' | relative_url }}) as appendix material when a storage provider or extension has extra setup details.
-
-### Add Kubernetes
-
-1. Start with [Deployment And Integrations]({{ '/reference/deployment-and-integrations/' | relative_url }}) to see the full deployment surface first.
-2. Read [Liveness and readiness probes]({{ '/kubernetes-liveness/' | relative_url }}) if you are only exposing health endpoints to Kubernetes.
-3. Read [Kubernetes operator]({{ '/k8s-operator/' | relative_url }}) and [Automatic Kubernetes service discovery]({{ '/k8s-ui-discovery/' | relative_url }}) if the rollout includes HealthChecks UI inside the cluster.
-4. Return to [HealthChecks UI Manual]({{ '/reference/ui-manual/' | relative_url }}) when the cluster deployment also needs UI storage, notification, or dashboard configuration details.
-
-## Notes
-
-The generated README catalog remains available as appendix material, but the reference manual is now the primary narrative entry point for this site.
-Use the README appendix when you need package-level edge cases, but start from these scenario paths when you want the supported integration path.
+The generated README appendix remains part of the manual, but it now sits behind the main narrative instead of looking like a second top-level documentation area.

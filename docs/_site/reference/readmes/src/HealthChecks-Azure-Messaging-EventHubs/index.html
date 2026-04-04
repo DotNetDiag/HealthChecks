@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HealthChecks.Azure.Messaging.EventHubs | DotNetDiag HealthChecks</title>
+    <meta name="description" content="Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork." />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="/">DotNetDiag HealthChecks</a>
+        <nav class="site-nav">
+            <a href="/guides/">Guides</a>
+            <a href="/reference/">使用手册</a>
+            <a href="/news/">News</a>
+            <a href="/about/">About</a>
+            <a href="https://github.com/DotNetDiag/HealthChecks">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>HealthChecks.Azure.Messaging.EventHubs</h1>
+        
+    </section>
+    
+
+    <div class="page-content">
+        <blockquote>
+<p>Generated from <a href="https://github.com/DotNetDiag/HealthChecks/blob/master/src/HealthChecks.Azure.Messaging.EventHubs/README.md">src/HealthChecks.Azure.Messaging.EventHubs/README.md</a>.</p>
+</blockquote>
+<h2 id="azure-event-hubs-health-check">Azure Event Hubs Health Check</h2>
+<p>This health check verifies the ability to communicate with <a href="https://azure.microsoft.com/services/event-hubs/">Azure Event Hubs</a>. It uses the provided <a href="https://learn.microsoft.com/dotnet/api/azure.messaging.eventhubs.producer.eventhubproducerclient">EventHubProducerClient</a> to get event hub properties.</p>
+<h3 id="defaults">Defaults</h3>
+<p>By default, the <code>EventHubProducerClient</code> instance is resolved from service provider.</p>
+<pre><code class="language-csharp">void Configure(IHealthChecksBuilder builder)
+{
+    builder.Services.AddSingleton(sp =&gt; new EventHubProducerClient(&quot;fullyQualifiedNamespace&quot;, &quot;eventHubName&quot;, new DefaultAzureCredential()));
+    builder.AddHealthChecks().AddAzureEventHub();
+}
+</code></pre>
+<h3 id="customization">Customization</h3>
+<p>You can additionally add the following parameters:</p>
+<ul>
+<li><code>clientFactory</code>: A factory method to provide <code>EventHubProducerClient</code> instance. This can be very useful when you need more than one <code>EventHubProducerClient</code> instance in your app (please see the example below that uses keyed DI introduced in .NET 8).</li>
+<li><code>failureStatus</code>: The <code>HealthStatus</code> that should be reported when the health check fails. Default is <code>HealthStatus.Unhealthy</code>.</li>
+<li><code>tags</code>: A list of tags that can be used to filter sets of health checks.</li>
+<li><code>timeout</code>: A <code>System.TimeSpan</code> representing the timeout of the check.</li>
+</ul>
+<pre><code class="language-csharp">void Configure(IHealthChecksBuilder builder)
+{
+    builder.Services
+        .AddKeyedSingleton(serviceKey: &quot;eventHubName1&quot;, (serviceProvider, serviceKey) =&gt; new EventHubProducerClient(&quot;fullyQualifiedNamespace&quot;, &quot;eventHubName1&quot;, new DefaultAzureCredential()))
+        .AddKeyedSingleton(serviceKey: &quot;eventHubName2&quot;, (serviceProvider, serviceKey) =&gt; new EventHubProducerClient(&quot;fullyQualifiedNamespace&quot;, &quot;eventHubName2&quot;, new DefaultAzureCredential()))
+        .AddHealthChecks()
+            .AddAzureKeyVaultSecrets(clientFactory: serviceProvider =&gt; serviceProvider.GetRequiredKeyedService&lt;EventHubProducerClient&gt;(&quot;eventHubName1&quot;), name: &quot;event_hub_1&quot;)
+            .AddAzureKeyVaultSecrets(clientFactory: serviceProvider =&gt; serviceProvider.GetRequiredKeyedService&lt;EventHubProducerClient&gt;(&quot;eventHubName2&quot;), name: &quot;event_hub_2&quot;);
+
+}
+</code></pre>
+<h3 id="breaking-changes">Breaking changes</h3>
+<p>In the prior releases, <code>AzureEventHubHealthCheck</code> was a part of <code>DotNetDiag.HealthChecks.AzureServiceBus</code> package. It had a dependency on not just <code>Azure.Messaging.EventHubs</code>, but also <code>Azure.Messaging.ServiceBus</code>. The packages have been split to avoid bringing unnecessary dependencies. Moreover, <code>AzureEventHubHealthCheck</code> was letting the users specify how <code>EventHubProducerClient</code> should be created (from raw connection string or from fully qualified namespace and managed identity credentials), at a cost of maintaining an internal, static client instances cache. Now the type does not create client instances nor maintain an internal cache and <strong>it's the caller responsibility to provide the instance of <code>EventHubProducerClient</code></strong> (please see <a href="https://github.com/DotNetDiag/HealthChecks/issues/2040">#2040</a> for more details). Since Azure SDK recommends treating clients as singletons <see href="https://devblogs.microsoft.com/azure-sdk/lifetime-management-and-thread-safety-guarantees-of-azure-sdk-net-clients/"/> and client instances can be expensive to create, it's recommended to register a singleton factory method for Azure SDK clients. So the clients are created only when needed and once per whole application lifetime.</p>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.</p>
+        <p>Maintained by DotNetDiag Maintainers / Project documentation</p>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kubernetes Liveness and Readiness Probes Using HealthChecks | DotNetDiag HealthChecks</title>
+    <meta name="description" content="Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork." />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="/">DotNetDiag HealthChecks</a>
+        <nav class="site-nav">
+            <a href="/guides/">Guides</a>
+            <a href="/reference/">使用手册</a>
+            <a href="/news/">News</a>
+            <a href="/about/">About</a>
+            <a href="https://github.com/DotNetDiag/HealthChecks">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>Kubernetes Liveness and Readiness Probes Using HealthChecks</h1>
+        
+    </section>
+    
+
+    <div class="page-content">
+        <h2 id="kubernetes-liveness-and-readiness-probes-using-healthchecks">Kubernetes liveness and readiness probes using HealthChecks</h2>
+<p>Asp.Net Core HealthChecks becomes really useful to configure our liveness and readiness probes in our kubernetes deployments. In the following lines we will show a sample of how can we do this. This sample is a little tutorial that might be useful for people starting to work with HealthChecks and Kubernetes.</p>
+<p>To follow the sample you will need to have docker and kubernetes running on your local computer, because we are going to build an image locally and we are not going to publish it. Remember that if you are using Windows and you are using minikube instead of docker for windows you have to set the docker environment to aim the minikube vm by executing <strong>eval $(minikube docker-env)</strong> in a bash window so docker sends the build context to the minikube machine and the k8s cluster can see the local images.</p>
+<p>First of all, we can create a new Empty Asp.Net Core application called <strong>WebApp</strong> and add the <strong>Microsoft.AspNetCore.Diagnostics.HealthChecks</strong> package to add the health checks capabilities to our application. Remember to set the Docker support checkbox to have the project <strong>Dockerfile</strong> automatically created.</p>
+<p>Next, we are going to configure a health check to represent the health of the service itself represented under the name &quot;self&quot;.</p>
+<pre><code class="language-csharp">services.AddHealthChecks()
+    .AddCheck(&quot;self&quot;, () =&gt; HealthCheckResult.Healthy());
+
+</code></pre>
+<p>After this, we are going to install the health check packages for sql server and redis that will be the dependencies we use in our application. Open a terminal
+located where the csproj was created:</p>
+<p><code>dotnet add package DotNetDiag.HealthChecks.SqlServer</code></p>
+<p><code>dotnet add package DotNetDiag.HealthChecks.Redis</code></p>
+<p>Once you confirm the packages are installed, we are going to configure this two health checks under a tag called &quot;services&quot;</p>
+<pre><code class="language-csharp">   services.AddHealthChecks()
+       .AddCheck(&quot;self&quot;, () =&gt; HealthCheckResult.Healthy())
+       .AddSqlServer(&quot;Server=server;Database=master;User Id=sa;Password=pass&quot;,
+              tags: new[] {&quot;services&quot;})
+       .AddRedis(&quot;redis&quot;,
+              tags: new[] {&quot;services&quot;});
+</code></pre>
+<p>The registered health checks will return a 200 OK status code when they are healthy and a 503 (service unavailable) when they are unhealthy. We will benefit from this status codes when we create http based checks on kubernetes.</p>
+<p>Next step, we are going to register the paths that will return our health reports:</p>
+<p>First, we are going to register the path for the &quot;self&quot; check, where the own application will tell us about it's health. Right now, we are always returning a healthy state, but for now, it's ok.</p>
+<p>Let's register our endpoint under &quot;/self&quot; path, telling the registrations predicate we wan't to return only the report of the registration called &quot;self&quot;. Go to Configure method in the Startup.cs and paste the following code block:</p>
+<pre><code class="language-csharp">
+    app.UseHealthChecks(&quot;/self&quot;, new HealthCheckOptions
+    {
+       Predicate = r =&gt; r.Name.Contains(&quot;self&quot;)
+    });
+</code></pre>
+<p port="">Launch the project and open a browser or a curl request to
+http://localhost:/self. The ouput should be the following:</p>
+<blockquote>
+<blockquote>
+<p>clanderas@Mephisto:~$ curl  http://localhost:5000/self
+Healthy</p>
+</blockquote>
+</blockquote>
+<p>Our application self check is on place, returning a 200 status code.</p>
+<p>Now is the turn to configure the service dependencies under the path &quot;/ready&quot;
+because once we are working with kubernetes we wan't this path to represent if our service is working and ready because all their dependencies are working as well:</p>
+<pre><code class="language-csharp"> app.UseHealthChecks(&quot;/ready&quot;, new HealthCheckOptions
+ {
+    Predicate = r =&gt; r.Tags.Contains(&quot;services&quot;)
+ });
+</code></pre>
+<p>To finish this section, we are going to change a little bit our self health check to be able to switch the application health status from healthy to unhealthy and viceversa:</p>
+<p>define a class variable called:</p>
+<pre><code class="language-csharp">bool running = true;
+</code></pre>
+<p>and register the path called /switch in the pipeline with the following code:</p>
+<pre><code class="language-csharp">app.Map(&quot;/switch&quot;, appBuilder =&gt;
+{
+      appBuilder.Run(async context =&gt;
+    {
+          running = !running;
+          await context.Response.WriteAsync($&quot;{Environment.MachineName} running {running}&quot;);
+    });
+ });
+</code></pre>
+<p>The previous method will give us the ability to switch the in-memory &quot;running&quot; variable and we will return the health report based on it's value:</p>
+<p>Replace the self check we registered like this:</p>
+<pre><code class="language-csharp">services.AddHealthChecks()
+    .AddCheck(&quot;self&quot;, () =&gt; HealthCheckResult.Healthy());
+
+</code></pre>
+<p>to this:</p>
+<pre><code class="language-csharp">services.AddHealthChecks()
+    .AddCheck(&quot;self&quot;, () =&gt; running ? HealthCheckResult.Healthy()
+                                    : HealthCheckResult.Unhealthy());
+
+</code></pre>
+<p>We are set!, we have the /self path to represent our application status. Think about what kind of code will you need to express the health of the app you are working on right now. Maybe a call to an MVC controller that shall be always responding?.</p>
+<p>The next think we are going to do is using the Dockerfile that Visual studio 2017 has automatically created for us and build a docker image.</p>
+<p>Open a terminal and locate your path where the project sln is located and execute the following command to build the docker image:</p>
+<p><code>docker build -t webapp . -f WebApp/Dockerfile</code></p>
+<p>Once our docker image is created, we are going to deploy to kubernetes 3 deployments.</p>
+<ul>
+<li>One for sqlserver</li>
+<li>One for redis</li>
+</ul>
+<p>(both of them with a service exposing the containers to the cluster using ClusterIp)</p>
+<ul>
+<li>The third one will be a deployment that creates 3 replicas of our webapp thas is configured with Asp.Net Core Healthchecks (webapp image). This deployment will be exposed using a Nodeport bound to our host 30000 port. This Nodeport will do local load balancing among all our replicas.</li>
+</ul>
+<p>To avoid pasting all the deployment and services yaml files within the tutorial I have created a gist on the following <a href="https://gist.github.com/CarlosLanderas/4f651fdaa2342db55f66d41f405630c6">link</a>.</p>
+<p>Copy and paste the code and create both files locally: <strong>infra.yml</strong> and <strong>deployment.yml</strong></p>
+<p>Note: Take a look to the deployment.yml file and the <strong>imagePullPolicy: Never</strong>. That line is in charge of not trying to connect to docker hub and look for the image locally.</p>
+<p>Once you have both files in place, be sure your kubernetes local cluster is running
+and execute the following commands:</p>
+<p><code>kubectl apply -f infra.yml</code></p>
+<p><code>kubectl apply -f deployment.yml</code></p>
+<p>The output of the commands should be:</p>
+<pre><code>deployment.extensions/sqlserver created
+
+service/sqlserver created
+
+deployment.extensions/redis created
+
+service/redis created
+
+deployment.extensions/sqlserver created
+
+service/sqlserver created
+
+deployment.extensions/redis created
+
+service/redis created
+</code></pre>
+<p>While your pods are being created, let's take a look to our deployment.yml file and put special attention in the line 16:</p>
+<pre><code class="language-yaml"> livenessProbe:
+          httpGet:
+            path: /self
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 15
+</code></pre>
+<p>As you can see, we are declaring the liveness probe that should be executed against each of our replicas in webapp deployment. This declaration will trigger an http request to the /self path we declared for the app health, giving and initial delay of <strong>10 seconds of margin</strong> to allow the pod initializing correcly. If we don't give <strong>enough delay</strong> so the pod can start the pod will be killed by the orchestrator all the time because we are not giving it time to be ready so we will find ourselves in a start-killed-loop</p>
+<p>In the line 23 of the deployment yaml we can find the readiness probe described like this:</p>
+<pre><code class="language-yaml">    readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 15
+</code></pre>
+<p>As you can see the declaration is very similar, but this time we are targetting the path /ready where we are returning the health of all our application dependencies (sql and redis)</p>
+<p><strong>IMPORTANT</strong>: The difference between a liveness and a readiness check is the liveness check will tell k8s if our pod is healthy.</p>
+<p>If the pod is not healthy, k8s will kill the pod and restart it so it can get recovered.</p>
+<p>The readiness check will tell k8s if our app is ready (In this case configured to tell if the dependencies are up and ready but it could apply to other scenarios like the application initialization that might be a long running process).</p>
+<p>If some of the dependencies are broken or not ready, when the readiness check is triggered, k8s will notice that the pod is not ready and no traffic will be redirected to that pod. That means if we have 3 replicas and one of them is not ready, instead of sharing all the requests among the 3 replicas only 2 will be serving requests and the failing one will be out of traffic until it gets recovered.</p>
+<blockquote>
+<blockquote>
+<p>Lets finish!</p>
+</blockquote>
+</blockquote>
+<p>Our pods should be ready by now, lets check it by running:</p>
+<p><code>kubectl get pods</code></p>
+<p>We should see all the pods in a ready state (1/1) and Running</p>
+<pre><code>NAME                             READY   STATUS    RESTARTS   AGE
+redis-5f6c496656-tbqdl           1/1     Running   0          14m
+sqlserver-6645fb796-4tfwd        1/1     Running   0          14m
+webapp-deploy-7686b8c794-fvfq9   1/1     Running   0          14m
+webapp-deploy-7686b8c794-kzjrx   1/1     Running   0          14m
+webapp-deploy-7686b8c794-w2nlk   1/1     Running   0          14m
+</code></pre>
+<p>To end this tutorial we are going to break some of the replicas by calling the switch mechanism we exposed on the /switch path. Have in mind, we are using a Nodeport
+and the output from this will be different in your execution because it's random.</p>
+<p>If you are running docker for windows, the webapp is listening in localhost:30000
+and if you are using minikube you should run the following command to get the final url.</p>
+<p><code>minikube service webapp-service --url</code></p>
+<p>(The output should be something like this: <a href="http://192.168.99.100:30000">http://192.168.99.100:30000</a>
+)</p>
+<p>On the console, execute the following command:</p>
+<p><code>kubectl get pods --watch</code></p>
+<p>This will show the pods with watch mode, and we will see live updates whenever a pod status changes.</p>
+<p>Open a new console and execute the following command to switch to unhealthy status some of the replicas:</p>
+<p><code>curl http://localhost:30000/switch</code></p>
+<p>As we are getting balanced, we can reach the same replica twice, so be sure to receive at least two messages in which the pod enters in a unhealthy state:</p>
+<p><code>webapp-deploy-7686b8c794-kzjrx running False</code></p>
+<p><code>webapp-deploy-7686b8c794-kzjrx running False</code></p>
+<p>If we wait some seconds for the liveness probe to pass, we will see on the watch console that our pods have been killed by kubernetes showing a 1 number on the restarts column:</p>
+<p><code>webapp-deploy-7686b8c794-fvfq9   1/1   Running   1     23m</code></p>
+<p><code>webapp-deploy-7686b8c794-kzjrx   1/1   Running   1     23m</code></p>
+<p>Kubernetes executed the liveness probe against the replicas and the two being unhealthy were killed and restarted.</p>
+<p>Let's try right now the readiness probe. The output of this experiment should be the application not being able to return any response, because although the pods are healthy and alive, they are gonna report as non ready.</p>
+<p>Execute the following command to scale to 0 replicas the sqlserver deployment and get the pod deleted:</p>
+<p><code>kubectl scale deployment sqlserver --replicas=0</code></p>
+<p>you should see the console output: deployment.extensions/sqlserver scaled</p>
+<p>Wait now for the readiness probe to execute and see the pods status (kubectl get pods):</p>
+<pre><code>webapp-deploy-7686b8c794-w2nlk   0/1   Running   0     27m
+webapp-deploy-7686b8c794-fvfq9   0/1   Running   1     27m
+webapp-deploy-7686b8c794-kzjrx   0/1   Running   1     27m
+</code></pre>
+<p>As you can see, none of them are ready (0/1) and if we try to query the health of the deployment using the previous command:</p>
+<p><code>curl http://localhost:30000/self</code></p>
+<p>We will not receive any response:</p>
+<p>curl: (7) Failed to connect to 192.168.99.100 port 30000: Connection refused</p>
+<p>The pods are alive but one of their dependencies isn't.</p>
+<p>In a real scenario, maybe one, maybe some, but not all the pods will be non ready, and that pods will get out of traffic, but as we are using the same images and dependencies on this deployment all pods are expelled from service.</p>
+<p>This has been a little introduction to how can you use Health Checks and benefit from it when you are running containers within an orchestrator.</p>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.</p>
+        <p>Maintained by DotNetDiag Maintainers / Project documentation</p>
+    </div>
+</footer>
+</body>
+</html>

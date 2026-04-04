@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HealthChecks UI Manual | DotNetDiag HealthChecks</title>
+    <meta name="description" content="Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork." />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="/">DotNetDiag HealthChecks</a>
+        <nav class="site-nav">
+            <a href="/guides/">Guides</a>
+            <a href="/reference/">使用手册</a>
+            <a href="/news/">News</a>
+            <a href="/about/">About</a>
+            <a href="https://github.com/DotNetDiag/HealthChecks">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>HealthChecks UI Manual</h1>
+        
+    </section>
+    
+
+    <div class="page-content">
+        <p>This chapter replaces the large UI section in the root README and centralizes the stable setup guidance for the dashboard.</p>
+<h2 id="ui-package-family">UI package family</h2>
+<ul>
+<li><code>DotNetDiag.HealthChecks.UI</code> - ASP.NET Core dashboard and middleware</li>
+<li><code>DotNetDiag.HealthChecks.UI.Client</code> - response writer and shared abstractions</li>
+<li><code>DotNetDiag.HealthChecks.UI.Core</code> - UI core services</li>
+<li><code>DotNetDiag.HealthChecks.UI.Data</code> - UI data models and database context</li>
+<li><code>DotNetDiag.HealthChecks.UI.InMemory.Storage</code></li>
+<li><code>DotNetDiag.HealthChecks.UI.SqlServer.Storage</code></li>
+<li><code>DotNetDiag.HealthChecks.UI.SQLite.Storage</code></li>
+<li><code>DotNetDiag.HealthChecks.UI.PostgreSQL.Storage</code></li>
+<li><code>DotNetDiag.HealthChecks.UI.MySql.Storage</code></li>
+</ul>
+<h2 id="minimal-setup">Minimal setup</h2>
+<pre><code class="language-csharp">using HealthChecks.UI.Client;
+using HealthChecks.UI.Core;
+using HealthChecks.UI.InMemory.Storage;
+
+services
+    .AddHealthChecksUI(setup =&gt;
+    {
+        setup.SetEvaluationTimeInSeconds(30);
+        setup.MaximumHistoryEntriesPerEndpoint(50);
+        setup.AddHealthCheckEndpoint(&quot;api&quot;, &quot;/healthz&quot;);
+    })
+    .AddInMemoryStorage();
+
+app.UseRouting();
+
+app.UseEndpoints(endpoints =&gt;
+{
+    endpoints.MapHealthChecks(&quot;/healthz&quot;, new HealthCheckOptions
+    {
+        Predicate = _ =&gt; true,
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    });
+
+    endpoints.MapHealthChecksUI();
+});
+</code></pre>
+<p>The dashboard is served from <code>/healthchecks-ui</code>, while the SPA polls the UI backend API served from <code>/healthchecks-api</code> by default.</p>
+<h2 id="polling-concurrency-and-history">Polling, concurrency, and history</h2>
+<pre><code class="language-csharp">services.AddHealthChecksUI(setup =&gt;
+{
+    setup.SetEvaluationTimeInSeconds(5);
+    setup.SetApiMaxActiveRequests(1);
+    setup.MaximumHistoryEntriesPerEndpoint(50);
+});
+</code></pre>
+<ul>
+<li>Use <code>SetEvaluationTimeInSeconds</code> to control polling cadence.</li>
+<li>Use <code>SetApiMaxActiveRequests</code> if your UI backend should reject excess concurrent requests with HTTP 429.</li>
+<li>Use <code>MaximumHistoryEntriesPerEndpoint</code> to limit how much timeline data the UI API returns.</li>
+</ul>
+<h2 id="storage-providers">Storage providers</h2>
+<pre><code class="language-csharp">services.AddHealthChecksUI().AddInMemoryStorage();
+services.AddHealthChecksUI().AddSqlServerStorage(&quot;connectionString&quot;);
+services.AddHealthChecksUI().AddPostgreSqlStorage(&quot;connectionString&quot;);
+services.AddHealthChecksUI().AddMySqlStorage(&quot;connectionString&quot;);
+services.AddHealthChecksUI().AddSqliteStorage(&quot;Data Source=sqlite.db&quot;);
+</code></pre>
+<p>Choose the storage provider based on where you want UI execution history and endpoint metadata to persist.</p>
+<h2 id="database-migrations">Database migrations</h2>
+<p>Database migrations are enabled by default. Disable them only when your deployment process manages the schema separately.</p>
+<pre><code class="language-csharp">services
+    .AddHealthChecksUI(setup =&gt; setup.DisableDatabaseMigrations())
+    .AddInMemoryStorage();
+</code></pre>
+<pre><code class="language-json">{
+  &quot;HealthChecksUI&quot;: {
+    &quot;DisableMigrations&quot;: true
+  }
+}
+</code></pre>
+<h2 id="configuration-by-appsettings-or-code">Configuration by appsettings or code</h2>
+<pre><code class="language-json">{
+  &quot;HealthChecksUI&quot;: {
+    &quot;HealthChecks&quot;: [
+      {
+        &quot;Name&quot;: &quot;HTTP-Api-Basic&quot;,
+        &quot;Uri&quot;: &quot;http://localhost:6457/healthz&quot;
+      }
+    ],
+    &quot;Webhooks&quot;: [
+      {
+        &quot;Name&quot;: &quot;teams&quot;,
+        &quot;Uri&quot;: &quot;https://example.test/webhook&quot;,
+        &quot;Payload&quot;: &quot;{...}&quot;,
+        &quot;RestoredPayload&quot;: &quot;{...}&quot;
+      }
+    ],
+    &quot;EvaluationTimeInSeconds&quot;: 10,
+    &quot;MinimumSecondsBetweenFailureNotifications&quot;: 60
+  }
+}
+</code></pre>
+<pre><code class="language-csharp">services
+    .AddHealthChecksUI(setup =&gt;
+    {
+        setup.AddHealthCheckEndpoint(&quot;endpoint1&quot;, &quot;http://localhost:8001/healthz&quot;);
+        setup.AddHealthCheckEndpoint(&quot;endpoint2&quot;, &quot;http://remoteendpoint:9000/healthz&quot;);
+        setup.AddWebhookNotification(&quot;webhook1&quot;, uri: &quot;http://httpbin.org/status/200?code=ax3rt56s&quot;, payload: &quot;{...}&quot;);
+    })
+    .AddSqlServerStorage(&quot;connectionString&quot;);
+</code></pre>
+<p>The supported configuration sources are the same ones you already use elsewhere in ASP.NET Core: JSON files, environment variables, user secrets, and code.</p>
+<h2 id="relative-urls-and-notifications">Relative URLs and notifications</h2>
+<p>When the UI runs in the same process as the health endpoints and webhook receivers, relative paths are supported.</p>
+<pre><code class="language-csharp">services
+    .AddHealthChecksUI(setup =&gt;
+    {
+        setup.AddHealthCheckEndpoint(&quot;endpoint1&quot;, &quot;/health-databases&quot;);
+        setup.AddHealthCheckEndpoint(&quot;endpoint2&quot;, &quot;health-messagebrokers&quot;);
+        setup.AddWebhookNotification(&quot;webhook1&quot;, uri: &quot;/notify&quot;, payload: &quot;{...}&quot;);
+        setup.SetNotifyUnHealthyOneTimeUntilChange();
+    })
+    .AddInMemoryStorage();
+</code></pre>
+<p>Use <code>SetNotifyUnHealthyOneTimeUntilChange</code> to avoid notification spam while a dependency remains down.</p>
+<h2 id="styling-and-http-pipeline-customization">Styling and HTTP pipeline customization</h2>
+<pre><code class="language-csharp">app.UseEndpoints(endpoints =&gt;
+{
+    endpoints.MapHealthChecksUI(setup =&gt;
+    {
+        setup.AddCustomStylesheet(&quot;dotnet.css&quot;);
+    });
+});
+</code></pre>
+<pre><code class="language-csharp">services.AddHealthChecksUI(setup =&gt;
+{
+    setup.ConfigureApiEndpointHttpclient((sp, client) =&gt;
+    {
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(&quot;Bearer&quot;, &quot;supertoken&quot;);
+    });
+    setup.UseApiEndpointHttpMessageHandler(sp =&gt; new HttpClientHandler());
+    setup.ConfigureWebhooksEndpointHttpclient((sp, client) =&gt;
+    {
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(&quot;Bearer&quot;, &quot;sampletoken&quot;);
+    });
+    setup.UseWebhookEndpointHttpMessageHandler(sp =&gt; new HttpClientHandler());
+})
+.AddInMemoryStorage();
+</code></pre>
+<p>Use these hooks when the dashboard or webhook pipeline must go through a proxy, attach headers, or use custom delegating handlers.</p>
+<h2 id="related-guides">Related guides</h2>
+<ul>
+<li><a href="/ui-docker/">UI Docker image</a></li>
+<li><a href="/webhooks/">Webhooks and failure notifications</a></li>
+<li><a href="/styles-branding/">Interface styling and branding</a></li>
+<li><a href="/ui-changelog/">UI changelog</a></li>
+</ul>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.</p>
+        <p>Maintained by DotNetDiag Maintainers / Project documentation</p>
+    </div>
+</footer>
+</body>
+</html>

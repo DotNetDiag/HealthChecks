@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AWS SQS Health Check | DotNetDiag HealthChecks</title>
+    <meta name="description" content="Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork." />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="/">DotNetDiag HealthChecks</a>
+        <nav class="site-nav">
+            <a href="/guides/">Guides</a>
+            <a href="/reference/">使用手册</a>
+            <a href="/news/">News</a>
+            <a href="/about/">About</a>
+            <a href="https://github.com/DotNetDiag/HealthChecks">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>AWS SQS Health Check</h1>
+        
+    </section>
+    
+
+    <div class="page-content">
+        <blockquote>
+<p>Generated from <a href="https://github.com/DotNetDiag/HealthChecks/blob/master/src/HealthChecks.Aws.Sqs/README.md">src/HealthChecks.Aws.Sqs/README.md</a>.</p>
+</blockquote>
+<h1 id="aws-sqs-health-check">AWS SQS Health Check</h1>
+<p>This health check verifies the ability to communicate with Amazon SQS and the existence of some queues. For more information about AWS SQS check the <a href="https://aws.amazon.com/sqs/">AWS SQS Site</a></p>
+<h2 id="example-usage">Example Usage</h2>
+<p>With all of the following examples, you can additionally add the following parameters:</p>
+<ul>
+<li><code>name</code>: The health check name. Default if not specified is <code>aws sqs</code>.</li>
+<li><code>failureStatus</code>: The <code>HealthStatus</code> that should be reported when the health check fails. Default is <code>HealthStatus.Unhealthy</code>.</li>
+<li><code>tags</code>: A list of tags that can be used to filter sets of health checks.</li>
+<li><code>timeout</code>: A <code>System.TimeSpan</code> representing the timeout of the check.</li>
+</ul>
+<h3 id="basic">Basic</h3>
+<h3 id="check-existence-of-a-queue-and-load-credentials-from-the-applications-default-configuration">Check existence of a queue and load credentials from the application's default configuration</h3>
+<pre><code class="language-csharp">public void ConfigureServices(IServiceCollection services)
+{
+    services
+        .AddHealthChecks()
+        .AddSqs(options =&gt;
+        {
+            options.AddQueue(&quot;queueName&quot;);
+        });
+}
+</code></pre>
+<h3 id="check-existence-of-a-queue-and-directly-pass-credentials">Check existence of a queue and directly pass credentials</h3>
+<pre><code class="language-csharp">public void ConfigureServices(IServiceCollection services)
+{
+    services
+        .AddHealthChecks()
+        .AddSqs(options =&gt;
+        {
+            options.AddQueue(&quot;queueName&quot;);
+            options.Credentials = new BasicAWSCredentials(&quot;access-key&quot;, &quot;secret-key&quot;);
+        });
+}
+</code></pre>
+<h3 id="check-existence-of-a-queue-and-specify-region-endpoint">Check existence of a queue and specify region endpoint</h3>
+<pre><code class="language-csharp">public void ConfigureServices(IServiceCollection services)
+{
+    services
+        .AddHealthChecks()
+        .AddSqs(options =&gt;
+        {
+            options.AddQueue(&quot;queueName&quot;);
+            options.RegionEndpoint = RegionEndpoint.EUCentral1;
+        });
+}
+</code></pre>
+<h3 id="check-existence-of-a-queue-and-specify-credentials-with-region-endpoint">Check existence of a queue and specify credentials with region endpoint</h3>
+<pre><code class="language-csharp">public void ConfigureServices(IServiceCollection services)
+{
+    services
+        .AddHealthChecks()
+        .AddSqs(options =&gt;
+        {
+            options.AddQueue(&quot;queueName&quot;);
+            options.Credentials = new BasicAWSCredentials(&quot;access-key&quot;, &quot;secret-key&quot;);
+            options.RegionEndpoint = RegionEndpoint.EUCentral1;
+        });
+}
+</code></pre>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.</p>
+        <p>Maintained by DotNetDiag Maintainers / Project documentation</p>
+    </div>
+</footer>
+</body>
+</html>

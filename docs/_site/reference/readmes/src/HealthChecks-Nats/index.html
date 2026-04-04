@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NATS Health Check | DotNetDiag HealthChecks</title>
+    <meta name="description" content="Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork." />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="/">DotNetDiag HealthChecks</a>
+        <nav class="site-nav">
+            <a href="/guides/">Guides</a>
+            <a href="/reference/">使用手册</a>
+            <a href="/news/">News</a>
+            <a href="/about/">About</a>
+            <a href="https://github.com/DotNetDiag/HealthChecks">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>NATS Health Check</h1>
+        
+    </section>
+    
+
+    <div class="page-content">
+        <blockquote>
+<p>Generated from <a href="https://github.com/DotNetDiag/HealthChecks/blob/master/src/HealthChecks.Nats/README.md">src/HealthChecks.Nats/README.md</a>.</p>
+</blockquote>
+<h1 id="nats-health-check">NATS Health Check</h1>
+<p>This health check verifies the ability to communicate with a <a href="https://nats.io/about/">NATS server</a>. <br />
+It relies on <code>NATS.Net</code> package. <br />
+Latest tag for the <a href="https://hub.docker.com/_/nats/">official dockerhub image</a> is <code>2.6.6</code>.</p>
+<h2 id="builder-extension">Builder Extension</h2>
+<pre><code class="language-csharp">public void ConfigureServices(IServiceCollection services)
+{
+    var options = NatsOpts.Default with
+    {
+      Url = &quot;nats://demo.nats.io:4222&quot;
+    };
+
+    services
+        .AddSingleton&lt;INatsConnection&gt;(new NatsConnection(options))
+        .AddHealthChecks()
+        .AddNats();
+}
+</code></pre>
+<p><code>Url</code> property is NATS server url and is <strong>mandatory</strong>. <br />
+There is a demo instance <code>nats://demo.nats.io:4222</code> managed by nats.io and this is the default value for the url property. <br />
+The rest of the properties in <code>NatsOpts</code> are optional. <br />
+Docker image produces <code>nats://localhost:4222</code>. <br />
+Url might also be a string containing multiple URLs to the NATS Server, e.g. <code>nats://localhost:4222, nats://localhost:8222</code>.</p>
+<p>See <a href="https://docs.nats.io/running-a-nats-service/configuration/securing_nats/auth_intro/nkey_auth">NKeys</a> for reference to the <code>PrivateNKey</code> and <code>Jwt</code> properties.</p>
+<p>See <a href="https://docs.nats.io/using-nats/developer/connecting/creds">Authenticating with a Credentials File</a> for details related to the <code>CredentialsPath</code> property.</p>
+<p>Like all <code>IHealthChecksBuilder</code> extensions, all the following parameters have type <code>default</code> values and may be overridden:</p>
+<ul>
+<li><code>name</code>: The health check name. Default if not specified is <code>nats</code>.</li>
+<li><code>failureStatus</code>: The <code>HealthStatus</code> that should be reported when the health check fails. Default is <code>HealthStatus.Unhealthy</code>.</li>
+<li><code>tags</code>: A list of tags that can be used to filter sets of health checks.</li>
+<li><code>timeout</code>: A <code>System.TimeSpan</code> representing the timeout of the check.</li>
+</ul>
+<p><a href="/reference/readmes/repository/">&lt;&lt;</a></p>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.</p>
+        <p>Maintained by DotNetDiag Maintainers / Project documentation</p>
+    </div>
+</footer>
+</body>
+</html>

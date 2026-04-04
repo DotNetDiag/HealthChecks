@@ -1,0 +1,32 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: #f5f7fb;
+  color: #102033;
+}
+
+a {
+  color: #0f5fd7;
+}
+
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.hero-block,
+.path-card,
+table,
+.site-footer,
+.site-header {
+  background: #ffffff;
+  border-color: #d9e2f0;
+}
+
+.page-description,
+.hero-subtitle,
+.path-card span,
+.site-footer-inner {
+  color: #56687d;
+}

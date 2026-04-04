@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Package Catalog | DotNetDiag HealthChecks</title>
+    <meta name="description" content="Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork." />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="/">DotNetDiag HealthChecks</a>
+        <nav class="site-nav">
+            <a href="/guides/">Guides</a>
+            <a href="/reference/">使用手册</a>
+            <a href="/news/">News</a>
+            <a href="/about/">About</a>
+            <a href="https://github.com/DotNetDiag/HealthChecks">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>Package Catalog</h1>
+        
+    </section>
+    
+
+    <div class="page-content">
+        <p>This chapter turns the package inventory from the root README into a maintainable manual chapter. Use it to choose the right package family first, then open the <a href="/reference/readmes/">README appendix</a> for package-specific defaults and code samples.</p>
+<h2 id="naming-convention">Naming convention</h2>
+<ul>
+<li>Health check packages use the <code>DotNetDiag.HealthChecks.&lt;Provider&gt;</code> convention.</li>
+<li>UI packages use the <code>DotNetDiag.HealthChecks.UI.*</code> convention and are covered in the <a href="/reference/ui-manual/">UI manual</a>.</li>
+<li>Publisher packages use the <code>DotNetDiag.HealthChecks.Publisher.*</code> convention and are covered in <a href="/reference/publishers-and-metrics/">publishers and metrics</a>.</li>
+</ul>
+<h2 id="core-and-platform-checks">Core and platform checks</h2>
+<ul>
+<li><a href="/reference/readmes/src/HealthChecks-ApplicationStatus/">Application Status</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-OpenIdConnectServer/">OpenID Connect Server</a></li>
+<li><code>DotNetDiag.HealthChecks.Kubernetes</code></li>
+<li><code>DotNetDiag.HealthChecks.Network</code></li>
+<li><code>DotNetDiag.HealthChecks.SignalR</code></li>
+<li><code>DotNetDiag.HealthChecks.System</code></li>
+<li><code>DotNetDiag.HealthChecks.Uris</code></li>
+</ul>
+<h2 id="aws-packages">AWS packages</h2>
+<ul>
+<li><a href="/reference/readmes/src/HealthChecks-Aws-S3/">Amazon S3</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-Aws-SecretsManager/">AWS Secrets Manager</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-Aws-Sns/">AWS SNS</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-Aws-Sqs/">AWS SQS</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-Aws-SystemsManager/">AWS Systems Manager</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-DynamoDb/">Amazon DynamoDB</a></li>
+</ul>
+<h2 id="azure-packages">Azure packages</h2>
+<ul>
+<li><a href="/reference/readmes/src/HealthChecks-AzureApplicationInsights/">Azure Application Insights</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-Azure-Data-Tables/">Azure Data Tables</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-Azure-IoTHub/">Azure IoT Hub</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-Azure-KeyVault-Secrets/">Azure Key Vault Secrets</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-Azure-Messaging-EventHubs/">Azure Event Hubs</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-Azure-Storage-Blobs/">Azure Blob Storage</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-Azure-Storage-Files-Shares/">Azure File Shares</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-Azure-Storage-Queues/">Azure Queue Storage</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-AzureDigitalTwin/">Azure Digital Twin</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-AzureKeyVault/">Azure Key Vault</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-AzureServiceBus/">Azure Service Bus</a></li>
+<li><code>DotNetDiag.HealthChecks.AzureSearch</code></li>
+</ul>
+<h2 id="databases-search-and-messaging-systems">Databases, search, and messaging systems</h2>
+<ul>
+<li><a href="/reference/readmes/src/HealthChecks-ArangoDb/">ArangoDb</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-ClickHouse/">ClickHouse</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-CosmosDb/">Cosmos DB</a></li>
+<li><code>DotNetDiag.HealthChecks.Dapr</code></li>
+<li><code>DotNetDiag.HealthChecks.Elasticsearch</code></li>
+<li><code>DotNetDiag.HealthChecks.EventStore</code></li>
+<li><code>DotNetDiag.HealthChecks.EventStore.gRPC</code></li>
+<li><code>DotNetDiag.HealthChecks.Gcp.CloudFirestore</code></li>
+<li><code>DotNetDiag.HealthChecks.Gremlin</code></li>
+<li><code>DotNetDiag.HealthChecks.Hangfire</code></li>
+<li><a href="/reference/readmes/src/HealthChecks-IbmMQ/">IbmMQ</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-InfluxDB/">InfluxDB</a></li>
+<li><code>DotNetDiag.HealthChecks.Kafka</code></li>
+<li><code>DotNetDiag.HealthChecks.Milvus</code></li>
+<li><a href="/reference/readmes/src/HealthChecks-MongoDb/">MongoDB</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-MySql/">MySQL</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-Nats/">NATS</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-NpgSql/">PostgreSQL</a></li>
+<li><code>DotNetDiag.HealthChecks.Oracle</code></li>
+<li><code>DotNetDiag.HealthChecks.Qdrant</code></li>
+<li><a href="/reference/readmes/src/HealthChecks-Rabbitmq/">RabbitMQ</a></li>
+<li><a href="/reference/readmes/src/HealthChecks-Rabbitmq-v6/">RabbitMQ v6</a></li>
+<li><code>DotNetDiag.HealthChecks.RavenDB</code></li>
+<li><code>DotNetDiag.HealthChecks.Redis</code></li>
+<li><code>DotNetDiag.HealthChecks.SendGrid</code></li>
+<li><code>DotNetDiag.HealthChecks.Solr</code></li>
+<li><code>DotNetDiag.HealthChecks.Sqlite</code></li>
+<li><code>DotNetDiag.HealthChecks.SqlServer</code></li>
+<li><a href="/reference/readmes/src/HealthChecks-SurrealDb/">SurrealDB</a></li>
+</ul>
+<h2 id="how-to-use-this-catalog-effectively">How to use this catalog effectively</h2>
+<ul>
+<li>Start with this chapter when you are selecting a provider package.</li>
+<li>Open the <a href="/reference/readmes/">README appendix</a> when a package has its own README and you need overload-specific behavior such as credentials, region selection, or connection pooling.</li>
+<li>Use the <a href="/reference/getting-started/">getting started</a> chapter for common registration patterns that apply across packages.</li>
+<li>Use the <a href="/reference/ui-manual/">UI manual</a> and <a href="/reference/publishers-and-metrics/">publishers and metrics</a> chapters for dashboard and observability components.</li>
+</ul>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.</p>
+        <p>Maintained by DotNetDiag Maintainers / Project documentation</p>
+    </div>
+</footer>
+</body>
+</html>

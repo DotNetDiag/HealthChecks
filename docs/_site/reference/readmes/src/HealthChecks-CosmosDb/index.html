@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HealthChecks.CosmosDb | DotNetDiag HealthChecks</title>
+    <meta name="description" content="Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork." />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="/">DotNetDiag HealthChecks</a>
+        <nav class="site-nav">
+            <a href="/guides/">Guides</a>
+            <a href="/reference/">使用手册</a>
+            <a href="/news/">News</a>
+            <a href="/about/">About</a>
+            <a href="https://github.com/DotNetDiag/HealthChecks">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>HealthChecks.CosmosDb</h1>
+        
+    </section>
+    
+
+    <div class="page-content">
+        <blockquote>
+<p>Generated from <a href="https://github.com/DotNetDiag/HealthChecks/blob/master/src/HealthChecks.CosmosDb/README.md">src/HealthChecks.CosmosDb/README.md</a>.</p>
+</blockquote>
+<h2 id="azure-cosmos-db-health-check">Azure Cosmos DB Health Check</h2>
+<p>This health check verifies the ability to communicate with <a href="https://azure.microsoft.com/en-us/products/cosmos-db/">Azure Cosmos DB</a>. It uses the provided <a href="https://learn.microsoft.com/dotnet/api/microsoft.azure.cosmos.cosmosclient">CosmosClient</a>.</p>
+<h3 id="defaults">Defaults</h3>
+<p>By default, the <code>CosmosClient</code> instance is resolved from service provider. <code>AzureCosmosDbHealthCheckOptions</code> does not provide any specific containers or database ids, the health check just calls <a href="https://learn.microsoft.com/dotnet/api/microsoft.azure.cosmos.cosmosclient.readaccountasync">CosmosClient.ReadAccountAsync</a>.</p>
+<pre><code class="language-csharp">void Configure(IHealthChecksBuilder builder)
+{
+    builder.Services.AddSingleton(sp =&gt; new CosmosClient(
+        &quot;endpoint-from-portal&quot;,
+        new DefaultAzureCredential()));
+    builder.AddHealthChecks().AddAzureCosmosDB();
+}
+</code></pre>
+<h3 id="customization">Customization</h3>
+<p>You can additionally add the following parameters:</p>
+<ul>
+<li><code>clientFactory</code>: A factory method to provide <code>CosmosClient</code> instance.</li>
+<li><code>optionsFactory</code>: A factory method to provide <code>AzureCosmosDbHealthCheckOptions</code> instance. It allows to specify the database id and/or container id(s).</li>
+<li><code>name</code>: The health check name. The default is <code>azure_cosmosdb</code>.</li>
+<li><code>failureStatus</code>: The <code>HealthStatus</code> that should be reported when the health check fails. Default is <code>HealthStatus.Unhealthy</code>.</li>
+<li><code>tags</code>: A list of tags that can be used to filter sets of health checks.</li>
+<li><code>timeout</code>: A <code>System.TimeSpan</code> representing the timeout of the check.</li>
+</ul>
+<pre><code class="language-csharp">void Configure(IHealthChecksBuilder builder)
+{
+    builder.Services.AddSingleton(sp =&gt; new CosmosClient(
+        &quot;endpoint-from-portal&quot;,
+        new DefaultAzureCredential(),
+        new CosmosClientOptions()
+        {
+            ApplicationRegion = Regions.EastUS2,
+        }));
+    builder.AddHealthChecks().AddAzureCosmosDB(
+        optionsFactory: sp =&gt; new AzureCosmosDbHealthCheckOptions()
+        {
+            DatabaseId = &quot;demo&quot;
+        });
+}
+</code></pre>
+<h3 id="breaking-changes">Breaking changes</h3>
+<p>In the prior releases, <code>CosmosDbHealthCheck</code> was a part of <code>DotNetDiag.HealthChecks.CosmosDb</code> package. It had a dependency on not just <code>Microsoft.Azure.Cosmos</code>, but also <code>Azure.Data.Tables</code>. The packages have been split to avoid bringing unnecessary dependencies. Moreover, <code>CosmosDbHealthCheck</code> was letting the users specify how <code>CosmosClient</code> should be created (from raw connection string or from endpoint and managed identity credentials), at a cost of maintaining an internal, static client instances cache. Now the type does not create client instances nor maintain an internal cache and <strong>it's the caller responsibility to provide the instance of <code>CosmosClient</code></strong> (please see <a href="https://github.com/DotNetDiag/HealthChecks/issues/2040">#2040</a> for more details). Since Azure SDK recommends treating clients as singletons <see href="https://devblogs.microsoft.com/azure-sdk/lifetime-management-and-thread-safety-guarantees-of-azure-sdk-net-clients/"/> and client instances can be expensive to create, it's recommended to register a singleton factory method for Azure SDK clients. So the clients are created only when needed and once per whole application lifetime.</p>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.</p>
+        <p>Maintained by DotNetDiag Maintainers / Project documentation</p>
+    </div>
+</footer>
+</body>
+</html>

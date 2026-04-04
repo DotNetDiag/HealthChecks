@@ -1,25 +1,59 @@
 ---
-title: Documentation
+layout: landing
+title: Guides
+description: Operational guides for Docker, branding, webhook notifications, and Kubernetes rollouts.
 permalink: /guides/
+show_title: false
+hero_eyebrow: DotNetDiag HealthChecks
+hero_title: Guides
+hero_subtitle: Task-oriented articles for running HealthChecks UI, wiring notifications, and deploying workloads into Kubernetes.
+hero_primary_url: /reference/ui-manual/
+hero_primary_label: Open UI Manual
+hero_secondary_url: /reference/deployment-and-integrations/
+hero_secondary_label: Open Deployment Chapter
+paths_kicker: Start from the task
+paths_title: Common guide paths
+paths_description: Use the manual to choose the feature, then switch here for the operational steps.
+landing_paths:
+  - kicker: Dashboard
+    title: Run the UI
+    description: Start with storage, runtime configuration, and container deployment for the dashboard.
+    url: /ui-docker/
+  - kicker: Alerts
+    title: Add notifications
+    description: Push failures into webhook targets such as Teams or Azure Functions.
+    url: /webhooks/
+  - kicker: Cluster
+    title: Deploy to Kubernetes
+    description: Combine probes, discovery, and operator workflows for in-cluster setups.
+    url: /k8s-operator/
+landing_sections:
+  - kicker: UI operations
+    title: Run and customize the dashboard
+    description: Articles for teams operating the HealthChecks UI in Docker or other hosted environments.
+    items:
+      - title: UI Docker image
+        description: Run the published image and wire configuration through environment variables or container settings.
+        url: /ui-docker/
+      - title: Interface styling and branding
+        description: Change logos, colors, and presentation without maintaining a long-lived UI fork.
+        url: /styles-branding/
+      - title: Webhooks and failure notifications
+        description: Send failures to external systems and tune the operational notification path.
+        url: /webhooks/
+  - kicker: Kubernetes
+    title: Roll out in-cluster
+    description: Guidance for probes, service discovery, and operator-managed HealthChecks UI resources.
+    items:
+      - title: Liveness and readiness probes
+        description: Expose endpoints that Kubernetes can use for rollout, restart, and readiness decisions.
+        url: /kubernetes-liveness/
+      - title: Automatic Kubernetes service discovery
+        description: Let the UI discover cluster services instead of manually registering every endpoint.
+        url: /k8s-ui-discovery/
+      - title: Kubernetes operator
+        description: Use the operator workflow when HealthChecks UI becomes part of the platform deployment model.
+        url: /k8s-operator/
 ---
 
-This section reorganizes the original repository articles under a single landing page.
-
-## HealthChecks UI
-
-- [UI Docker image]({{ '/ui-docker/' | relative_url }})
-- [Webhooks and failure notifications]({{ '/webhooks/' | relative_url }})
-- [Interface styling and branding]({{ '/styles-branding/' | relative_url }})
-- [UI changelog]({{ '/ui-changelog/' | relative_url }})
-
-## Kubernetes
-
-- [Kubernetes operator]({{ '/k8s-operator/' | relative_url }})
-- [Automatic Kubernetes service discovery]({{ '/k8s-ui-discovery/' | relative_url }})
-- [Liveness and readiness probes]({{ '/kubernetes-liveness/' | relative_url }})
-
-## Recommended reading order
-
-1. Start with the Docker or branding guide if you are wiring the UI into an existing service.
-2. Move to the webhook guide when you need alerting integrations such as Teams or Azure Functions.
-3. Use the Kubernetes articles when you need discovery, probes, or operator-based deployment.
+Use these guides when the manual chapter tells you what feature to adopt and you now need the operational setup details.

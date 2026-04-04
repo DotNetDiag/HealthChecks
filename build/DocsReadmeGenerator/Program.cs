@@ -145,6 +145,11 @@ internal static partial class DocsReadmeGeneratorProgram
                 return true;
             }
 
+            if (segments[0].StartsWith(".", StringComparison.Ordinal))
+            {
+                return true;
+            }
+
             if (segments[0].StartsWith("logs-", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
@@ -169,7 +174,6 @@ internal static partial class DocsReadmeGeneratorProgram
             var contentBuilder = new StringBuilder();
             contentBuilder.AppendLine("---");
             contentBuilder.AppendLine($"title: \"{EscapeYamlDoubleQuotedString(pageTitle)}\"");
-            contentBuilder.AppendLine($"permalink: {virtualUrl}");
             contentBuilder.AppendLine("---");
             contentBuilder.AppendLine();
             contentBuilder.AppendLine($"> Generated from [{repoRelativeReadmePath}]({sourceUrl}).");
@@ -206,11 +210,11 @@ internal static partial class DocsReadmeGeneratorProgram
 
             var builder = new StringBuilder();
             builder.AppendLine("---");
-            builder.AppendLine("title: Project READMEs");
+            builder.AppendLine("title: README Appendix");
             builder.AppendLine("permalink: /reference/readmes/");
             builder.AppendLine("---");
             builder.AppendLine();
-            builder.AppendLine("This catalog is generated during the docs build. Package, extension, sample, and other subproject READMEs outside the docs folder are published under stable virtual paths here.");
+            builder.AppendLine("This appendix is generated during the docs build. Package, extension, sample, and other subproject READMEs outside the docs folder are published under stable virtual paths here.");
             builder.AppendLine();
             builder.AppendLine($"Total generated pages: **{entries.Count}**.");
             builder.AppendLine();
@@ -475,24 +479,34 @@ internal static partial class DocsReadmeGeneratorProgram
 
         private static string GetReadmeVirtualUrl(string repoRelativeReadmePath)
         {
-            if (string.Equals(repoRelativeReadmePath, "README.md", StringComparison.OrdinalIgnoreCase))
-            {
-                return "/reference/readmes/repository/";
-            }
-
-            var directoryPath = Path.GetDirectoryName(repoRelativeReadmePath)?.Replace('\\', '/') ?? string.Empty;
-            return $"/reference/readmes/{directoryPath.Trim('/')}/";
+            var generatedPath = GetGeneratedReadmePath(repoRelativeReadmePath);
+            return $"/reference/readmes/{generatedPath.Trim('/')}/";
         }
 
         private string GetReadmeOutputDirectory(string repoRelativeReadmePath)
         {
+            var generatedPath = GetGeneratedReadmePath(repoRelativeReadmePath);
+            return Path.Combine(_generatedRoot, generatedPath.Replace('/', Path.DirectorySeparatorChar));
+        }
+
+        private static string GetGeneratedReadmePath(string repoRelativeReadmePath)
+        {
             if (string.Equals(repoRelativeReadmePath, "README.md", StringComparison.OrdinalIgnoreCase))
             {
-                return Path.Combine(_generatedRoot, "repository");
+                return "repository";
             }
 
-            var directoryPath = Path.GetDirectoryName(repoRelativeReadmePath) ?? string.Empty;
-            return Path.Combine(_generatedRoot, directoryPath);
+            var directoryPath = Path.GetDirectoryName(repoRelativeReadmePath)?.Replace('\\', '/') ?? string.Empty;
+            return string.Join(
+                '/',
+                directoryPath
+                    .Split('/', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(SanitizePathSegment));
+        }
+
+        private static string SanitizePathSegment(string segment)
+        {
+            return segment.Replace(".", "-", StringComparison.Ordinal);
         }
 
         private static string ConvertDocsPathToSiteUrl(string repoRelativePath)

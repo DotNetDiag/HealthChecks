@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HealthChecks.Azure.KeyVault.Secrets | DotNetDiag HealthChecks</title>
+    <meta name="description" content="Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork." />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="/">DotNetDiag HealthChecks</a>
+        <nav class="site-nav">
+            <a href="/guides/">Guides</a>
+            <a href="/reference/">使用手册</a>
+            <a href="/news/">News</a>
+            <a href="/about/">About</a>
+            <a href="https://github.com/DotNetDiag/HealthChecks">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>HealthChecks.Azure.KeyVault.Secrets</h1>
+        
+    </section>
+    
+
+    <div class="page-content">
+        <blockquote>
+<p>Generated from <a href="https://github.com/DotNetDiag/HealthChecks/blob/master/src/HealthChecks.Azure.KeyVault.Secrets/README.md">src/HealthChecks.Azure.KeyVault.Secrets/README.md</a>.</p>
+</blockquote>
+<h2 id="azure-keyvault-secrets-health-check">Azure KeyVault Secrets Health Check</h2>
+<p>This health check verifies the ability to communicate with <a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault Secrets</a>. It uses the provided <a href="https://learn.microsoft.com/dotnet/api/azure.security.keyvault.secrets.secretclient">SecretClient</a> to get configured secret. When the connection to the service itself can be made, but secret is not found, it returns <code>HealthStatus.Healthy</code> status.</p>
+<h3 id="defaults">Defaults</h3>
+<p>By default, the <code>SecretClient</code> instance is resolved from service provider. <code>AzureKeyVaultSecretsHealthCheckOptions</code> by default uses &quot;AzureKeyVaultSecretsHealthCheck&quot; secret name and does not try to create the secret when it's not found.</p>
+<pre><code class="language-csharp">void Configure(IHealthChecksBuilder builder)
+{
+    builder.Services.AddSingleton(sp =&gt; new SecretClient(new Uri(&quot;azure-key-vault-uri&quot;), new DefaultAzureCredential()));
+    builder.AddHealthChecks().AddAzureKeyVaultSecrets();
+}
+</code></pre>
+<h3 id="customization">Customization</h3>
+<p>You can additionally add the following parameters:</p>
+<ul>
+<li><code>clientFactory</code>: A factory method to provide <code>SecretClient</code> instance.</li>
+<li><code>optionsFactory</code>: A factory method to provide <code>AzureKeyVaultSecretsHealthCheckOptions</code> instance. It allows to specify the secret name and whether the secret should be created when it's not found.</li>
+<li><code>name</code>: The health check name. The default is <code>azure_key_vault_secret</code>.</li>
+<li><code>failureStatus</code>: The <code>HealthStatus</code> that should be reported when the health check fails. Default is <code>HealthStatus.Unhealthy</code>.</li>
+<li><code>tags</code>: A list of tags that can be used to filter sets of health checks.</li>
+<li><code>timeout</code>: A <code>System.TimeSpan</code> representing the timeout of the check.</li>
+</ul>
+<pre><code class="language-csharp">void Configure(IHealthChecksBuilder builder)
+{
+    builder.Services.AddSingleton(sp =&gt; new SecretClient(new Uri(&quot;azure-key-vault-uri&quot;), new DefaultAzureCredential()));
+    builder.AddHealthChecks().AddAzureKeyVaultSecrets(
+        optionsFactory: sp =&gt; new AzureKeyVaultSecretsHealthCheckOptions()
+        {
+            SecretName = &quot;demo&quot;
+        });
+}
+</code></pre>
+<h3 id="performance">Performance</h3>
+<p>When the secret is not found, the secret client throws <code>RequestFailedException</code>. The health check catches it, but it's expensive in terms of performance.</p>
+<p>That is why it's recommended to create the secret before using the health check. It can be done by using <code>AzureKeyVaultSecretsHealthCheckOptions.CreateWhenNotFound</code>, but it requires secret set permissions. Such permissions should not be assigned just for the purpose of using this health check!</p>
+<p>For more information about credentials types please see <a href="https://docs.microsoft.com/dotnet/api/overview/azure/identity-readme">Azure TokenCredentials</a></p>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.</p>
+        <p>Maintained by DotNetDiag Maintainers / Project documentation</p>
+    </div>
+</footer>
+</body>
+</html>

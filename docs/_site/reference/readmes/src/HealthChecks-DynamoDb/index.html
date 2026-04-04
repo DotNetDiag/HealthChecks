@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Amazon DynamoDB Health Check | DotNetDiag HealthChecks</title>
+    <meta name="description" content="Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork." />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="/">DotNetDiag HealthChecks</a>
+        <nav class="site-nav">
+            <a href="/guides/">Guides</a>
+            <a href="/reference/">使用手册</a>
+            <a href="/news/">News</a>
+            <a href="/about/">About</a>
+            <a href="https://github.com/DotNetDiag/HealthChecks">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>Amazon DynamoDB Health Check</h1>
+        
+    </section>
+    
+
+    <div class="page-content">
+        <blockquote>
+<p>Generated from <a href="https://github.com/DotNetDiag/HealthChecks/blob/master/src/HealthChecks.DynamoDb/README.md">src/HealthChecks.DynamoDb/README.md</a>.</p>
+</blockquote>
+<h1 id="amazon-dynamodb-health-check">Amazon DynamoDB Health Check</h1>
+<p>This health check verifies the ability to communicate with <a href="https://aws.amazon.com/dynamodb/">Amazon DynamoDB</a>.</p>
+<h2 id="example-usage">Example Usage</h2>
+<p>With all of the following examples, you can additionally add the following parameters:</p>
+<ul>
+<li><code>name</code>: The health check name. Default if not specified is <code>dynamodb</code>.</li>
+<li><code>failureStatus</code>: The <code>HealthStatus</code> that should be reported when the health check fails. Default is <code>HealthStatus.Unhealthy</code>.</li>
+<li><code>tags</code>: A list of tags that can be used to filter sets of health checks.</li>
+<li><code>timeout</code>: A <code>System.TimeSpan</code> representing the timeout of the check.</li>
+</ul>
+<h3 id="load-credentials-from-the-applications-default-configuration">Load credentials from the application's default configuration</h3>
+<pre><code class="language-csharp">public void ConfigureServices(IServiceCollection services)
+{
+    services
+        .AddHealthChecks()
+        .AddDynamoDb(options =&gt;
+        {
+            options.RegionEndpoint = RegionEndpoint.EUCentral1;
+        });
+}
+</code></pre>
+<h3 id="directly-pass-credentials">Directly pass credentials</h3>
+<pre><code class="language-csharp">public void ConfigureServices(IServiceCollection services)
+{
+    services
+        .AddHealthChecks()
+        .AddDynamoDb(options =&gt;
+        {
+            options.Credentials = new BasicAWSCredentials(&quot;access-key&quot;, &quot;secret-key&quot;);
+            options.RegionEndpoint = RegionEndpoint.EUCentral1;
+        });
+}
+</code></pre>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.</p>
+        <p>Maintained by DotNetDiag Maintainers / Project documentation</p>
+    </div>
+</footer>
+</body>
+</html>

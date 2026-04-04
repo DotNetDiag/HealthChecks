@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HealthChecks.AzureServiceBus | DotNetDiag HealthChecks</title>
+    <meta name="description" content="Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork." />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="/">DotNetDiag HealthChecks</a>
+        <nav class="site-nav">
+            <a href="/guides/">Guides</a>
+            <a href="/reference/">使用手册</a>
+            <a href="/news/">News</a>
+            <a href="/about/">About</a>
+            <a href="https://github.com/DotNetDiag/HealthChecks">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>HealthChecks.AzureServiceBus</h1>
+        
+    </section>
+    
+
+    <div class="page-content">
+        <blockquote>
+<p>Generated from <a href="https://github.com/DotNetDiag/HealthChecks/blob/master/src/HealthChecks.AzureServiceBus/README.md">src/HealthChecks.AzureServiceBus/README.md</a>.</p>
+</blockquote>
+<h2 id="azure-service-bus-health-check">Azure Service Bus Health Check</h2>
+<p>This health check verifies the ability to communicate with <a href="https://azure.microsoft.com/services/service-bus/">Azure Service Bus</a>.</p>
+<h3 id="breaking-changes">Breaking changes</h3>
+<p>In the prior releases, <code>AzureEventHubHealthCheck</code> was a part of <code>DotNetDiag.HealthChecks.AzureServiceBus</code> package. It had a dependency on not just <code>Azure.Messaging.ServiceBus</code>, but also <code>Azure.Messaging.EventHubs</code>. The packages have been split to avoid bringing unnecessary dependencies. The name of the new EveHub package is <a href="https://www.nuget.org/packages/DotNetDiag.HealthChecks.Azure.Messaging.EventHubs">DotNetDiag.HealthChecks.Azure.Messaging.EventHubs</a>.</p>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.</p>
+        <p>Maintained by DotNetDiag Maintainers / Project documentation</p>
+    </div>
+</footer>
+</body>
+</html>

@@ -10,7 +10,7 @@ This chapter replaces the quick-start portion of the repository README and gives
 - Use `DotNetDiag.HealthChecks.<Provider>` when you need a dependency-specific check such as SQL Server, Redis, MySQL, Azure Service Bus, or Amazon S3.
 - Use `DotNetDiag.HealthChecks.UI` when you want a dashboard that polls one or more health endpoints and stores history.
 - Use `DotNetDiag.HealthChecks.Publisher.*` or `DotNetDiag.HealthChecks.Prometheus.Metrics` when you need push or scrape integrations.
-- Use the [package catalog]({{ '/reference/package-catalog/' | relative_url }}) to choose a package family, then use [Project READMEs]({{ '/reference/readmes/' | relative_url }}) for provider-specific defaults and overloads.
+- Use the [package catalog]({{ '/reference/package-catalog/' | relative_url }}) to choose a package family, then use the [README appendix]({{ '/reference/readmes/' | relative_url }}) for provider-specific defaults and overloads.
 
 ## Install a package
 

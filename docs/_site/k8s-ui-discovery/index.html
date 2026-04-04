@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Health Checks UI Automatic Kubernetes Services Discovery | DotNetDiag HealthChecks</title>
+    <meta name="description" content="Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork." />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="/">DotNetDiag HealthChecks</a>
+        <nav class="site-nav">
+            <a href="/guides/">Guides</a>
+            <a href="/reference/">使用手册</a>
+            <a href="/news/">News</a>
+            <a href="/about/">About</a>
+            <a href="https://github.com/DotNetDiag/HealthChecks">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>Health Checks UI Automatic Kubernetes Services Discovery</h1>
+        
+    </section>
+    
+
+    <div class="page-content">
+        <h2 id="health-checks-ui-automatic-kubernetes-services-discovery">Health Checks UI automatic Kubernetes services discovery</h2>
+<p>HealthChecks UI supports automatic discovery of k8s services exposing pods that have health checks endpoints. This means, you can benefit from it and avoid registering all the endpoints you want to check and let the UI discover them using the k8s api.</p>
+<p><img src="./images/k8s-discovery-service.png" alt="k8s-discovery" /></p>
+<p>The default mechanism to register the target endpoints to be queried for health is using the UI project appsettings.json and declare our named endpoints:</p>
+<blockquote>
+<p>Example:</p>
+</blockquote>
+<pre><code class="language-json">{
+  &quot;HealthChecksUI&quot;: {
+    &quot;HealthChecks&quot;: [
+      {
+        &quot;Name&quot;: &quot;Http and UI on single project&quot;,
+        &quot;Uri&quot;: &quot;http://localhost:6001/healthz&quot;
+      }
+    ],
+    &quot;Webhooks&quot;: [],
+    &quot;EvaluationTimeInSeconds&quot;: 10,
+    &quot;MinimumSecondsBetweenFailureNotifications&quot;: 60
+  }
+}
+</code></pre>
+<p>To enable Kubernetes discovery you just need to configure some settings inside the UI project appsettings.json:</p>
+<pre><code class="language-json">{
+  &quot;HealthChecksUI&quot;: {
+    &quot;KubernetesDiscoveryService&quot;: {
+      &quot;Enabled&quot;: true,
+      &quot;HealthPath&quot;: &quot;healthz&quot;,
+      &quot;ServicesLabel&quot;: &quot;HealthChecks&quot;,
+      &quot;ServicesPathAnnotation&quot;: &quot;HealthChecksPath&quot;,
+      &quot;ServicesPortAnnotation&quot;: &quot;HealthChecksPort&quot;,
+      &quot;ServicesSchemeAnnotation&quot;: &quot;HealthChecksScheme&quot;
+    }
+  }
+}
+</code></pre>
+<p>By default, it'll use the in-cluster pod config if running inside of a pod and the kubectl config file located at <code>~/.kube.config</code> otherwise. This can be overriden by setting a custom cluster host and token, like this:</p>
+<pre><code class="language-json">{
+  &quot;HealthChecksUI&quot;: {
+    &quot;KubernetesDiscoveryService&quot;: {
+      &quot;Enabled&quot;: true,
+      &quot;ClusterHost&quot;: &quot;https://myaks-962d02ba.hcp.westeurope.azmk8s.io:443&quot;,
+      &quot;Token&quot;: &quot;eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3M...&quot;,
+      &quot;HealthPath&quot;: &quot;healthz&quot;,
+      &quot;ServicesLabel&quot;: &quot;HealthChecks&quot;,
+      &quot;ServicesPathAnnotation&quot;: &quot;HealthChecksPath&quot;,
+      &quot;ServicesPortAnnotation&quot;: &quot;HealthChecksPort&quot;,
+      &quot;ServicesSchemeAnnotation&quot;: &quot;HealthChecksScheme&quot;
+    }
+  }
+}
+</code></pre>
+<h3 id="parameters-description">Parameters description</h3>
+<p>Here are all the available parameters detailed:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enabled</td>
+<td>Establishes if the k8s discovery service is enabled of disabled</td>
+<td>false</td>
+</tr>
+<tr>
+<td>InCluster</td>
+<td>The service discovery will try to load the cluster config as an in-cluster pod. ClusterHost and Token does not need to be defined if this is true</td>
+<td>false</td>
+</tr>
+<tr>
+<td>ClusterHost</td>
+<td>The uri of the kubernetes cluster</td>
+<td></td>
+</tr>
+<tr>
+<td>Token</td>
+<td>The token that will be sent to the cluster for authentication</td>
+<td></td>
+</tr>
+<tr>
+<td>HealthPath</td>
+<td>The default url path where the UI will call once the service is discovered</td>
+<td>hc</td>
+</tr>
+<tr>
+<td>ServicesLabel</td>
+<td>The labeled services the UI will look for in k8s</td>
+<td>HealthChecks</td>
+</tr>
+<tr>
+<td>ServicesPathAnnotation</td>
+<td>The annotation on a service that can override the configured url path</td>
+<td>HealthChecksPath</td>
+</tr>
+<tr>
+<td>ServicesPortAnnotation</td>
+<td>The annotation on a service to define which port to call. If the annotation does not exist on the service the first defined port will be used</td>
+<td>HealthChecksPort</td>
+</tr>
+<tr>
+<td>ServicesSchemeAnnotation</td>
+<td>The annotation on a service to define which URI scheme to use for healthchecks. If the annotation does not exist on the service http will be used</td>
+<td>HealthChecksScheme</td>
+</tr>
+<tr>
+<td>RefreshTimeOnSeconds</td>
+<td>Healthchecks refresh time in seconds</td>
+<td>300</td>
+</tr>
+<tr>
+<td>Namespaces</td>
+<td>The namespace(s) to query services in</td>
+<td>[]</td>
+</tr>
+</tbody>
+</table>
+<h2 id="labeling-services-for-discovery-in-kubernetes">Labeling Services for discovery in Kubernetes</h2>
+<p>The <code>ServicesLabel</code> option provided in the discovery settings (by default HealthChecks) is the label that will be used to filter k8s services.</p>
+<p>If you want to tag a service just execute the k8s command line tool (kubectl) using the following command:</p>
+<p><code>kubectl label service service-name HealthChecks=true</code></p>
+<p>Change <code>HealthChecks=true</code> by your configured ServiceLabel if you gave another value for it.</p>
+<p>The <code>ServicesPathAnnotation</code> option (by default HealthChecksPath) provides a method for services to override the default health path configured.</p>
+<p>The <code>ServicesPortAnnotation</code> option (by default HealthChecksPort) provides a method for services to specify which port to use for health checks. By default the first port defined on the service will be used. The annotation can refer to either the name of the port or the port number.</p>
+<p>The <code>ServicesSchemeAnnotation</code> option (by default HealthChecksScheme) provides a method for services to specify which URI scheme to use for health checks. By default the HTTP will be used as the URI scheme.</p>
+<h2 id="how-it-works">How it works</h2>
+<p>The kubernetes service discovery will retrieve from the k8s api all the labelled services and from the metadata it will try to build the target url to query for health.</p>
+<p>If you have exposed a deployment using for example a LoadBalancer on port 50000 and your configured HealthPath is &quot;healthz&quot; the target url to be queried would be : (ip/host):50000/healthz</p>
+<p>If Namespaces is set only the labelled services within the specified namespace(s) will be queried. By default it will query all services in the cluster.</p>
+<p><strong>NOTE</strong>: Remember if you are using <code>kubectl proxy</code> you can configure your cluster address as <a href="http://localhost:8001">http://localhost:8001</a>.</p>
+<h2 id="kubernetes-role-based-access">Kubernetes Role-Based Access</h2>
+<p>The service account being used for the Kubernetes Service Discovery needs the following role on its service account for the service discovery to work:</p>
+<pre><code class="language-yaml">apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: healthchecksui
+rules:
+- apiGroups: [&quot;&quot;]
+  resources: [&quot;services&quot;]
+  verbs: [&quot;list&quot;]
+</code></pre>
+<p>The role needs to be added in every namespace configured, and a corresponding <code>RoleBinding</code> to bind it to the service account. If you wish to query all namespaces, replace <code>Role</code> with <code>ClusterRole</code> and <code>RoleBinding</code> to <code>ClusterRoleBinding</code>.</p>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.</p>
+        <p>Maintained by DotNetDiag Maintainers / Project documentation</p>
+    </div>
+</footer>
+</body>
+</html>

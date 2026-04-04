@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HealthChecks.NpgSql | DotNetDiag HealthChecks</title>
+    <meta name="description" content="Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork." />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="/">DotNetDiag HealthChecks</a>
+        <nav class="site-nav">
+            <a href="/guides/">Guides</a>
+            <a href="/reference/">使用手册</a>
+            <a href="/news/">News</a>
+            <a href="/about/">About</a>
+            <a href="https://github.com/DotNetDiag/HealthChecks">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>HealthChecks.NpgSql</h1>
+        
+    </section>
+    
+
+    <div class="page-content">
+        <blockquote>
+<p>Generated from <a href="https://github.com/DotNetDiag/HealthChecks/blob/master/src/HealthChecks.NpgSql/README.md">src/HealthChecks.NpgSql/README.md</a>.</p>
+</blockquote>
+<h2 id="postgresql-health-check">PostgreSQL Health Check</h2>
+<p>This health check verifies the ability to communicate with <a href="https://www.postgresql.org/">PostgreSQL</a>. It uses the <a href="https://www.npgsql.org/">Npgsql</a> library.</p>
+<h2 id="npgsqldatasource">NpgsqlDataSource</h2>
+<p>Starting with Npgsql 7.0 (and .NET 7), the starting point for any database operation is <a href="https://www.npgsql.org/doc/api/Npgsql.NpgsqlDataSource.html">NpgsqlDataSource</a>. The data source represents your PostgreSQL database, and can hand out connections to it, or support direct execution of SQL against it. The data source encapsulates the various Npgsql configuration needed to connect to PostgreSQL, as well as the <strong>connection pooling which makes Npgsql efficient</strong>.</p>
+<p>Npgsql's <strong>data source supports additional configuration beyond the connection string</strong>, such as logging, advanced authentication options, type mapping management, and more.</p>
+<h2 id="recommended-approach">Recommended approach</h2>
+<p>To take advantage of the performance <code>NpgsqlDataSource</code> has to offer, it should be used as a <strong>singleton</strong>. Otherwise, the app might end up with having multiple data source instances, all of which would have their own connection pools. This can lead to resources exhaustion and major performance issues (Example: <a href="https://github.com/DotNetDiag/HealthChecks/issues/1993">#1993</a>).</p>
+<p>We encourage you to use <a href="https://www.nuget.org/packages/Npgsql.DependencyInjection">Npgsql.DependencyInjection</a> package for registering a singleton factory for <code>NpgsqlDataSource</code>.  It allows easy configuration of your Npgsql connections and registers the appropriate services in your DI container.</p>
+<p>To make the shift to <code>NpgsqlDataSource</code> as easy as possible,  the <code>Npgsql.DependencyInjection</code> package registers not just a factory for the data source, but also factory for <code>NpgsqlConnection</code>  (and even <code>DbConnection</code>). So, your app does not need to suddenly start using <code>NpgsqlDataSource</code> everywhere.</p>
+<pre><code class="language-csharp">void Configure(IServiceCollection services)
+{
+    services.AddNpgsqlDataSource(&quot;Host=pg_server;Username=test;Password=test;Database=test&quot;);
+    services.AddHealthChecks().AddNpgSql();
+}
+</code></pre>
+<p>By default, the <code>NpgsqlDataSource</code> instance is resolved from service provider. If you need to access more than one PostgreSQL database, you can use keyed DI services to achieve that:</p>
+<pre><code class="language-csharp">void Configure(IServiceCollection services)
+{
+    services.AddNpgsqlDataSource(&quot;Host=pg_server;Username=test;Password=test;Database=first&quot;, serviceKey: &quot;first&quot;);
+    services.AddHealthChecks().AddNpgSql(sp =&gt; sp.GetRequiredKeyedService&lt;NpgsqlDataSource&gt;(&quot;first&quot;));
+
+    services.AddNpgsqlDataSource(&quot;Host=pg_server;Username=test;Password=test;Database=second&quot;, serviceKey: &quot;second&quot;);
+    services.AddHealthChecks().AddNpgSql(sp =&gt; sp.GetRequiredKeyedService&lt;NpgsqlDataSource&gt;(&quot;second&quot;));
+}
+</code></pre>
+<h2 id="connection-string">Connection String</h2>
+<p>Raw connection string is of course still supported:</p>
+<pre><code class="language-csharp">services.AddHealthChecks().AddNpgSql(&quot;Host=pg_server;Username=test;Password=test;Database=test&quot;);
+</code></pre>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.</p>
+        <p>Maintained by DotNetDiag Maintainers / Project documentation</p>
+    </div>
+</footer>
+</body>
+</html>

@@ -9,7 +9,7 @@ This chapter replaces the push-results section of the repository README and grou
 
 - `DotNetDiag.HealthChecks.Publisher.ApplicationInsights`
 - `DotNetDiag.HealthChecks.Publisher.CloudWatch`
-- [DotNetDiag.HealthChecks.Publisher.Datadog]({{ '/reference/readmes/src/HealthChecks.Publisher.Datadog/' | relative_url }})
+- [DotNetDiag.HealthChecks.Publisher.Datadog]({{ '/reference/readmes/src/HealthChecks-Publisher-Datadog/' | relative_url }})
 - `DotNetDiag.HealthChecks.Publisher.Prometheus` - deprecated gateway publisher
 - `DotNetDiag.HealthChecks.Publisher.Seq`
 

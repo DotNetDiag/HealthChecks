@@ -7,43 +7,18 @@ baseurl: ""
 markdown: kramdown
 show_excerpts: false
 
-remote_theme: JekyllNet/jekyll-theme-lumen
-plugins:
-  - jekyll-remote-theme
+collections:
+  docs:
+    output: true
 
 source_url: https://github.com/DotNetDiag/HealthChecks
 source_readme_url: https://github.com/DotNetDiag/HealthChecks/blob/master/README.md
 source_sample_url: https://github.com/DotNetDiag/HealthChecks/tree/master/samples
-
-locales:
-  - code: en
-    root: /
-    label: English
+github_pages:
+  enabled: true
 
 defaults:
   - scope:
       path: ""
     values:
       layout: default
-      ui_home_url: /
-      ui_docs_url: /guides/
-      ui_news_url: /news/
-      ui_blog_url: /reference/
-      ui_about_url: /about/
-      ui_getting_started_url: /reference/
-      ui_github_pages_url: https://github.com/DotNetDiag/HealthChecks
-      ui_brand_subtitle: Project documentation
-      ui_docs_label: Documentation
-      ui_news_label: News
-      ui_blog_label: Reference Manual
-      ui_about_label: About
-      ui_source_label: Source
-      ui_switch_label: Language
-      ui_footer_intro: Official documentation for the DotNetDiag HealthChecks packages, HealthChecks UI, and Kubernetes integrations.
-      ui_footer_docs_title: Documentation
-      ui_footer_project_title: Project
-      ui_footer_doc_map_label: Documentation map
-      ui_footer_getting_started_label: Reference Manual
-      ui_footer_github_pages_label: Repository
-      ui_footer_news_label: News
-      ui_footer_blog_label: Reference Manual

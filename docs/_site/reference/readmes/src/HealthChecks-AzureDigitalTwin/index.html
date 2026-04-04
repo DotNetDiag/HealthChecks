@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>**Digital Twin Health Check** | DotNetDiag HealthChecks</title>
+    <meta name="description" content="Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork." />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="/">DotNetDiag HealthChecks</a>
+        <nav class="site-nav">
+            <a href="/guides/">Guides</a>
+            <a href="/reference/">使用手册</a>
+            <a href="/news/">News</a>
+            <a href="/about/">About</a>
+            <a href="https://github.com/DotNetDiag/HealthChecks">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>**Digital Twin Health Check**</h1>
+        
+    </section>
+    
+
+    <div class="page-content">
+        <blockquote>
+<p>Generated from <a href="https://github.com/DotNetDiag/HealthChecks/blob/master/src/HealthChecks.AzureDigitalTwin/README.md">src/HealthChecks.AzureDigitalTwin/README.md</a>.</p>
+</blockquote>
+<h1 id="digital-twin-health-check"><strong>Digital Twin Health Check</strong></h1>
+<p>Azure Digital Twins is an Internet of Things (IoT) platform that enables you to create a digital representation of real-world things, places, business processes, and people.</p>
+<p>For more information about Azure Digital Twin please check <a href="https://azure.microsoft.com/en-us/services/digital-twins/">Azure Digital Twin Home</a></p>
+<p>This health check can check the Digital Twin:</p>
+<ul>
+<li>liveness connection status.</li>
+<li>state of the model definition</li>
+<li>status of an instance</li>
+</ul>
+<p>With all of the following examples, you can additionally add the following parameters:</p>
+<ul>
+<li><code>name</code>: The health check name.
+<br/>Default for liveness if not specified is <code>azuredigitaltwin</code>.
+<br/>Default for model state if not specified is <code>azuredigitaltwinmodels</code>.
+<br/>Default for model state if not specified is <code>azuredigitaltwininstance</code>.</li>
+<li><code>failureStatus</code>: The <code>HealthStatus</code> that should be reported when the health check fails. Default is <code>HealthStatus.Unhealthy</code>.</li>
+<li><code>tags</code>: A list of tags that can be used to filter sets of health checks.</li>
+<li><code>timeout</code>: A <code>System.TimeSpan</code> representing the timeout of the check.</li>
+</ul>
+<hr />
+<h3 id="how-to-install">How to install</h3>
+<p>You can download the latest version from nuget packages:</p>
+<p>Through Visual Studio:</p>
+<pre><code>Install-Package DotNetDiag.HealthChecks.AzureDigitalTwin
+</code></pre>
+<p>Or through CLI:</p>
+<pre><code>dotnet add package DotNetDiag.HealthChecks.AzureDigitalTwin
+</code></pre>
+<hr />
+<h2 id="digital-twin-liveness-health-check"><em>Digital Twin Liveness Health Check</em></h2>
+<p>This health check provides the liveness status for the Azure Digital Twin resource client connection.</p>
+<h3 id="example-usage">Example Usage</h3>
+<p>You can add health check with the default client arguments...</p>
+<pre><code class="language-cs">public void ConfigureServices(IServiceCollection services)
+{
+    services
+        .AddHealthChecks()
+        .AddAzureDigitalTwin(
+            &quot;MyDigitalTwinClientId&quot;,
+            &quot;MyDigitalTwinClientSecret&quot;,
+            &quot;TenantId&quot;)
+}
+</code></pre>
+<p>... or with the service client credentials flow that you want:</p>
+<pre><code class="language-cs">public void ConfigureServices(IServiceCollection services)
+{
+    ServiceClientCredentials myCredentials = &lt;my_credentials_flow&gt;;
+    services
+        .AddHealthChecks()
+        .AddAzureDigitalTwin(
+            myCredentials)
+}
+</code></pre>
+<hr />
+<h2 id="digital-twin-model-health-check"><em>Digital Twin Model Health Check</em></h2>
+<p>This health check receives a list of models ids, and check if the Digital Twin has all models match with them.
+If the health check detect an <code>out of sync</code> models return the data with those elements:</p>
+<ul>
+<li><code>unregistered</code>: those models that exist in model definition but not in the Digital Twin</li>
+</ul>
+<h3 id="example-usage-1">Example Usage</h3>
+<p><br/><em>C# Configuration:</em></p>
+<p>You can also add health check with the default client arguments...</p>
+<pre><code class="language-cs">public void ConfigureServices(IServiceCollection services)
+{
+    services
+        .AddHealthChecks()
+        .AddAzureDigitalTwinModels(
+            &quot;MyDigitalTwinClientId&quot;,
+            &quot;MyDigitalTwinClientSecret&quot;,
+            &quot;TenantId&quot;,
+            &quot;https://my-awesome-dt-host&quot;,
+            [&quot;my:dt:definition_a;1&quot;, &quot;my:dt:definition_b;1&quot;, &quot;my:dt:definition_c;1&quot;])
+}
+</code></pre>
+<p>... or with the token credentials flow that you want:</p>
+<pre><code class="language-cs">public void ConfigureServices(IServiceCollection services)
+{
+    TokenCredentials myCredentials = &lt;my_credentials_flow&gt;;
+    services
+        .AddHealthChecks()
+        .AddAzureDigitalTwinModels(
+            myCredentials,
+            [&quot;my:dt:definition_a;1&quot;, &quot;my:dt:definition_b;1&quot;, &quot;my:dt:definition_c;1&quot;],
+            failureStatus: HealthStatus.Degraded)
+}
+</code></pre>
+<p><small>NOTE: This sample provides a Degraded status if this Health Check fails because it will check for a non sync model state (instead of a real connection status), and the resource is responding at the client call.</small></p>
+<p><br/><em>Failure status response:</em></p>
+<pre><code class="language-json">azuredigitaltwinmodels:
+{
+  data:
+  {
+    unregistered: [ &quot;my:dt:definition_b;1&quot; ]
+  },
+  description: &quot;The digital twin is out of sync with the models provided&quot;,
+  duration: &quot;00:00:17.6056085&quot;,
+  exception: null,
+  status: 1,
+  tags: [ &quot;ready&quot; ]
+}
+</code></pre>
+<hr />
+<h2 id="digital-twin-instance-health-check"><em>Digital Twin Instance Health Check</em></h2>
+<p>This health check returns the status of a given instance.</p>
+<h3 id="example-usage-2">Example Usage</h3>
+<p><br/><em>C# Configuration:</em></p>
+<p>You can also add health check with the default client arguments...</p>
+<pre><code class="language-cs">public void ConfigureServices(IServiceCollection services)
+{
+    services
+        .AddHealthChecks()
+        .AddAzureDigitalTwinInstance(
+            &quot;MyDigitalTwinClientId&quot;,
+            &quot;MyDigitalTwinClientSecret&quot;,
+            &quot;TenantId&quot;,
+            &quot;https://my-awesome-dt-host&quot;,
+            &quot;my_dt_instance_name&quot;)
+}
+</code></pre>
+<p>... or with the token credentials flow that you want:</p>
+<pre><code class="language-cs">public void ConfigureServices(IServiceCollection services)
+{
+    TokenCredentials myCredentials = &lt;my_credentials_flow&gt;;
+    services
+        .AddHealthChecks()
+        .AddAzureDigitalTwinModels(
+            myCredentials,
+            &quot;https://my-awesome-dt-host&quot;,
+            &quot;my_dt_instance_name&quot;)
+}
+</code></pre>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.</p>
+        <p>Maintained by DotNetDiag Maintainers / Project documentation</p>
+    </div>
+</footer>
+</body>
+</html>

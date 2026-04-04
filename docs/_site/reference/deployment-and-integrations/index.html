@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Deployment And Integrations | DotNetDiag HealthChecks</title>
+    <meta name="description" content="Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork." />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="/">DotNetDiag HealthChecks</a>
+        <nav class="site-nav">
+            <a href="/guides/">Guides</a>
+            <a href="/reference/">使用手册</a>
+            <a href="/news/">News</a>
+            <a href="/about/">About</a>
+            <a href="https://github.com/DotNetDiag/HealthChecks">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>Deployment And Integrations</h1>
+        
+    </section>
+    
+
+    <div class="page-content">
+        <p>This chapter replaces the deployment and integration sections from the root README and points to the maintained operational guides.</p>
+<h2 id="container-images">Container images</h2>
+<p>The published images still use the <code>xabarilcoding/*</code> namespace.</p>
+<ul>
+<li>UI image: <code>xabarilcoding/healthchecksui</code></li>
+<li>Kubernetes operator image: <code>xabarilcoding/healthchecksui-k8s-operator</code></li>
+</ul>
+<p>Use the <a href="/ui-docker/">UI Docker image guide</a> when you are deploying the dashboard in a containerized environment.</p>
+<h2 id="kubernetes">Kubernetes</h2>
+<ul>
+<li><a href="/k8s-operator/">Kubernetes operator</a> for rapid bootstrap of HealthChecks UI workloads.</li>
+<li><a href="/k8s-ui-discovery/">Automatic Kubernetes service discovery</a> when you want the UI to discover services instead of registering endpoints manually.</li>
+<li><a href="/kubernetes-liveness/">Liveness and readiness probes</a> for application-level health endpoints used by Kubernetes.</li>
+</ul>
+<h2 id="azure-devops-release-gates">Azure DevOps release gates</h2>
+<p>Health checks can be used as Azure DevOps release gates through the marketplace extension documented in <a href="/reference/readmes/extensions/">the extension README</a>.</p>
+<p>Use this integration when deployment promotion must wait for an application-specific health signal instead of relying only on generic availability checks.</p>
+<h2 id="protected-ui-with-openid-connect">Protected UI with OpenID Connect</h2>
+<p>If the dashboard should only be visible to authenticated users, protect the UI with standard ASP.NET Core authentication and authorization.</p>
+<ul>
+<li>Sample application: <a href="https://github.com/DotNetDiag/HealthChecks/tree/master/samples/HealthChecks.UI.Oidc">HealthChecks.UI.Oidc</a></li>
+<li>Common identity providers: Azure AD, Auth0, Okta, IdentityServer-compatible providers</li>
+</ul>
+<p>The dashboard itself does not require a special authentication package. Treat it like any other ASP.NET Core application and apply your normal authentication and authorization pipeline before mapping the UI endpoints.</p>
+<h2 id="recommended-deployment-path">Recommended deployment path</h2>
+<ol>
+<li>Start with the <a href="/reference/ui-manual/">UI manual</a> for endpoint shape, storage, and configuration.</li>
+<li>Use the <a href="/ui-docker/">Docker guide</a> if the UI runs in a container.</li>
+<li>Add the Kubernetes guides when the target environment needs discovery, operator management, or probe integration.</li>
+<li>Add Azure DevOps release gates only after the UI or JSON health endpoint is already stable and trusted.</li>
+</ol>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.</p>
+        <p>Maintained by DotNetDiag Maintainers / Project documentation</p>
+    </div>
+</footer>
+</body>
+</html>
