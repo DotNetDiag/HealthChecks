@@ -12,7 +12,7 @@ public class ElasticContainerFixture : IAsyncLifetime
 {
     private static readonly TimeSpan StartTimeout = TimeSpan.FromMinutes(5);
     private static readonly TimeSpan RetryInterval = TimeSpan.FromSeconds(5);
-    private static readonly Uri ElasticsearchApiKeyUri = new("https://localhost:9200/_security/api_key?pretty");
+    private static readonly Uri ElasticsearchServerUri = new("https://localhost:9200");
 
     public const string ELASTIC_PASSWORD = "abcDEF123!";
     private readonly ICompositeService _compositeService;
@@ -21,7 +21,7 @@ public class ElasticContainerFixture : IAsyncLifetime
 
     public ElasticContainerFixture()
     {
-        var composeFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "docker-compose.yml");
+        var composeFilePath = ResolveComposeFilePath();
 
         _compositeService = new Builder()
             .UseContainer()
@@ -31,6 +31,8 @@ public class ElasticContainerFixture : IAsyncLifetime
             .Build()
             .Start();
     }
+
+    public string GetConnectionString() => ElasticsearchServerUri.ToString();
 
     public async Task InitializeAsync()
     {
@@ -58,6 +60,19 @@ public class ElasticContainerFixture : IAsyncLifetime
         GC.SuppressFinalize(this);
     }
 
+    private static string ResolveComposeFilePath()
+    {
+        string[] candidatePaths =
+        [
+            Path.Combine(AppContext.BaseDirectory, "Resources", "docker-compose.yml"),
+            Path.Combine(Directory.GetCurrentDirectory(), "Resources", "docker-compose.yml"),
+            Path.Combine(Directory.GetCurrentDirectory(), "test", "HealthChecks.Elasticsearch.Tests", "Resources", "docker-compose.yml")
+        ];
+
+        return candidatePaths.FirstOrDefault(File.Exists)
+            ?? throw new FileNotFoundException("Could not locate the Elasticsearch docker-compose.yml test resource.");
+    }
+
     private static HttpClient CreateHttpClient()
     {
         var handler = new HttpClientHandler
@@ -76,6 +91,8 @@ public class ElasticContainerFixture : IAsyncLifetime
 
     private async Task<string> SetApiKeyInElasticSearchAsync(HttpClient httpClient)
     {
+        var elasticsearchApiKeyUri = new Uri(ElasticsearchServerUri, "/_security/api_key?pretty");
+
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(
             Encoding.ASCII.GetBytes($"elastic:{ELASTIC_PASSWORD}")));
 
@@ -88,7 +105,7 @@ public class ElasticContainerFixture : IAsyncLifetime
         {
             try
             {
-                using var response = await httpClient.PostAsJsonAsync(ElasticsearchApiKeyUri,
+                using var response = await httpClient.PostAsJsonAsync(elasticsearchApiKeyUri,
                     new { name = "new-api-key", role_descriptors = new { } }).ConfigureAwait(false);
 
                 if (response.IsSuccessStatusCode)
