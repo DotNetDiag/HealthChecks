@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Prometheus;Prometheus Exporter;Metrics</PackageTags>
     <Description>HealthChecks.Publisher.Prometheus is a health check prometheus metrics exporter.</Description>
-    <VersionPrefix>$(HealthCheckPrometheusMetrics)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,3 +13,4 @@
   </ItemGroup>
 
 </Project>
+

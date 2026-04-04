@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);SQLite</PackageTags>
     <Description>HealthChecks.UI.SQLite.Storage package contains the required classes to use SQLite provider in the UI</Description>
-    <VersionPrefix>$(HealthCheckUISQLiteStorage)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,3 +15,4 @@
   </ItemGroup>
 
 </Project>
+

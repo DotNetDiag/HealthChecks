@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);EventStore</PackageTags>
     <Description>HealthChecks.EventStore is the health check package for EventStore, using the TCP Client.</Description>
-    <VersionPrefix>$(HealthCheckEventStore)</VersionPrefix>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
@@ -13,3 +12,4 @@
   </ItemGroup>
 
 </Project>
+

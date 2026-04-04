@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Sql Server</PackageTags>
     <Description>HealthChecks.SqlServer is the health check package for SqlServer.</Description>
-    <VersionPrefix>$(HealthCheckSqlServer)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,3 +11,4 @@
   </ItemGroup>
 
 </Project>
+

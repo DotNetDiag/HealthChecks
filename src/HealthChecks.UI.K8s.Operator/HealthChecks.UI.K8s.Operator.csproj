@@ -1,11 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
-    <VersionPrefix>$(HealthChecksUIK8sOperator)</VersionPrefix>
     <NoWarn>$(NoWarn);RCS1090</NoWarn>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
@@ -19,3 +18,4 @@
   </ItemGroup>
 
 </Project>
+

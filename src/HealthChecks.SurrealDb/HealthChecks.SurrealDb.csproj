@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ExtendedNetStandard21LibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);SurrealDb</PackageTags>
     <Description>HealthChecks.SurrealDb is the health check package for SurrealDB.</Description>
-    <VersionPrefix>$(HealthCheckSurrealDb)</VersionPrefix>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
@@ -13,3 +12,4 @@
   </ItemGroup>
 
 </Project>
+

@@ -4,7 +4,6 @@
     <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);RabbitMQ</PackageTags>
     <Description>HealthChecks.RabbitMQ is the health check package for RabbitMQ.Client (version 6).</Description>
-    <VersionPrefix>$(HealthCheckRabbitMQ)</VersionPrefix>
     <AssemblyName>HealthChecks.Rabbitmq</AssemblyName>
     <RootNamespace>HealthChecks.RabbitMQ</RootNamespace> <!--For backward naming compatibility-->
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -17,3 +16,4 @@
   </ItemGroup>
 
 </Project>
+

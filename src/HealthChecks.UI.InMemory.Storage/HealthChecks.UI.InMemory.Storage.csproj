@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);InMemory</PackageTags>
     <Description>HealthChecks.UI.InMemory.Storage package contains the required classes to use InMemory provider in the UI</Description>
-    <VersionPrefix>$(HealthCheckUIInMemoryStorage)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,3 +15,4 @@
   </ItemGroup>
 
 </Project>
+

@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);SqlServer</PackageTags>
     <Description>HealthChecks.UI.SqlServer.Storage package contains the required classes to use SqlServer provider in the UI</Description>
-    <VersionPrefix>$(HealthCheckUISqlServerStorage)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,3 +19,4 @@
   </ItemGroup>
 
 </Project>
+

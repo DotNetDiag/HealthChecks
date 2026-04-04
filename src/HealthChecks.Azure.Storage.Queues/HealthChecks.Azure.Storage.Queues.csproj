@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Azure;AzureStorage</PackageTags>
     <Description>HealthChecks.Azure.Storage.Queues is the health check package for Azure Storage Queues.</Description>
-    <VersionPrefix>$(HealthCheckAzureStorageQueues)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,3 +11,4 @@
   </ItemGroup>
 
 </Project>
+

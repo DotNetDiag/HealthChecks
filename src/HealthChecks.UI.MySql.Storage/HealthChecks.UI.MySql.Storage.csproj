@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);MySql</PackageTags>
     <Description>HealthChecks.UI.MySql.Storage package contains the required classes to use the MySQL database provider in the UI</Description>
-    <VersionPrefix>$(HealthCheckUIMySqlStorage)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,3 +15,4 @@
   </ItemGroup>
 
 </Project>
+

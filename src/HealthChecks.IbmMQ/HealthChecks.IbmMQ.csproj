@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);IbmMQ</PackageTags>
     <Description>HealthChecks.IbmMQ is the health check package for IbmMQ.</Description>
-    <VersionPrefix>$(HealthCheckIbmMQ)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,3 +12,4 @@
   </ItemGroup>
 
 </Project>
+

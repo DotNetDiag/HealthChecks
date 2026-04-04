@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);SignalR</PackageTags>
     <Description>HealthChecks.SignalR is the health check package for SignalR.</Description>
-    <VersionPrefix>$(HealthCheckSignalR)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,3 +11,4 @@
   </ItemGroup>
 
 </Project>
+

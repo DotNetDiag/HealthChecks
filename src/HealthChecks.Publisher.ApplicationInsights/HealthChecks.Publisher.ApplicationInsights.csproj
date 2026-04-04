@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Publisher;Application Insights</PackageTags>
     <Description>HealthChecks.Publisher.ApplicationInsights is the health check publisher for Application Insights.</Description>
-    <VersionPrefix>$(HealthCheckPublisherAppplicationInsights)</VersionPrefix>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
@@ -13,3 +12,4 @@
   </ItemGroup>
 
 </Project>
+

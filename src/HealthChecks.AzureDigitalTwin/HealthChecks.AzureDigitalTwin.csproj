@@ -1,9 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Azure;DigitalTwin</PackageTags>
     <Description>HealthChecks.AzureDigitalTwin is the health check package for Azure DigitalTwin.</Description>
-    <VersionPrefix>$(HealthCheckAzureDigitalTwin)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,3 +14,4 @@
     <PackageReference Include="System.Text.RegularExpressions" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
   </ItemGroup>
 </Project>
+

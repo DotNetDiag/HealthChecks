@@ -1,11 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <!--since v3.0.0 Google.Cloud.Firestore supports netstandard2.1 instead of netstandard2.0-->
     <TargetFrameworks>$(ExtendedNetStandard21LibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);CloudFirestore</PackageTags>
     <Description>HealthChecks.Gcp.CloudFirestore is the health check package for the Firebase Cloud Firebase realtime database.</Description>
-    <VersionPrefix>$(HealthCheckCloudFirestore)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,3 +12,4 @@
   </ItemGroup>
 
 </Project>
+

@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);IdentityServer;IdSvr;OpenId;OpenIdConnect</PackageTags>
     <Description>HealthChecks.OpenIdConnectServer is the health check package for OpenIdConnect servers</Description>
-    <VersionPrefix>$(HealthCheckOpenIdConnectServer)</VersionPrefix>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
@@ -14,3 +13,4 @@
   </ItemGroup>
 
 </Project>
+

@@ -1,5 +1,9 @@
 <Project>
-  <Import Project="build/versions.props" />
+
+  <PropertyGroup>
+    <VersionPrefix>10.0.0</VersionPrefix>
+    <TestcontainersVersion>4.1.0</TestcontainersVersion>
+  </PropertyGroup>
 
   <PropertyGroup>
     <LangVersion>latest</LangVersion>

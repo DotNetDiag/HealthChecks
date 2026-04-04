@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Uri;Url;Uris;Urls</PackageTags>
     <Description>HealthChecks.Uris is a simple health check package for Uri groups.</Description>
-    <VersionPrefix>$(HealthCheckUri)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,3 +11,4 @@
   </ItemGroup>
 
 </Project>
+

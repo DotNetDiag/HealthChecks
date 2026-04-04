@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);AWS;S3;Simple Storage Service</PackageTags>
     <Description>HealthChecks.Aws.S3 is the health check package for S3 Buckets and files.</Description>
-    <VersionPrefix>$(HealthCheckAWSS3)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,3 +11,4 @@
   </ItemGroup>
 
 </Project>
+

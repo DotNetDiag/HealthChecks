@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);ArangoDb</PackageTags>
     <Description>HealthChecks.ArangoDb is the health check package for ArangoDb.</Description>
-    <VersionPrefix>$(HealthCheckArangoDb)</VersionPrefix>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
@@ -13,3 +12,4 @@
   </ItemGroup>
 
 </Project>
+

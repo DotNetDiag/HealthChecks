@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Elasticsearch</PackageTags>
     <Description>HealthChecks.Elasticsearch is the health check package for Elasticsearch.</Description>
-    <VersionPrefix>$(HealthCheckElasticsearch)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,3 +12,4 @@
   </ItemGroup>
 
 </Project>
+

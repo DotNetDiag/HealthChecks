@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);AWS;Systems Manager;Parameter Store</PackageTags>
     <Description>HealthChecks.Aws.SystemsManager is the health check package for Systems Manager for Parameter Store.</Description>
-    <VersionPrefix>$(HealthCheckAWSSystemsManager)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,3 +11,4 @@
   </ItemGroup>
 
 </Project>
+

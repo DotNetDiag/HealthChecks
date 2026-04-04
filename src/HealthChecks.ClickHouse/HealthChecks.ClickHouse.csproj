@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ExtendedNetStandard21LibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Beat;ClickHouse</PackageTags>
     <Description>HealthChecks.ClickHouse is a health check for ClickHouse.</Description>
-    <VersionPrefix>$(HealthCheckClickHouse)</VersionPrefix>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
@@ -13,3 +12,4 @@
   </ItemGroup>
 
 </Project>
+

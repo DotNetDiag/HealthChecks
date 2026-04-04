@@ -1,11 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <!-- Match the TFMs of MongoDB.Driver -->
     <TargetFrameworks>$(ExtendedNetStandard21LibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);MongoDb</PackageTags>
     <Description>HealthChecks.MongoDb is the health check package for MongoDb.</Description>
-    <VersionPrefix>$(HealthCheckMongoDB)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,3 +12,4 @@
   </ItemGroup>
 
 </Project>
+

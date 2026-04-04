@@ -18,7 +18,6 @@ $defaultGlobalFiles = @(
     'Directory.Build.props',
     'Directory.Build.targets',
     'Directory.Packages.props',
-    'build/versions.props',
     'src/Directory.Build.props',
     'src/ApiMarker.cs',
     'src/CallerArgumentExpressionAttribute.cs'
