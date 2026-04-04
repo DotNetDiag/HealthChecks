@@ -40,7 +40,7 @@ public class inmemory_storage_should
             collectorReset,
             configureUI: config => config.AddInMemoryStorage());
 
-        using var server = new TestServer(appHost.Services);
+        var server = appHost.GetTestServer();
 
         hostReset.Wait(ProviderTestHelper.DefaultHostTimeout);
 

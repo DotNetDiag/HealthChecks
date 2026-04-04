@@ -41,7 +41,7 @@ public class postgre_storage_should
             collectorReset,
             configureUI: config => config.AddPostgreSqlStorage(ProviderTestHelper.PostgresConnectionString()));
 
-        using var server = new TestServer(appHost.Services);
+        var server = appHost.GetTestServer();
 
         hostReset.Wait(ProviderTestHelper.DefaultHostTimeout);
 

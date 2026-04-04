@@ -4,8 +4,16 @@ public static class TestHostHelper
 {
     public static IHost Build(Action<IWebHostBuilder> configureWebHost)
     {
-        return new HostBuilder()
-            .ConfigureWebHost(configureWebHost)
+        var host = new HostBuilder()
+            .ConfigureWebHost(webHostBuilder =>
+            {
+                webHostBuilder.UseTestServer();
+                configureWebHost(webHostBuilder);
+            })
             .Build();
+
+        host.StartAsync().GetAwaiter().GetResult();
+
+        return host;
     }
 }

@@ -27,7 +27,7 @@ public class arangodb_healthcheck_should
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -65,7 +65,7 @@ public class arangodb_healthcheck_should
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -95,7 +95,7 @@ public class arangodb_healthcheck_should
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

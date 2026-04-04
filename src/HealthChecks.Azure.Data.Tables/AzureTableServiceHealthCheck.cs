@@ -8,6 +8,14 @@ namespace HealthChecks.Azure.Data.Tables;
 /// </summary>
 public sealed class AzureTableServiceHealthCheck : IHealthCheck
 {
+    private const string PROBE_PARTITION_KEY = "__dotnetdiag_healthchecks_probe_partition__";
+    private const string PROBE_ROW_KEY = "__dotnetdiag_healthchecks_probe_row__";
+    private const string PROBE_TABLE_NAME = "__dotnetdiag_healthchecks_probe_table__";
+    private static readonly string _tableServiceProbeFilter = TableServiceClient.CreateQueryFilter(item => item.Name == PROBE_TABLE_NAME);
+    private static readonly string _tableEntityProbeFilter = TableClient.CreateQueryFilter<TableEntity>(entity =>
+        entity.PartitionKey == PROBE_PARTITION_KEY && entity.RowKey == PROBE_ROW_KEY);
+    private static readonly string[] _tableEntityProbeSelectColumns = [nameof(TableEntity.PartitionKey), nameof(TableEntity.RowKey)];
+
     private readonly TableServiceClient _tableServiceClient;
     private readonly AzureTableServiceHealthCheckOptions _options;
 
@@ -35,9 +43,15 @@ public sealed class AzureTableServiceHealthCheck : IHealthCheck
             {
                 // Note: PoLP (Principle of least privilege)
                 // This can be used having at least the role assignment "Storage Table Data Reader" at table level.
+                // A raw filter like "false" can be rejected by Azure Tables, so probe with a valid sentinel key filter instead.
+                // Issue: https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/issues/2445
                 var tableClient = _tableServiceClient.GetTableClient(_options.TableName);
                 await tableClient
-                    .QueryAsync<TableEntity>(filter: "false", cancellationToken: cancellationToken)
+                    .QueryAsync<TableEntity>(
+                        filter: _tableEntityProbeFilter,
+                        maxPerPage: 1,
+                        select: _tableEntityProbeSelectColumns,
+                        cancellationToken: cancellationToken)
                     .GetAsyncEnumerator(cancellationToken)
                     .MoveNextAsync()
                     .ConfigureAwait(false);
@@ -49,8 +63,13 @@ public sealed class AzureTableServiceHealthCheck : IHealthCheck
                 // TableClient.QueryAsync<T>() are used instead to probe service health.
                 // Note: PoLP (Principle of least privilege)
                 // This can can be used with only the role assignment "Storage Table Data Reader" at storage account level.
+                // A raw filter like "false" can be rejected by Azure Tables, so probe with a valid sentinel table-name filter instead.
+                // Issue: https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/issues/2445
                 await _tableServiceClient
-                    .QueryAsync(filter: "false", cancellationToken: cancellationToken)
+                    .QueryAsync(
+                        filter: _tableServiceProbeFilter,
+                        maxPerPage: 1,
+                        cancellationToken: cancellationToken)
                     .GetAsyncEnumerator(cancellationToken)
                     .MoveNextAsync()
                     .ConfigureAwait(false);

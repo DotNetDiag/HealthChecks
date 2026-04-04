@@ -26,7 +26,7 @@ public class milvus_healthcheck_should(MilvusContainerFixture milvusContainerFix
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -54,7 +54,7 @@ public class milvus_healthcheck_should(MilvusContainerFixture milvusContainerFix
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -80,7 +80,7 @@ public class milvus_healthcheck_should(MilvusContainerFixture milvusContainerFix
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

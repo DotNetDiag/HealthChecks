@@ -38,7 +38,7 @@ public class ElasticsearchAuthenticationTests : IClassFixture<ElasticContainerFi
                     new HealthCheckOptions { Predicate = r => r.Tags.Contains("elasticsearch") });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         var response = await server.CreateRequest("/health")
             .GetAsync();
@@ -73,7 +73,7 @@ public class ElasticsearchAuthenticationTests : IClassFixture<ElasticContainerFi
                     new HealthCheckOptions { Predicate = r => r.Tags.Contains("elasticsearch") });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         var response = await server.CreateRequest("/health")
             .GetAsync();

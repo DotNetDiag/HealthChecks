@@ -31,7 +31,7 @@ public class ClickHouse_healthcheck_should(ClickHouseContainerFixture clickHouse
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -55,7 +55,7 @@ public class ClickHouse_healthcheck_should(ClickHouseContainerFixture clickHouse
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -82,7 +82,7 @@ public class ClickHouse_healthcheck_should(ClickHouseContainerFixture clickHouse
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -111,7 +111,7 @@ public class ClickHouse_healthcheck_should(ClickHouseContainerFixture clickHouse
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -144,7 +144,7 @@ public class ClickHouse_healthcheck_should(ClickHouseContainerFixture clickHouse
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -175,7 +175,7 @@ public class ClickHouse_healthcheck_should(ClickHouseContainerFixture clickHouse
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

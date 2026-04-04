@@ -11,6 +11,13 @@ public class tableservicehealthcheck_should
 {
     private const string TableName = "unit-test";
     private const string HealthCheckName = "unit-test-check";
+    private const string ProbePartitionKey = "__dotnetdiag_healthchecks_probe_partition__";
+    private const string ProbeRowKey = "__dotnetdiag_healthchecks_probe_row__";
+    private const string ProbeTableName = "__dotnetdiag_healthchecks_probe_table__";
+    private static readonly string TableServiceProbeFilter = TableServiceClient.CreateQueryFilter(item => item.Name == ProbeTableName);
+    private static readonly string TableEntityProbeFilter = TableClient.CreateQueryFilter<TableEntity>(entity =>
+        entity.PartitionKey == ProbePartitionKey && entity.RowKey == ProbeRowKey);
+    private static readonly string[] TableEntityProbeSelectColumns = [nameof(TableEntity.PartitionKey), nameof(TableEntity.RowKey)];
 
     private readonly TableServiceClient _tableServiceClient;
     private readonly TableClient _tableClient;
@@ -38,14 +45,14 @@ public class tableservicehealthcheck_should
         using var tokenSource = new CancellationTokenSource();
 
         _tableServiceClient
-            .QueryAsync(filter: "false", cancellationToken: tokenSource.Token)
+            .QueryAsync(filter: TableServiceProbeFilter, maxPerPage: 1, cancellationToken: tokenSource.Token)
             .Returns(AsyncPageable<TableItem>.FromPages([]));
 
         var actual = await _healthCheck.CheckHealthAsync(_context, tokenSource.Token);
 
         _tableServiceClient
             .Received(1)
-            .QueryAsync(filter: "false", cancellationToken: tokenSource.Token);
+            .QueryAsync(filter: TableServiceProbeFilter, maxPerPage: 1, cancellationToken: tokenSource.Token);
 
         _tableClient
             .DidNotReceiveWithAnyArgs()
@@ -60,7 +67,11 @@ public class tableservicehealthcheck_should
         using var tokenSource = new CancellationTokenSource();
 
         _tableClient
-            .QueryAsync<TableEntity>(filter: "false", cancellationToken: tokenSource.Token)
+            .QueryAsync<TableEntity>(
+                filter: TableEntityProbeFilter,
+                maxPerPage: 1,
+                select: Arg.Is<IEnumerable<string>>(columns => columns.SequenceEqual(TableEntityProbeSelectColumns)),
+                cancellationToken: tokenSource.Token)
             .Returns(AsyncPageable<TableEntity>.FromPages([]));
 
         _options.TableName = TableName;
@@ -68,7 +79,11 @@ public class tableservicehealthcheck_should
 
         _tableClient
             .Received(1)
-            .QueryAsync<TableEntity>(filter: "false", cancellationToken: tokenSource.Token);
+            .QueryAsync<TableEntity>(
+                filter: TableEntityProbeFilter,
+                maxPerPage: 1,
+                select: Arg.Is<IEnumerable<string>>(columns => columns.SequenceEqual(TableEntityProbeSelectColumns)),
+                cancellationToken: tokenSource.Token);
 
         actual.Status.ShouldBe(HealthStatus.Healthy);
     }
@@ -82,7 +97,7 @@ public class tableservicehealthcheck_should
         var enumerator = Substitute.For<IAsyncEnumerator<TableItem>>();
 
         _tableServiceClient
-            .QueryAsync(filter: "false", cancellationToken: tokenSource.Token)
+            .QueryAsync(filter: TableServiceProbeFilter, maxPerPage: 1, cancellationToken: tokenSource.Token)
             .Returns(pageable);
 
         pageable
@@ -97,7 +112,7 @@ public class tableservicehealthcheck_should
 
         _tableServiceClient
             .Received(1)
-            .QueryAsync(filter: "false", cancellationToken: tokenSource.Token);
+            .QueryAsync(filter: TableServiceProbeFilter, maxPerPage: 1, cancellationToken: tokenSource.Token);
 
         pageable
             .Received(1)
@@ -108,8 +123,12 @@ public class tableservicehealthcheck_should
             .MoveNextAsync();
 
         _tableClient
-            .DidNotReceiveWithAnyArgs()
-            .QueryAsync<TableEntity>(filter: "false", cancellationToken: tokenSource.Token);
+            .DidNotReceive()
+            .QueryAsync<TableEntity>(
+                Arg.Any<string>(),
+                Arg.Any<int?>(),
+                Arg.Any<IEnumerable<string>>(),
+                Arg.Any<CancellationToken>());
 
         actual.Status.ShouldBe(HealthStatus.Unhealthy);
         actual
@@ -123,7 +142,11 @@ public class tableservicehealthcheck_should
         using var tokenSource = new CancellationTokenSource();
 
         _tableClient
-            .QueryAsync<TableEntity>(filter: "false", cancellationToken: tokenSource.Token)
+            .QueryAsync<TableEntity>(
+                filter: TableEntityProbeFilter,
+                maxPerPage: 1,
+                select: Arg.Is<IEnumerable<string>>(columns => columns.SequenceEqual(TableEntityProbeSelectColumns)),
+                cancellationToken: tokenSource.Token)
             .Throws(new RequestFailedException((int)HttpStatusCode.NotFound, "Table not found"));
 
         _options.TableName = TableName;
@@ -131,7 +154,11 @@ public class tableservicehealthcheck_should
 
         _tableClient
             .Received(1)
-            .QueryAsync<TableEntity>(filter: "false", cancellationToken: tokenSource.Token);
+            .QueryAsync<TableEntity>(
+                filter: TableEntityProbeFilter,
+                maxPerPage: 1,
+                select: Arg.Is<IEnumerable<string>>(columns => columns.SequenceEqual(TableEntityProbeSelectColumns)),
+                cancellationToken: tokenSource.Token);
 
 
         actual.Status.ShouldBe(HealthStatus.Unhealthy);
@@ -155,7 +182,7 @@ public class tableservicehealthcheck_should
         var enumerator = Substitute.For<IAsyncEnumerator<TableItem>>();
 
         _tableServiceClient
-            .QueryAsync(filter: "false", cancellationToken: Arg.Any<CancellationToken>())
+            .QueryAsync(filter: TableServiceProbeFilter, maxPerPage: 1, cancellationToken: Arg.Any<CancellationToken>())
             .Returns(pageable);
 
         pageable
@@ -171,7 +198,7 @@ public class tableservicehealthcheck_should
 
         _tableServiceClient
             .Received(1)
-            .QueryAsync(filter: "false", cancellationToken: Arg.Any<CancellationToken>());
+            .QueryAsync(filter: TableServiceProbeFilter, maxPerPage: 1, cancellationToken: Arg.Any<CancellationToken>());
 
         pageable
             .Received(1)
@@ -199,7 +226,11 @@ public class tableservicehealthcheck_should
             .BuildServiceProvider();
 
         _tableClient
-            .QueryAsync<TableEntity>(filter: "false", cancellationToken: Arg.Any<CancellationToken>())
+            .QueryAsync<TableEntity>(
+                filter: TableEntityProbeFilter,
+                maxPerPage: 1,
+                select: Arg.Is<IEnumerable<string>>(columns => columns.SequenceEqual(TableEntityProbeSelectColumns)),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Throws(new RequestFailedException((int)HttpStatusCode.NotFound, "Table not found"));
 
         var service = provider.GetRequiredService<HealthCheckService>();
@@ -207,7 +238,11 @@ public class tableservicehealthcheck_should
 
         _tableClient
             .Received(1)
-            .QueryAsync<TableEntity>(filter: "false", cancellationToken: Arg.Any<CancellationToken>());
+            .QueryAsync<TableEntity>(
+                filter: TableEntityProbeFilter,
+                maxPerPage: 1,
+                select: Arg.Is<IEnumerable<string>>(columns => columns.SequenceEqual(TableEntityProbeSelectColumns)),
+                cancellationToken: Arg.Any<CancellationToken>());
 
         var actual = report.Entries[HealthCheckName];
         actual.Status.ShouldBe(HealthStatus.Unhealthy);

@@ -14,7 +14,7 @@ public class prometheus_response_writer_should
                     .AddCheck("fake", check => HealthCheckResult.Healthy());
             })
             .Configure(app => app.UseHealthChecksPrometheusExporter("/health")));
-        using var sut = new TestServer(host.Services);
+        var sut = host.GetTestServer();
 
         using var response = await sut.CreateRequest("/health").GetAsync();
 
@@ -33,7 +33,7 @@ public class prometheus_response_writer_should
                     .AddCheck("fake", check => HealthCheckResult.Unhealthy());
             })
             .Configure(app => app.UseHealthChecksPrometheusExporter("/health")));
-        using var sut = new TestServer(host.Services);
+        var sut = host.GetTestServer();
 
         using var response = await sut.CreateRequest("/health").GetAsync();
 
@@ -52,7 +52,7 @@ public class prometheus_response_writer_should
                     .AddCheck("fake", check => HealthCheckResult.Unhealthy());
             })
             .Configure(app => app.UseHealthChecksPrometheusExporter("/health", options => options.ResultStatusCodes[HealthStatus.Unhealthy] = (int)HttpStatusCode.OK)));
-        using var sut = new TestServer(host.Services);
+        var sut = host.GetTestServer();
 
         using var response = await sut.CreateRequest("/health").GetAsync();
 

@@ -31,7 +31,7 @@ public class kafka_healthcheck_should(KafkaContainerFixture kafkaContainerFixtur
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -63,7 +63,7 @@ public class kafka_healthcheck_should(KafkaContainerFixture kafkaContainerFixtur
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

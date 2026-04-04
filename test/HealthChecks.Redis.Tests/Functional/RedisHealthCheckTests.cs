@@ -26,7 +26,7 @@ public class redis_healthcheck_should(RedisContainerFixture redisContainerFixtur
              });
          }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -53,7 +53,7 @@ public class redis_healthcheck_should(RedisContainerFixture redisContainerFixtur
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -82,7 +82,7 @@ public class redis_healthcheck_should(RedisContainerFixture redisContainerFixtur
              });
          }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -114,7 +114,7 @@ public class redis_healthcheck_should(RedisContainerFixture redisContainerFixtur
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -142,7 +142,7 @@ public class redis_healthcheck_should(RedisContainerFixture redisContainerFixtur
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -166,7 +166,7 @@ public class redis_healthcheck_should(RedisContainerFixture redisContainerFixtur
              });
          }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -191,7 +191,7 @@ public class redis_healthcheck_should(RedisContainerFixture redisContainerFixtur
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -216,7 +216,7 @@ public class redis_healthcheck_should(RedisContainerFixture redisContainerFixtur
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

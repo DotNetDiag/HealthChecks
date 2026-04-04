@@ -33,7 +33,7 @@ public class imap_healthcheck_should
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.EnsureSuccessStatusCode();
@@ -62,7 +62,7 @@ public class imap_healthcheck_should
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.EnsureSuccessStatusCode();
@@ -92,7 +92,7 @@ public class imap_healthcheck_should
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);
@@ -122,7 +122,7 @@ public class imap_healthcheck_should
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.EnsureSuccessStatusCode();
@@ -152,7 +152,7 @@ public class imap_healthcheck_should
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);
@@ -180,7 +180,7 @@ public class imap_healthcheck_should
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.EnsureSuccessStatusCode();
@@ -209,7 +209,7 @@ public class imap_healthcheck_should
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.EnsureSuccessStatusCode();
@@ -240,7 +240,7 @@ public class imap_healthcheck_should
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.EnsureSuccessStatusCode();
@@ -270,7 +270,7 @@ public class imap_healthcheck_should
                 app.UseHealthChecks("/health", options);
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);

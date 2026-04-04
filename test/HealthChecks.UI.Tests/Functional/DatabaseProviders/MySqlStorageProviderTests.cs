@@ -44,7 +44,7 @@ public class mysql_storage_should
             collectorReset,
             configureUI: config => config.AddMySqlStorage(ProviderTestHelper.MySqlConnectionString()));
 
-        using var server = new TestServer(appHost.Services);
+        var server = appHost.GetTestServer();
 
         hostReset.Wait(ProviderTestHelper.DefaultHostTimeout);
 

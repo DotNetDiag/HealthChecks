@@ -42,7 +42,7 @@ public class ui_api_request_limiting
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         var tasks = Enumerable.Range(0, maxActiveRequests + 5)
             .Select(_ => server.CreateRequest(new Configuration.Options().ApiPath).GetAsync())
@@ -87,7 +87,7 @@ public class ui_api_request_limiting
 
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         var serverSettings = server.Services.GetRequiredService<IOptions<Settings>>().Value;
 

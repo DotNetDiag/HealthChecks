@@ -40,7 +40,7 @@ public class sqlite_storage_should
             collectorReset,
             configureUI: setup => setup.AddSqliteStorage(ProviderTestHelper.SqliteConnectionString()));
 
-        using var server = new TestServer(appHost.Services);
+        var server = appHost.GetTestServer();
 
         hostReset.Wait(ProviderTestHelper.DefaultHostTimeout);
 

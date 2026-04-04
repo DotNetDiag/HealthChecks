@@ -327,7 +327,7 @@ public class UI_Configuration_should
                     });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
         var options = host.Services.GetRequiredService<IOptions<Configuration.Options>>().Value;
         var response = await server.CreateRequest(options.UIPath).GetAsync();
         var html = await response.Content.ReadAsStringAsync();

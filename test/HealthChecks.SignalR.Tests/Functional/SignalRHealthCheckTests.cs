@@ -35,13 +35,11 @@ public class signalr_healthcheck_should
                     .UseEndpoints(config => config.MapHub<TestHub>("/test"));
             }));
 
-        server = new TestServer(host.Services);
+        server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-
-        server.Dispose();
     }
 
     [Fact]
@@ -72,13 +70,11 @@ public class signalr_healthcheck_should
                     .UseEndpoints(config => config.MapHub<TestHub>("/test"));
             }));
 
-        server = new TestServer(host.Services);
+        server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);
-
-        server.Dispose();
     }
 
     private class TestHub : Hub

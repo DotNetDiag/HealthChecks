@@ -34,7 +34,7 @@ public class UI_configuration_should
                 app.UseEndpoints(setup => setup.MapHealthChecksUI());
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
         hostReset.Wait(3000);
 
         tracer.Received().Log(keyName, valueName);
@@ -70,7 +70,7 @@ public class UI_configuration_should
                 app.UseEndpoints(setup => setup.MapHealthChecksUI());
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         hostReset.Wait(3000);
 
@@ -109,7 +109,7 @@ public class UI_configuration_should
                 app.UseEndpoints(setup => setup.MapHealthChecksUI());
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         hostReset.Wait(3000);
 

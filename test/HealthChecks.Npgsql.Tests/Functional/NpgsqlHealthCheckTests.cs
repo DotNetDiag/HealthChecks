@@ -30,7 +30,7 @@ public class npgsql_healthcheck_should(PostgreSQLContainerFixture postgreSQLCont
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -56,7 +56,7 @@ public class npgsql_healthcheck_should(PostgreSQLContainerFixture postgreSQLCont
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -80,7 +80,7 @@ public class npgsql_healthcheck_should(PostgreSQLContainerFixture postgreSQLCont
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -111,7 +111,7 @@ public class npgsql_healthcheck_should(PostgreSQLContainerFixture postgreSQLCont
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -140,7 +140,7 @@ public class npgsql_healthcheck_should(PostgreSQLContainerFixture postgreSQLCont
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -171,7 +171,7 @@ public class npgsql_healthcheck_should(PostgreSQLContainerFixture postgreSQLCont
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

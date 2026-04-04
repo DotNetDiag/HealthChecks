@@ -25,7 +25,7 @@ public class mysql_healthcheck_should(MySqlContainerFixture mySqlContainerFixtur
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -51,7 +51,7 @@ public class mysql_healthcheck_should(MySqlContainerFixture mySqlContainerFixtur
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -77,7 +77,7 @@ public class mysql_healthcheck_should(MySqlContainerFixture mySqlContainerFixtur
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -104,7 +104,7 @@ public class mysql_healthcheck_should(MySqlContainerFixture mySqlContainerFixtur
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

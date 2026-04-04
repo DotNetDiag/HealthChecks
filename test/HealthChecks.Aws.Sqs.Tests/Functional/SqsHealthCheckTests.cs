@@ -31,7 +31,7 @@ public class aws_sqs_healthcheck_should(LocalStackContainerFixture localStackFix
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -63,7 +63,7 @@ public class aws_sqs_healthcheck_should(LocalStackContainerFixture localStackFix
                 });
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);

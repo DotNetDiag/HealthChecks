@@ -40,7 +40,7 @@ public class dns_resolve_host_count_should
 
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.EnsureSuccessStatusCode();
@@ -78,7 +78,7 @@ public class dns_resolve_host_count_should
 
             }));
 
-        using var server = new TestServer(host.Services);
+        var server = host.GetTestServer();
         var response = await server.CreateClient().GetAsJson<UIHealthReport>("/health");
         response.ShouldNotBeNull();
     }

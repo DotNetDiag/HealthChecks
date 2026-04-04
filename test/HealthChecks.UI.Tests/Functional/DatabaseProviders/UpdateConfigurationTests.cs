@@ -33,7 +33,6 @@ public class UpdateConfigurationTests
 
         var hostReset = new ManualResetEventSlim(false);
         using var host1 = getHost(endpointUri, hostReset);
-        using var server1 = new TestServer(host1.Services);
         hostReset.Wait();
 
         var context = host1.Services.GetRequiredService<HealthChecksDb>();
@@ -44,7 +43,6 @@ public class UpdateConfigurationTests
 
         hostReset = new ManualResetEventSlim(false);
         using var host2 = getHost(updatedEndpointUri, hostReset);
-        using var server2 = new TestServer(host2.Services);
         hostReset.Wait();
 
         context = host2.Services.GetRequiredService<HealthChecksDb>();
