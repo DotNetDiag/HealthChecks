@@ -1,14 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(ExtendedNetStandard21LibraryTargetFrameworks)</TargetFrameworks>
+    <!-- ClickHouse.Driver does not support netstandard2.1, so this package is restricted to .NET 8 and .NET 10.
+         PR: https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/pull/2431
+         Issue: https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/issues/2430 -->
+    <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);Beat;ClickHouse</PackageTags>
     <Description>HealthChecks.ClickHouse is a health check for ClickHouse.</Description>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ClickHouse.Client" />
+    <PackageReference Include="ClickHouse.Driver" />
   </ItemGroup>
 
 </Project>

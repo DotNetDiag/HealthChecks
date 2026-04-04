@@ -45,7 +45,20 @@ public class AzureServiceBusSubscriptionHealthCheck : AzureServiceBusHealthCheck
                 _ => client.CreateReceiver(Options.TopicName, Options.SubscriptionName))
                 .ConfigureAwait(false);
 
-            await receiver.PeekMessageAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            // Some peek flows can outlive the requested cancellation, so race the SDK call against the token.
+            // PR: https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/pull/2433
+            // Issue: https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/issues/2432
+            using var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            var cancellationTask = Task.Delay(Timeout.InfiniteTimeSpan, linkedTokenSource.Token);
+            var peekTask = receiver.PeekMessageAsync(cancellationToken: cancellationToken);
+            var completedTask = await Task.WhenAny(peekTask, cancellationTask).ConfigureAwait(false);
+
+            if (completedTask == peekTask)
+            {
+                await linkedTokenSource.CancelAsync().ConfigureAwait(false);
+            }
+
+            await completedTask.ConfigureAwait(false);
         }
 
         Task CheckWithManagement()
