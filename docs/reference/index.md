@@ -5,6 +5,11 @@ permalink: /reference/
 
 The reference manual collects short implementation examples and the operational cautions that come up most often when integrating the packages in real services.
 
+## Project README catalog
+
+- [Project READMEs]({{ '/reference/readmes/' | relative_url }}) publishes every repository `README.md` outside `docs/` under a generated documentation path.
+- Use it when you need package-specific defaults, extension setup notes, or the original per-project usage snippets.
+
 ## Basic package registration
 
 ```csharp

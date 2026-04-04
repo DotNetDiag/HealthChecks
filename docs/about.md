@@ -16,4 +16,5 @@ DotNetDiag HealthChecks is the actively maintained fork of AspNetCore.Diagnostic
 
 - Documentation pages migrated from the historical `doc` directory.
 - A reference manual with copy-paste integration examples.
+- A generated catalog that maps project `README.md` files into stable documentation URLs.
 - A news section for change records and changelog entry points.
