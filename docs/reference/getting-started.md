@@ -3,14 +3,14 @@ title: Getting Started
 permalink: /reference/getting-started/
 ---
 
-This chapter replaces the quick-start portion of the repository README and gives you the smallest reliable setup for a service that exposes health endpoints.
+Use this chapter for the smallest reliable setup for a service that exposes health endpoints.
 
 ## Choose the right package
 
 - Use `DotNetDiag.HealthChecks.<Provider>` when you need a dependency-specific check such as SQL Server, Redis, MySQL, Azure Service Bus, or Amazon S3.
 - Use `DotNetDiag.HealthChecks.UI` when you want a dashboard that polls one or more health endpoints and stores history.
 - Use `DotNetDiag.HealthChecks.Publisher.*` or `DotNetDiag.HealthChecks.Prometheus.Metrics` when you need push or scrape integrations.
-- Use the [package catalog]({{ '/reference/package-catalog/' | relative_url }}) to choose a package family, then use the [README appendix]({{ '/reference/readmes/' | relative_url }}) for provider-specific defaults and overloads.
+- Use the [package catalog]({{ '/reference/package-catalog/' | relative_url }}) to choose a package family, then use the [package references]({{ '/reference/readmes/' | relative_url }}) for provider-specific defaults and overloads.
 
 ## Install a package
 

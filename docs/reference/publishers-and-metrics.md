@@ -3,13 +3,13 @@ title: Publishers And Metrics
 permalink: /reference/publishers-and-metrics/
 ---
 
-This chapter replaces the push-results section of the repository README and groups the outbound telemetry options in one place.
+Use this chapter to choose outbound telemetry packages and Prometheus integration options.
 
 ## Publisher packages
 
 - `DotNetDiag.HealthChecks.Publisher.ApplicationInsights`
 - `DotNetDiag.HealthChecks.Publisher.CloudWatch`
-- [DotNetDiag.HealthChecks.Publisher.Datadog]({{ '/reference/readmes/src/HealthChecks-Publisher-Datadog/' | relative_url }})
+- [Datadog package reference]({{ '/reference/readmes/src/HealthChecks-Publisher-Datadog/' | relative_url }})
 - `DotNetDiag.HealthChecks.Publisher.Prometheus` - deprecated gateway publisher
 - `DotNetDiag.HealthChecks.Publisher.Seq`
 

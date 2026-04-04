@@ -163,10 +163,12 @@ internal static partial class DocsReadmeGeneratorProgram
             var repoRelativeReadmePath = GetNormalizedRelativePath(sourceReadmePath);
             var sourceContent = File.ReadAllText(sourceReadmePath, Encoding.UTF8);
             var pageTitle = GetReadmeTitle(sourceContent, repoRelativeReadmePath);
+            var category = GetReadmeCategory(repoRelativeReadmePath);
             var virtualUrl = GetReadmeVirtualUrl(repoRelativeReadmePath);
             var outputDirectory = GetReadmeOutputDirectory(repoRelativeReadmePath);
             var outputPath = Path.Combine(outputDirectory, "index.md");
-            var sourceUrl = ConvertRepoPathToGitHubUrl(repoRelativeReadmePath);
+            var sourceReferencePath = GetReferenceSourcePath(repoRelativeReadmePath);
+            var sourceReferenceUrl = ConvertRepoTreePathToGitHubUrl(sourceReferencePath);
             var rewrittenContent = RewriteMarkdownContent(sourceContent, sourceReadmePath).Trim();
 
             Directory.CreateDirectory(outputDirectory);
@@ -174,9 +176,10 @@ internal static partial class DocsReadmeGeneratorProgram
             var contentBuilder = new StringBuilder();
             contentBuilder.AppendLine("---");
             contentBuilder.AppendLine($"title: \"{EscapeYamlDoubleQuotedString(pageTitle)}\"");
+            contentBuilder.AppendLine("show_title: false");
             contentBuilder.AppendLine("---");
             contentBuilder.AppendLine();
-            contentBuilder.AppendLine($"> Generated from [{repoRelativeReadmePath}]({sourceUrl}).");
+            contentBuilder.AppendLine($"> {GetReferenceLead(category)} maintained from the source documentation in [{sourceReferencePath}]({sourceReferenceUrl}).");
             contentBuilder.AppendLine();
             contentBuilder.AppendLine(rewrittenContent);
 
@@ -184,7 +187,7 @@ internal static partial class DocsReadmeGeneratorProgram
 
             return new GeneratedEntry(
                 pageTitle,
-                GetReadmeCategory(repoRelativeReadmePath),
+                category,
                 repoRelativeReadmePath,
                 virtualUrl);
         }
@@ -210,11 +213,11 @@ internal static partial class DocsReadmeGeneratorProgram
 
             var builder = new StringBuilder();
             builder.AppendLine("---");
-            builder.AppendLine("title: README Appendix");
+            builder.AppendLine("title: Package References");
             builder.AppendLine("permalink: /reference/readmes/");
             builder.AppendLine("---");
             builder.AppendLine();
-            builder.AppendLine("This appendix is generated during the docs build. Package, extension, sample, and other subproject READMEs outside the docs folder are published under stable virtual paths here.");
+            builder.AppendLine("This section is generated during the docs build. Package, extension, sample, and other project documentation is published here under stable reference URLs.");
             builder.AppendLine();
             builder.AppendLine($"Total generated pages: **{entries.Count}**.");
             builder.AppendLine();
@@ -231,7 +234,7 @@ internal static partial class DocsReadmeGeneratorProgram
 
                 foreach (var entry in categoryEntries)
                 {
-                    builder.AppendLine($"- [{entry.Title}]({entry.Url}) - `{entry.SourcePath}`");
+                    builder.AppendLine($"- [{entry.Title}]({entry.Url}) - `{GetReferenceSourcePath(entry.SourcePath)}`");
                 }
 
                 builder.AppendLine();
@@ -477,6 +480,27 @@ internal static partial class DocsReadmeGeneratorProgram
             };
         }
 
+        private static string GetReferenceLead(string category)
+        {
+            return category switch
+            {
+                "Extensions" => "Extension reference page",
+                "Samples" => "Sample reference page",
+                "Source Packages" => "Package reference page",
+                _ => "Reference page"
+            };
+        }
+
+        private static string GetReferenceSourcePath(string repoRelativeReadmePath)
+        {
+            if (string.Equals(repoRelativeReadmePath, "README.md", StringComparison.OrdinalIgnoreCase))
+            {
+                return ".";
+            }
+
+            return Path.GetDirectoryName(repoRelativeReadmePath)?.Replace('\\', '/') ?? repoRelativeReadmePath;
+        }
+
         private static string GetReadmeVirtualUrl(string repoRelativeReadmePath)
         {
             var generatedPath = GetGeneratedReadmePath(repoRelativeReadmePath);
@@ -535,6 +559,18 @@ internal static partial class DocsReadmeGeneratorProgram
         {
             var encodedPath = string.Join('/', repoRelativePath.Split('/').Select(Uri.EscapeDataString));
             return $"{_repositoryUrl}/blob/{Uri.EscapeDataString(_branch)}/{encodedPath}";
+        }
+
+        private string ConvertRepoTreePathToGitHubUrl(string repoRelativePath)
+        {
+            var normalizedPath = repoRelativePath.Trim('/');
+            if (string.IsNullOrEmpty(normalizedPath) || normalizedPath == ".")
+            {
+                return $"{_repositoryUrl}/tree/{Uri.EscapeDataString(_branch)}";
+            }
+
+            var encodedPath = string.Join('/', normalizedPath.Split('/').Select(Uri.EscapeDataString));
+            return $"{_repositoryUrl}/tree/{Uri.EscapeDataString(_branch)}/{encodedPath}";
         }
 
         private static string EscapeYamlDoubleQuotedString(string value)

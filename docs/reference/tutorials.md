@@ -3,7 +3,7 @@ title: Tutorials And Samples
 permalink: /reference/tutorials/
 ---
 
-This chapter replaces the tutorial list from the root README and groups official guides, sample applications, and community references.
+Use this chapter for official guides, sample applications, and community references.
 
 ## Official guides in this site
 

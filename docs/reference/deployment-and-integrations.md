@@ -3,7 +3,7 @@ title: Deployment And Integrations
 permalink: /reference/deployment-and-integrations/
 ---
 
-This chapter replaces the deployment and integration sections from the root README and points to the maintained operational guides.
+Use this chapter for container, Kubernetes, Azure DevOps, and protected UI integration paths.
 
 ## Container images
 
@@ -22,7 +22,7 @@ Use the [UI Docker image guide]({{ '/ui-docker/' | relative_url }}) when you are
 
 ## Azure DevOps release gates
 
-Health checks can be used as Azure DevOps release gates through the marketplace extension documented in [the extension README]({{ '/reference/readmes/extensions/' | relative_url }}).
+Health checks can be used as Azure DevOps release gates through the marketplace extension documented in [the extension reference page]({{ '/reference/readmes/extensions/' | relative_url }}).
 
 Use this integration when deployment promotion must wait for an application-specific health signal instead of relying only on generic availability checks.
 

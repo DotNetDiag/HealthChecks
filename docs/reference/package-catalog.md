@@ -3,7 +3,7 @@ title: Package Catalog
 permalink: /reference/package-catalog/
 ---
 
-This chapter turns the package inventory from the root README into a maintainable manual chapter. Use it to choose the right package family first, then open the [README appendix]({{ '/reference/readmes/' | relative_url }}) for package-specific defaults and code samples.
+Use this chapter to choose the right package family first, then open the [package references]({{ '/reference/readmes/' | relative_url }}) for package-specific defaults and code samples.
 
 ## Naming convention
 
@@ -80,6 +80,6 @@ This chapter turns the package inventory from the root README into a maintainabl
 ## How to use this catalog effectively
 
 - Start with this chapter when you are selecting a provider package.
-- Open the [README appendix]({{ '/reference/readmes/' | relative_url }}) when a package has its own README and you need overload-specific behavior such as credentials, region selection, or connection pooling.
+- Open the [package references]({{ '/reference/readmes/' | relative_url }}) when you need overload-specific behavior such as credentials, region selection, or connection pooling.
 - Use the [getting started]({{ '/reference/getting-started/' | relative_url }}) chapter for common registration patterns that apply across packages.
 - Use the [UI manual]({{ '/reference/ui-manual/' | relative_url }}) and [publishers and metrics]({{ '/reference/publishers-and-metrics/' | relative_url }}) chapters for dashboard and observability components.

@@ -3,7 +3,7 @@ title: HealthChecks UI Manual
 permalink: /reference/ui-manual/
 ---
 
-This chapter replaces the large UI section in the root README and centralizes the stable setup guidance for the dashboard.
+Use this chapter for stable dashboard setup, storage, polling, and configuration guidance.
 
 ## UI package family
 

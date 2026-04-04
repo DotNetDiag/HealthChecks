@@ -18,4 +18,4 @@ DotNetDiag HealthChecks continues the work of the original project and depends o
 - [Open issues](https://github.com/DotNetDiag/HealthChecks/issues)
 - [Contributors graph](https://github.com/DotNetDiag/HealthChecks/graphs/contributors)
 
-If you are contributing a new health check package, update the package README when it exists, update the relevant manual chapter, and keep the generated README catalog buildable.
+If you are contributing a new health check package, update the package documentation when it exists, update the relevant manual chapter, and keep the generated package reference section buildable.
