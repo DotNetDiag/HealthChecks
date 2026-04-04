@@ -59,23 +59,21 @@ public class windows_service__healthcheck_should
     [SkipOnPlatform(Platform.WINDOWS)]
     public void throw_exception_when_registering_it_in_a_no_windows_system()
     {
-        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
-            .ConfigureServices(services =>
-            {
-                services.AddHealthChecks()
-                    .AddWindowsServiceHealthCheck("dotnet", s => s.Status == ServiceControllerStatus.Running);
-            })
-            .Configure(app =>
-            {
-                app.UseHealthChecks("/health", new HealthCheckOptions
-                {
-                    Predicate = _ => true
-                });
-            }));
-
         var exception = Should.Throw<PlatformNotSupportedException>(() =>
         {
-            var server = host.GetTestServer();
+            using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
+                .ConfigureServices(services =>
+                {
+                    services.AddHealthChecks()
+                        .AddWindowsServiceHealthCheck("dotnet", s => s.Status == ServiceControllerStatus.Running);
+                })
+                .Configure(app =>
+                {
+                    app.UseHealthChecks("/health", new HealthCheckOptions
+                    {
+                        Predicate = _ => true
+                    });
+                }));
         });
 
         exception.Message.ShouldBe("WindowsServiceHealthCheck can only be registered in Windows Systems");
