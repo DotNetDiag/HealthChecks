@@ -17,7 +17,8 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" VersionOverride="8.0.*" Condition="'$(TargetFramework)' == 'net8.0'" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" VersionOverride="10.0.*" Condition="'$(TargetFramework)' == 'net10.0'" />
     <PackageReference Include="KubernetesClient" />
   </ItemGroup>
 
