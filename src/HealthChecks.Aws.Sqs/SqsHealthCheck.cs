@@ -37,14 +37,16 @@ public class SqsHealthCheck : IHealthCheck
 
         // Support custom AWS-compatible endpoints such as LocalStack.
         // PR: https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/pull/2425
-        if (_options.ServiceURL is not null)
-        {
-            config.ServiceURL = _options.ServiceURL;
-        }
-
+        // In AWS SDK v4, setting RegionEndpoint after ServiceURL nullifies ServiceURL.
+        // Set RegionEndpoint first so that ServiceURL takes precedence when both are specified.
         if (_options.RegionEndpoint is not null)
         {
             config.RegionEndpoint = _options.RegionEndpoint;
+        }
+
+        if (_options.ServiceURL is not null)
+        {
+            config.ServiceURL = _options.ServiceURL;
         }
 
         return _options.Credentials is not null

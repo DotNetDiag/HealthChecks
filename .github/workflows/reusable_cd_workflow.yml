@@ -121,7 +121,7 @@ jobs:
             package_url="https://api.nuget.org/v3-flatcontainer/${package_id_lower}/index.json"
 
             verified=false
-            for attempt in {1..18}; do
+            for attempt in {1..60}; do
               response=$(curl -fsS "$package_url" || true)
               if echo "$response" | grep -Fqi "\"$package_version\""; then
                 echo "Verified $package_id $package_version on NuGet.org."
@@ -129,7 +129,7 @@ jobs:
                 break
               fi
 
-              echo "Waiting for $package_id $package_version to appear on NuGet.org (attempt $attempt/18)..."
+              echo "Waiting for $package_id $package_version to appear on NuGet.org (attempt $attempt/60)..."
               sleep 10
             done
 
