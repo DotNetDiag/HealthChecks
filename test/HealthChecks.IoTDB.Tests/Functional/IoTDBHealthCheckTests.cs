@@ -36,7 +36,7 @@ public class iotdb_healthcheck_should(IoTDBContainerFixture ioTDBFixture) : ICla
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                    .AddIoTDB("host=200.0.0.1;port=6667;user=root;password=root", tags: ["iotdb"], timeout: TimeSpan.FromSeconds(15));
+                    .AddIoTDB("DataSource=200.0.0.1;Port=6667;Username=root;Password=root", tags: ["iotdb"], timeout: TimeSpan.FromSeconds(15));
             })
             .Configure(static app =>
             {

@@ -26,7 +26,7 @@ void Configure(IHealthChecksBuilder builder)
 {
     builder.Services
         .AddHealthChecks()
-        .AddIoTDB("host=localhost;port=6667;user=root;password=root");
+        .AddIoTDB("DataSource=localhost;Port=6667;Username=root;Password=root");
 }
 ```
 
@@ -39,7 +39,7 @@ void Configure(IHealthChecksBuilder builder)
         .AddHealthChecks()
         .AddIoTDB(new IoTDBHealthCheckOptions
         {
-            ConnectionString = "host=localhost;port=6667;user=root;password=root",
+            ConnectionString = "DataSource=localhost;Port=6667;Username=root;Password=root",
             EnableRpcCompression = true
         });
 }

@@ -7,7 +7,7 @@ public class iotdb_registration_should
     {
         var services = new ServiceCollection();
         services.AddHealthChecks()
-            .AddIoTDB("host=localhost;port=6667;user=root;password=root");
+            .AddIoTDB("DataSource=localhost;Port=6667;Username=root;Password=root");
 
         using var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptions<HealthCheckServiceOptions>>();
@@ -24,7 +24,7 @@ public class iotdb_registration_should
     {
         var services = new ServiceCollection();
         services.AddHealthChecks()
-            .AddIoTDB("host=localhost;port=6667;user=root;password=root", name: "my-iotdb-1");
+            .AddIoTDB("DataSource=localhost;Port=6667;Username=root;Password=root", name: "my-iotdb-1");
 
         using var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptions<HealthCheckServiceOptions>>();
@@ -43,7 +43,7 @@ public class iotdb_registration_should
         services.AddHealthChecks()
             .AddIoTDB(new IoTDBHealthCheckOptions
             {
-                ConnectionString = "host=localhost;port=6667;user=root;password=root",
+                ConnectionString = "DataSource=localhost;Port=6667;Username=root;Password=root",
                 EnableRpcCompression = false
             });
 

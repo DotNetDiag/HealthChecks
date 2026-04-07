@@ -5,7 +5,7 @@ namespace HealthChecks.IoTDB.Tests;
 
 public class IoTDBContainerFixture : IAsyncLifetime
 {
-    private const string Image = "apache/iotdb:1.3.3-standalone";
+    private const string Image = "apache/iotdb:2.0.2-standalone";
     private const int IoTDBPort = 6667;
 
     public IContainer? Container { get; private set; }
@@ -19,7 +19,7 @@ public class IoTDBContainerFixture : IAsyncLifetime
 
         var host = Container.Hostname;
         var port = Container.GetMappedPublicPort(IoTDBPort);
-        return $"host={host};port={port};user=root;password=root";
+        return $"DataSource={host};Port={port};Username=root;Password=root";
     }
 
     public async Task InitializeAsync() => Container = await CreateContainerAsync();
