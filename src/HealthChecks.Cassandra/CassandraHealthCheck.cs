@@ -22,13 +22,11 @@ public class CassandraHealthCheck : IHealthCheck
     {
         try
         {
-            ISession session = _options?.Keyspace is { } keyspace
+            _ = _options?.Keyspace is { } keyspace
                 ? await _cluster.ConnectAsync(keyspace).ConfigureAwait(false)
                 : await _cluster.ConnectAsync().ConfigureAwait(false);
 
-            return session is not null
-                ? HealthCheckResult.Healthy()
-                : new HealthCheckResult(context.Registration.FailureStatus, description: "Could not connect to Cassandra.");
+            return HealthCheckResult.Healthy();
         }
         catch (Exception ex)
         {

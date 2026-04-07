@@ -51,7 +51,7 @@ public class NTPServerHealthCheck : IHealthCheck
             throw new InvalidOperationException($"Could not resolve NTP server host: {ntpServer}");
 
         var endpoint = new IPEndPoint(addresses[0], NTP_PORT);
-        using var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        using var socket = new Socket(addresses[0].AddressFamily, SocketType.Dgram, ProtocolType.Udp);
 
         await socket.ConnectAsync(endpoint, cancellationToken).ConfigureAwait(false);
 
