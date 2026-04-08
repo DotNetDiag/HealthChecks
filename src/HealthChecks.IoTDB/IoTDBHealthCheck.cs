@@ -23,7 +23,7 @@ public class IoTDBHealthCheck : IHealthCheck
             var builder = new IoTDBConnectionStringBuilder(_options.ConnectionString);
             var sessionPool = builder.CreateSession();
 
-            await sessionPool.Open(_options.EnableRpcCompression, cancellationToken).WaitAsync(cancellationToken).ConfigureAwait(false);
+            await Task.Run(() => sessionPool.Open(_options.EnableRpcCompression, cancellationToken), cancellationToken).WaitAsync(cancellationToken).ConfigureAwait(false);
             var isOpen = sessionPool.IsOpen();
             await sessionPool.Close().ConfigureAwait(false);
 
