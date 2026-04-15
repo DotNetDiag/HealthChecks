@@ -88,4 +88,38 @@ public class clickhouse_registration_should
         // ClickHouseConnection is not thread safe, so we assume that that we get a new instance every time
         factoryCalls.ShouldBe(10);
     }
+
+    [Fact]
+    public void add_health_check_with_connection_string_when_properly_configured()
+    {
+        var services = new ServiceCollection();
+        services.AddHealthChecks()
+            .AddClickHouse("Host=localhost");
+
+        using var serviceProvider = services.BuildServiceProvider();
+        var options = serviceProvider.GetRequiredService<IOptions<HealthCheckServiceOptions>>();
+
+        var registration = options.Value.Registrations.First();
+        var check = registration.Factory(serviceProvider);
+
+        registration.Name.ShouldBe("ClickHouse");
+        check.ShouldBeOfType<ClickHouseHealthCheck>();
+    }
+
+    [Fact]
+    public void add_named_health_check_with_connection_string_when_properly_configured()
+    {
+        var services = new ServiceCollection();
+        services.AddHealthChecks()
+            .AddClickHouse("Host=localhost", name: "my-ch-2");
+
+        using var serviceProvider = services.BuildServiceProvider();
+        var options = serviceProvider.GetRequiredService<IOptions<HealthCheckServiceOptions>>();
+
+        var registration = options.Value.Registrations.First();
+        var check = registration.Factory(serviceProvider);
+
+        registration.Name.ShouldBe("my-ch-2");
+        check.ShouldBeOfType<ClickHouseHealthCheck>();
+    }
 }

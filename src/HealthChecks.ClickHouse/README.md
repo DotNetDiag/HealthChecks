@@ -2,9 +2,19 @@
 
 This health check verifies the ability to communicate with [ClickHouse](https://www.clickhouse.com/). It uses the [ClickHouse.Driver](https://www.nuget.org/packages/ClickHouse.Driver) library.
 
-## Recommended approach
+## Usage
 
-When registering the ClickHouse health check, it is recommended to use `IHttpClientFactory` or a static instance of `HttpClient` to manage connections.
+```csharp
+void Configure(IServiceCollection services)
+{
+    services.AddHealthChecks()
+        .AddClickHouse("Host=ch;Username=default;Password=test;Database=default");
+}
+```
+
+## Advanced usage
+
+If you want to manage the HTTP connection manually (e.g. via `IHttpClientFactory`), you can use the factory overload:
 
 ```csharp
 void Configure(IServiceCollection services)
