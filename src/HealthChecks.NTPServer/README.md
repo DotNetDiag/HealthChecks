@@ -45,6 +45,21 @@ void Configure(IHealthChecksBuilder builder)
 }
 ```
 
+### Specify a custom NTP server port
+
+```csharp
+void Configure(IHealthChecksBuilder builder)
+{
+    builder.Services
+        .AddHealthChecks()
+        .AddNTPServer(options =>
+        {
+            options.NtpServer = "time.internal.example";
+            options.NtpPort = 10123;
+        });
+}
+```
+
 ### Health status thresholds
 
 | Condition | Returned status |

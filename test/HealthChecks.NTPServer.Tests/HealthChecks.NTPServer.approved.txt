@@ -8,6 +8,7 @@ namespace HealthChecks.NTPServer
     public class NTPServerHealthCheckOptions
     {
         public NTPServerHealthCheckOptions() { }
+        public int NtpPort { get; set; }
         public string NtpServer { get; set; }
         public double ToleranceSeconds { get; set; }
     }

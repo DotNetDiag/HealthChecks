@@ -9,7 +9,6 @@ namespace HealthChecks.NTPServer;
 /// </summary>
 public class NTPServerHealthCheck : IHealthCheck
 {
-    private const int NTP_PORT = 123;
     private const int NTP_DATA_LENGTH = 48;
     private static readonly DateTime _ntpEpoch = new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -25,7 +24,7 @@ public class NTPServerHealthCheck : IHealthCheck
     {
         try
         {
-            var offset = await GetTimeOffsetAsync(_options.NtpServer, cancellationToken).ConfigureAwait(false);
+            var offset = await GetTimeOffsetAsync(_options.NtpServer, _options.NtpPort, cancellationToken).ConfigureAwait(false);
             var absOffset = Math.Abs(offset);
 
             if (absOffset <= _options.ToleranceSeconds)
@@ -44,14 +43,41 @@ public class NTPServerHealthCheck : IHealthCheck
         }
     }
 
-    private static async Task<double> GetTimeOffsetAsync(string ntpServer, CancellationToken cancellationToken)
+    private static async Task<double> GetTimeOffsetAsync(string ntpServer, int ntpPort, CancellationToken cancellationToken)
     {
         var addresses = await Task.Run(() => Dns.GetHostAddresses(ntpServer), cancellationToken).ConfigureAwait(false);
         if (addresses.Length == 0)
             throw new InvalidOperationException($"Could not resolve NTP server host: {ntpServer}");
 
-        var endpoint = new IPEndPoint(addresses[0], NTP_PORT);
-        using var socket = new Socket(addresses[0].AddressFamily, SocketType.Dgram, ProtocolType.Udp);
+        List<Exception> failures = [];
+
+        foreach (var address in addresses)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            try
+            {
+                return await GetTimeOffsetAsync(address, ntpPort, cancellationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                failures.Add(new InvalidOperationException(
+                    $"Failed to query NTP server '{ntpServer}' using address '{address}' on port {ntpPort}.",
+                    ex));
+            }
+        }
+
+        throw new AggregateException($"Failed to query NTP server '{ntpServer}' on port {ntpPort}.", failures);
+    }
+
+    private static async Task<double> GetTimeOffsetAsync(IPAddress address, int ntpPort, CancellationToken cancellationToken)
+    {
+        var endpoint = new IPEndPoint(address, ntpPort);
+        using var socket = new Socket(address.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
 
         await socket.ConnectAsync(endpoint, cancellationToken).ConfigureAwait(false);
 
