@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class ClickHouseHealthCheckBuilderExtensions
 {
     private const string NAME = "ClickHouse";
-    private const string CLIENT_NAME = "ClickHouseHealthChecks";
+    private const string HTTP_CLIENT_NAME = "ClickHouseHealthChecks";
 
     /// <summary>
     /// Add a health check for ClickHouse databases.
@@ -44,7 +44,7 @@ public static class ClickHouseHealthCheckBuilderExtensions
             {
                 var httpClientFactory = sp.GetService<IHttpClientFactory>();
                 var connection = httpClientFactory is not null
-                    ? new ClickHouseConnection(connectionString, httpClientFactory, CLIENT_NAME)
+                    ? new ClickHouseConnection(connectionString, httpClientFactory, HTTP_CLIENT_NAME)
                     : new ClickHouseConnection(connectionString);
                 return new ClickHouseHealthCheck(connection, healthQuery);
             },
