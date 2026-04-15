@@ -10,11 +10,13 @@ internal class HealthCheckExecutionMap
     {
         builder.Property(le => le.OnStateFrom)
             .IsRequired(true)
-            .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+            .HasAnnotation("Relational:ColumnType", "timestamp without time zone");
 
         builder.Property(le => le.LastExecuted)
             .IsRequired(true)
-            .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+            .HasAnnotation("Relational:ColumnType", "timestamp without time zone");
 
         builder.Property(le => le.Uri)
             .HasMaxLength(500)

@@ -14,7 +14,8 @@ public class HealthCheckFailureNotificationsMap
 
         builder.Property(lf => lf.LastNotified)
             .IsRequired()
-            .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+            .HasAnnotation("Relational:ColumnType", "timestamp without time zone");
 
         builder.Property(lf => lf.IsUpAndRunning)
             .IsRequired();
