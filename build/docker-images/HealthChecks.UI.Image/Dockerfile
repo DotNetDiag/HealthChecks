@@ -27,6 +27,7 @@ COPY ./build/docker-images/HealthChecks.UI.Image/HealthChecks.UI.Image.csproj ./
 COPY . .
 WORKDIR /src/build/docker-images/HealthChecks.UI.Image
 RUN dotnet restore -nowarn:msb3202,nu1503
+RUN dotnet build /src/src/HealthChecks.UI/HealthChecks.UI.csproj -c Release
 RUN dotnet build -c Release -o /app
 
 FROM build AS publish

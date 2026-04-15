@@ -1,6 +1,4 @@
 using HealthChecks.UI.Data;
-using HealthChecks.UI.Image;
-using HealthChecks.UI.Image.Configuration;
 using Microsoft.Extensions.Configuration;
 
 namespace HealthChecks.UI.Tests;
@@ -26,7 +24,7 @@ public class docker_image_storage_provider_configuration_should
                     new KeyValuePair<string, string?>("storage_provider", "invalidvalue")
                 });
             })
-            .UseStartup<Startup>();
+            .UseStartup<HealthChecks.UI.Image.Startup>();
 
         Should.Throw<ArgumentException>(() => hostBuilder.Build());
     }
@@ -40,11 +38,11 @@ public class docker_image_storage_provider_configuration_should
 
                 config.AddInMemoryCollection(new List<KeyValuePair<string, string?>>
                 {
-                    new KeyValuePair<string, string?>("storage_provider", StorageProviderEnum.SqlServer.ToString()),
+                    new KeyValuePair<string, string?>("storage_provider", HealthChecks.UI.Image.Configuration.StorageProviderEnum.SqlServer.ToString()),
                     new KeyValuePair<string, string?>("storage_connection", "connectionstring"),
                 });
             })
-            .UseStartup<Startup>();
+            .UseStartup<HealthChecks.UI.Image.Startup>();
 
         var host = hostBuilder.Build();
 
@@ -62,10 +60,10 @@ public class docker_image_storage_provider_configuration_should
 
                 config.AddInMemoryCollection(new List<KeyValuePair<string, string?>>
                 {
-                    new KeyValuePair<string, string?>("storage_provider", StorageProviderEnum.SqlServer.ToString())
+                    new KeyValuePair<string, string?>("storage_provider", HealthChecks.UI.Image.Configuration.StorageProviderEnum.SqlServer.ToString())
                 });
             })
-            .UseStartup<Startup>();
+            .UseStartup<HealthChecks.UI.Image.Startup>();
 
         Should.Throw<ArgumentNullException>(() => hostBuilder.Build());
     }
@@ -80,11 +78,11 @@ public class docker_image_storage_provider_configuration_should
 
                 config.AddInMemoryCollection(new List<KeyValuePair<string, string?>>
                 {
-                    new KeyValuePair<string, string?>("storage_provider", StorageProviderEnum.Sqlite.ToString()),
+                    new KeyValuePair<string, string?>("storage_provider", HealthChecks.UI.Image.Configuration.StorageProviderEnum.Sqlite.ToString()),
                     new KeyValuePair<string, string?>("storage_connection", "connectionstring"),
                 });
             })
-            .UseStartup<Startup>();
+            .UseStartup<HealthChecks.UI.Image.Startup>();
 
         var host = hostBuilder.Build();
 
@@ -102,10 +100,10 @@ public class docker_image_storage_provider_configuration_should
 
                 config.AddInMemoryCollection(new List<KeyValuePair<string, string?>>
                 {
-                    new KeyValuePair<string, string?>("storage_provider", StorageProviderEnum.Sqlite.ToString())
+                    new KeyValuePair<string, string?>("storage_provider", HealthChecks.UI.Image.Configuration.StorageProviderEnum.Sqlite.ToString())
                 });
             })
-            .UseStartup<Startup>();
+            .UseStartup<HealthChecks.UI.Image.Startup>();
 
         Should.Throw<ArgumentNullException>(() => hostBuilder.Build());
     }
@@ -120,11 +118,11 @@ public class docker_image_storage_provider_configuration_should
 
                 config.AddInMemoryCollection(new List<KeyValuePair<string, string?>>
                 {
-                    new KeyValuePair<string, string?>("storage_provider", StorageProviderEnum.PostgreSql.ToString()),
+                    new KeyValuePair<string, string?>("storage_provider", HealthChecks.UI.Image.Configuration.StorageProviderEnum.PostgreSql.ToString()),
                     new KeyValuePair<string, string?>("storage_connection", "connectionstring"),
                 });
             })
-            .UseStartup<Startup>();
+            .UseStartup<HealthChecks.UI.Image.Startup>();
 
         var host = hostBuilder.Build();
 
@@ -142,10 +140,10 @@ public class docker_image_storage_provider_configuration_should
 
                 config.AddInMemoryCollection(new List<KeyValuePair<string, string?>>
                 {
-                    new KeyValuePair<string, string?>("storage_provider", StorageProviderEnum.PostgreSql.ToString())
+                    new KeyValuePair<string, string?>("storage_provider", HealthChecks.UI.Image.Configuration.StorageProviderEnum.PostgreSql.ToString())
                 });
             })
-            .UseStartup<Startup>();
+            .UseStartup<HealthChecks.UI.Image.Startup>();
 
         Should.Throw<ArgumentNullException>(() => hostBuilder.Build());
     }
@@ -160,10 +158,10 @@ public class docker_image_storage_provider_configuration_should
 
                 config.AddInMemoryCollection(new List<KeyValuePair<string, string?>>
                 {
-                    new KeyValuePair<string, string?>("storage_provider", StorageProviderEnum.InMemory.ToString())
+                    new KeyValuePair<string, string?>("storage_provider", HealthChecks.UI.Image.Configuration.StorageProviderEnum.InMemory.ToString())
                 });
             })
-            .UseStartup<Startup>();
+            .UseStartup<HealthChecks.UI.Image.Startup>();
 
         var host = hostBuilder.Build();
 
@@ -176,7 +174,7 @@ public class docker_image_storage_provider_configuration_should
     {
         var hostBuilder = new WebHostBuilder()
             .ConfigureAppConfiguration(config => config.Sources.Clear())
-            .UseStartup<Startup>();
+            .UseStartup<HealthChecks.UI.Image.Startup>();
 
         var host = hostBuilder.Build();
 
@@ -195,12 +193,12 @@ public class docker_image_storage_provider_configuration_should
 
                 config.AddInMemoryCollection(new List<KeyValuePair<string, string?>>
                 {
-                    new KeyValuePair<string, string?>("storage_provider", StorageProviderEnum.MySql.ToString()),
+                    new KeyValuePair<string, string?>("storage_provider", HealthChecks.UI.Image.Configuration.StorageProviderEnum.MySql.ToString()),
                     new KeyValuePair<string, string?>("storage_connection", "Host=localhost;User Id=root;Password=Password12!;Database=UI"),
 
                 });
             })
-            .UseStartup<Startup>();
+            .UseStartup<HealthChecks.UI.Image.Startup>();
 
         var host = hostBuilder.Build();
 
@@ -218,10 +216,10 @@ public class docker_image_storage_provider_configuration_should
 
                 config.AddInMemoryCollection(new List<KeyValuePair<string, string?>>
                 {
-                    new KeyValuePair<string, string?>("storage_provider", StorageProviderEnum.MySql.ToString())
+                    new KeyValuePair<string, string?>("storage_provider", HealthChecks.UI.Image.Configuration.StorageProviderEnum.MySql.ToString())
                 });
             })
-            .UseStartup<Startup>();
+            .UseStartup<HealthChecks.UI.Image.Startup>();
 
         Should.Throw<ArgumentNullException>(() => hostBuilder.Build());
     }
