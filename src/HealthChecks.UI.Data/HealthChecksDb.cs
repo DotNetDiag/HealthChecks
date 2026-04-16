@@ -1,5 +1,7 @@
+using System.Linq.Expressions;
 using HealthChecks.UI.Data.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HealthChecks.UI.Data;
 
@@ -27,6 +29,16 @@ public class HealthChecksDb : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        static PropertyBuilder<DateTime> ConfigureNpgsqlTimestamp<TEntity>(
+            ModelBuilder builder,
+            Expression<Func<TEntity, DateTime>> propertyExpression)
+            where TEntity : class
+        {
+            return builder.Entity<TEntity>().Property(propertyExpression)
+                .HasConversion(v => DateTime.SpecifyKind(v, DateTimeKind.Unspecified), v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+                .HasAnnotation("Relational:ColumnType", "timestamp without time zone");
+        }
+
         modelBuilder.ApplyConfiguration(new HealthCheckConfigurationMap());
         modelBuilder.ApplyConfiguration(new HealthCheckExecutionMap());
         modelBuilder.ApplyConfiguration(new HealthCheckExecutionEntryMap());
@@ -35,18 +47,10 @@ public class HealthChecksDb : DbContext
 
         if (Database.ProviderName == "Npgsql.EntityFrameworkCore.PostgreSQL")
         {
-            modelBuilder.Entity<HealthCheckExecution>().Property(le => le.OnStateFrom)
-                .HasConversion(v => DateTime.SpecifyKind(v, DateTimeKind.Unspecified), v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
-                .HasAnnotation("Relational:ColumnType", "timestamp without time zone");
-            modelBuilder.Entity<HealthCheckExecution>().Property(le => le.LastExecuted)
-                .HasConversion(v => DateTime.SpecifyKind(v, DateTimeKind.Unspecified), v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
-                .HasAnnotation("Relational:ColumnType", "timestamp without time zone");
-            modelBuilder.Entity<HealthCheckExecutionHistory>().Property(le => le.On)
-                .HasConversion(v => DateTime.SpecifyKind(v, DateTimeKind.Unspecified), v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
-                .HasAnnotation("Relational:ColumnType", "timestamp without time zone");
-            modelBuilder.Entity<HealthCheckFailureNotification>().Property(lf => lf.LastNotified)
-                .HasConversion(v => DateTime.SpecifyKind(v, DateTimeKind.Unspecified), v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
-                .HasAnnotation("Relational:ColumnType", "timestamp without time zone");
+            ConfigureNpgsqlTimestamp(modelBuilder, (HealthCheckExecution execution) => execution.OnStateFrom);
+            ConfigureNpgsqlTimestamp(modelBuilder, (HealthCheckExecution execution) => execution.LastExecuted);
+            ConfigureNpgsqlTimestamp(modelBuilder, (HealthCheckExecutionHistory history) => history.On);
+            ConfigureNpgsqlTimestamp(modelBuilder, (HealthCheckFailureNotification notification) => notification.LastNotified);
         }
     }
 }
