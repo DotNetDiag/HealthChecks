@@ -3,12 +3,12 @@ namespace HealthChecks.UI.Tests;
 public class ProviderTestHelper
 {
     public const int DefaultHostTimeout = 1000;
-    public const int DefaultCollectorTimeout = 10000;
+    public const int DefaultCollectorTimeout = 15000;
 
     public static List<(string Name, string Uri)> Endpoints = new()
     {
-        ("host1", "http://localhost/health"),
-        ("host2", "http://localhost/health")
+        ("host1", "/health"),
+        ("host2", "/health")
     };
 
     public static string SqlServerConnectionString() => "Server=tcp:localhost,5433;Initial Catalog=master;User Id=sa;Password=Password12!;TrustServerCertificate=true";

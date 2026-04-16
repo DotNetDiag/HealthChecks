@@ -10,8 +10,7 @@ internal class HealthCheckExecutionHistoryMap
     {
         builder.Property(le => le.On)
             .IsRequired(true)
-            .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
-            .HasAnnotation("Relational:ColumnType", "timestamp without time zone");
+            .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
 
         builder.Property(le => le.Status)
             .HasMaxLength(50)

@@ -16,7 +16,11 @@ public class HostBuilderHelper
                 .AddHealthChecks()
                 .AddCheck("check1", () => HealthCheckResult.Healthy())
                 .Services
-                .AddHealthChecksUI(setup => setup.AddHealthCheckEndpoint(ProviderTestHelper.Endpoints[0].Name, ProviderTestHelper.Endpoints[0].Uri));
+                .AddHealthChecksUI(setup =>
+                {
+                    setup.SetEvaluationTimeInSeconds(1);
+                    setup.AddHealthCheckEndpoint(ProviderTestHelper.Endpoints[0].Name, ProviderTestHelper.Endpoints[0].Uri);
+                });
 
                 configureUI?.Invoke(builder);
 
