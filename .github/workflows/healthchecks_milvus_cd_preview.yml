@@ -1,5 +1,9 @@
 name: Legacy HealthChecks Milvus Preview CD
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   workflow_dispatch:
   push:
