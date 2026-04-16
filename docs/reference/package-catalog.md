@@ -60,7 +60,7 @@ Use this chapter to choose the right package family first, then open the [packag
 - [IbmMQ]({{ '/reference/readmes/src/HealthChecks-IbmMQ/' | relative_url }})
 - [InfluxDB]({{ '/reference/readmes/src/HealthChecks-InfluxDB/' | relative_url }})
 - `DotNetDiag.HealthChecks.Kafka`
-- `DotNetDiag.HealthChecks.Milvus`
+- `DotNetDiag.HealthChecks.Milvus` (preview)
 - [MongoDB]({{ '/reference/readmes/src/HealthChecks-MongoDb/' | relative_url }})
 - [MySQL]({{ '/reference/readmes/src/HealthChecks-MySql/' | relative_url }})
 - [NATS]({{ '/reference/readmes/src/HealthChecks-Nats/' | relative_url }})

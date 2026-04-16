@@ -13,7 +13,6 @@ jobs:
     outputs:
       has_packages: ${{ steps.detect.outputs.has_packages }}
       matrix: ${{ steps.detect.outputs.matrix }}
-      package_version: ${{ steps.version.outputs.package_version }}
       previous_tag: ${{ steps.previous.outputs.tag }}
       release_mode: ${{ steps.detect.outputs.release_mode }}
       release_reason: ${{ steps.detect.outputs.release_reason }}
@@ -29,7 +28,6 @@ jobs:
             8.0.x
             10.0.x
       - name: Validate version tag
-        id: version
         shell: bash
         run: |
           tag_name="${GITHUB_REF_NAME}"
@@ -37,8 +35,6 @@ jobs:
             echo "Tag '$tag_name' must match the format vA.B.C." >&2
             exit 1
           fi
-
-          echo "package_version=${tag_name#v}" >> "$GITHUB_OUTPUT"
       - name: Resolve previous version tag
         id: previous
         shell: bash
@@ -103,7 +99,7 @@ jobs:
           fi
 
           entries=()
-          package_ids=()
+          package_descriptors=()
           while IFS= read -r project_path; do
             [ -z "$project_path" ] && continue
 
@@ -123,8 +119,13 @@ jobs:
 
             if [ "$project_changed" = true ]; then
               package_id=$(dotnet msbuild "$project_path" -nologo -getProperty:PackageId | tail -n 1)
-              entries+=("{\"project_path\":\"./$project_path\",\"package_id\":\"$package_id\"}")
-              package_ids+=("$package_id")
+              package_version="$current_version"
+              if [ "$package_id" = 'DotNetDiag.HealthChecks.Milvus' ]; then
+                package_version="${current_version}-preview.1"
+              fi
+
+              entries+=("{\"project_path\":\"./$project_path\",\"package_id\":\"$package_id\",\"package_version\":\"$package_version\"}")
+              package_descriptors+=("$package_id|$package_version")
             fi
           done < <(find src -name '*.csproj' | sort)
 
@@ -139,15 +140,17 @@ jobs:
             echo
             echo "- Current tag: \`$current_tag\`"
             echo "- Previous tag: \`${PREVIOUS_TAG:-<none>}\`"
-            echo "- Package version: \`$current_version\`"
+            echo "- Default package version: \`$current_version\`"
             echo "- Release mode: \`$release_mode\`"
             echo "- Reason: $release_reason"
             echo "- Packages selected: $package_count"
             echo
             if [ "$package_count" -gt 0 ]; then
               echo "### Packages"
-              for package_id in "${package_ids[@]}"; do
-                echo "- \`$package_id\`"
+              for package_descriptor in "${package_descriptors[@]}"; do
+                package_id="${package_descriptor%%|*}"
+                package_version="${package_descriptor#*|}"
+                echo "- \`$package_id\` → \`$package_version\`"
               done
             else
               echo "No packages selected for publication."
@@ -179,5 +182,5 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ${{ matrix.package.project_path }}
-      PACKAGE_VERSION: ${{ needs.detect-packages.outputs.package_version }}
+      PACKAGE_VERSION: ${{ matrix.package.package_version }}
     secrets: inherit
