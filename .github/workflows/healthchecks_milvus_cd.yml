@@ -1,12 +1,13 @@
-name: Legacy HealthChecks Milvus CD
+name: Legacy HealthChecks Milvus CD (Preview Package)
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    uses: ./.github/workflows/reusable_cd_workflow.yml
+    uses: ./.github/workflows/reusable_cd_preview_workflow.yml
     secrets: inherit
     with:
       BUILD_CONFIG: Release
+      VERSION_SUFFIX_PREFIX: preview
       PROJECT_PATH: ./src/HealthChecks.Milvus/HealthChecks.Milvus.csproj

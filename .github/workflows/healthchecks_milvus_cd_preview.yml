@@ -20,5 +20,5 @@ jobs:
     secrets: inherit
     with:
       BUILD_CONFIG: Release
-      VERSION_SUFFIX_PREFIX: rc2
+      VERSION_SUFFIX_PREFIX: preview
       PROJECT_PATH: ./src/HealthChecks.Milvus/HealthChecks.Milvus.csproj
