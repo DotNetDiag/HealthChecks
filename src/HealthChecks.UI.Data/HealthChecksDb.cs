@@ -1,5 +1,7 @@
+using System.Linq.Expressions;
 using HealthChecks.UI.Data.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HealthChecks.UI.Data;
 
@@ -27,10 +29,28 @@ public class HealthChecksDb : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        static PropertyBuilder<DateTime> ConfigureNpgsqlTimestamp<TEntity>(
+            ModelBuilder builder,
+            Expression<Func<TEntity, DateTime>> propertyExpression)
+            where TEntity : class
+        {
+            return builder.Entity<TEntity>().Property(propertyExpression)
+                .HasConversion(v => DateTime.SpecifyKind(v, DateTimeKind.Unspecified), v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+                .HasAnnotation("Relational:ColumnType", "timestamp without time zone");
+        }
+
         modelBuilder.ApplyConfiguration(new HealthCheckConfigurationMap());
         modelBuilder.ApplyConfiguration(new HealthCheckExecutionMap());
         modelBuilder.ApplyConfiguration(new HealthCheckExecutionEntryMap());
         modelBuilder.ApplyConfiguration(new HealthCheckExecutionHistoryMap());
         modelBuilder.ApplyConfiguration(new HealthCheckFailureNotificationsMap());
+
+        if (Database.ProviderName == "Npgsql.EntityFrameworkCore.PostgreSQL")
+        {
+            ConfigureNpgsqlTimestamp(modelBuilder, (HealthCheckExecution execution) => execution.OnStateFrom);
+            ConfigureNpgsqlTimestamp(modelBuilder, (HealthCheckExecution execution) => execution.LastExecuted);
+            ConfigureNpgsqlTimestamp(modelBuilder, (HealthCheckExecutionHistory history) => history.On);
+            ConfigureNpgsqlTimestamp(modelBuilder, (HealthCheckFailureNotification notification) => notification.LastNotified);
+        }
     }
 }

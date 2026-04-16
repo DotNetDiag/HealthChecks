@@ -12,7 +12,7 @@ internal sealed class ClusterServiceWatcher : IDisposable
     private readonly ILogger<K8sOperator> _logger;
     private readonly OperatorDiagnostics _diagnostics;
     private readonly NotificationHandler _notificationHandler;
-    private Watcher<V1Service>? _watcher;
+    private CancellationTokenSource? _watcherCts;
 
     public ClusterServiceWatcher(
       IKubernetes client,
@@ -29,19 +29,13 @@ internal sealed class ClusterServiceWatcher : IDisposable
 
     internal Task Watch(HealthCheckResource resource, CancellationToken token)
     {
-        var response = _client.CoreV1.ListServiceForAllNamespacesWithHttpMessagesAsync(
-            labelSelector: $"{resource.Spec.ServicesLabel}",
-            watch: true,
-            cancellationToken: token);
+        if (_watcherCts is { IsCancellationRequested: false })
+        {
+            return Task.CompletedTask;
+        }
 
-        _watcher = response.Watch<V1Service, V1ServiceList>(
-            onEvent: async (type, item) => await _notificationHandler.NotifyDiscoveredServiceAsync(type, item, resource),
-            onError: e =>
-            {
-                _diagnostics.ServiceWatcherThrow(e);
-                Watch(resource, token);
-            }
-        );
+        _watcherCts = CancellationTokenSource.CreateLinkedTokenSource(token);
+        _ = WatchServicesAsync(resource, _watcherCts.Token);
 
         _diagnostics.ServiceWatcherStarting("All");
 
@@ -55,9 +49,39 @@ internal sealed class ClusterServiceWatcher : IDisposable
 
     public void Dispose()
     {
-        if (_watcher != null && _watcher.Watching)
+        _watcherCts?.Cancel();
+        _watcherCts?.Dispose();
+        _watcherCts = null;
+    }
+
+    private async Task WatchServicesAsync(HealthCheckResource resource, CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
         {
-            _watcher.Dispose();
+            var response = _client.CoreV1.ListServiceForAllNamespacesWithHttpMessagesAsync(
+                labelSelector: $"{resource.Spec.ServicesLabel}",
+                watch: true,
+                cancellationToken: token);
+
+            try
+            {
+#pragma warning disable CS0618 // KubernetesClient 19 exposes WatchAsync via an obsolete extension with no non-obsolete alternative yet
+                await foreach (var (type, item) in response.WatchAsync<V1Service, V1ServiceList>(
+                    onError: e =>
+                    {
+                        _diagnostics.ServiceWatcherThrow(e);
+                        _logger.LogError(e, "Error watching cluster services");
+                    },
+                    cancellationToken: token))
+                {
+                    await _notificationHandler.NotifyDiscoveredServiceAsync(type, item, resource);
+                }
+#pragma warning restore CS0618
+            }
+            catch (OperationCanceledException) when (token.IsCancellationRequested)
+            {
+                break;
+            }
         }
     }
 }

@@ -1,8 +1,8 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-bookworm-slim AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim AS sdk-with-node
+FROM mcr.microsoft.com/dotnet/sdk:10.0-noble AS sdk-with-node
 
 ENV NODE_VERSION 18.16.0
 ENV NODE_DOWNLOAD_SHA fc83046a93d2189d919005a348db3b2372b598a145d84eb9781a3a4b0f032e95
@@ -27,6 +27,7 @@ COPY ./build/docker-images/HealthChecks.UI.Image/HealthChecks.UI.Image.csproj ./
 COPY . .
 WORKDIR /src/build/docker-images/HealthChecks.UI.Image
 RUN dotnet restore -nowarn:msb3202,nu1503
+RUN dotnet build /src/src/HealthChecks.UI/HealthChecks.UI.csproj -c Release
 RUN dotnet build -c Release -o /app
 
 FROM build AS publish
