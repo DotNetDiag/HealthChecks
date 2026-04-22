@@ -3,7 +3,9 @@ title: About
 permalink: /about/
 ---
 
-DotNetDiag HealthChecks is the actively maintained fork of AspNetCore.Diagnostics.HealthChecks, including ASP.NET Core health check packages, the HealthChecks UI dashboard, and supporting deployment assets.
+DotNetDiag HealthChecks is a community-maintained continuation of [Xabaril/AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks), the ASP.NET Core health-check library that [Xabaril](https://github.com/Xabaril) and its contributors built and maintained for years, and that shaped how the .NET ecosystem thinks about liveness and readiness probes. With upstream maintenance paused, this fork exists to keep the packages, the HealthChecks UI dashboard, and the supporting deployment assets alive for teams still running them in production.
+
+This is a continuation, not a replacement. Every API, package layout, and sample here started life in the original project. Huge thanks to the Xabaril maintainers and every contributor whose work this fork builds on.
 
 ## Project links
 
