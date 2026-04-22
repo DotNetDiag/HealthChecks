@@ -256,7 +256,6 @@ img {
 
 .landing-card {
     display: block;
-    min-height: 100%;
     padding: 20px;
     border-radius: 20px;
     background: #ffffff;

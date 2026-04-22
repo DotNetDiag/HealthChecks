@@ -14,8 +14,6 @@ collections:
 source_url: https://github.com/DotNetDiag/HealthChecks
 source_readme_url: https://github.com/DotNetDiag/HealthChecks/blob/master/README.md
 source_sample_url: https://github.com/DotNetDiag/HealthChecks/tree/master/samples
-github_pages:
-  enabled: true
 
 defaults:
   - scope:
