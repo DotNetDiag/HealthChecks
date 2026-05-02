@@ -1,15 +1,44 @@
-using Microsoft.AspNetCore;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace HealthChecks.UIAndApi;
+var builder = WebApplication.CreateBuilder(args);
 
-public class Program
+builder.Services
+    .AddHealthChecksUI()
+    .AddInMemoryStorage()
+    .Services
+    .AddHealthChecks()
+    .AddCheck<RandomHealthCheck>("random")
+    .AddUrlGroup(new Uri("http://httpbin.org/status/200"))
+    .Services
+    .AddControllers();
+
+var app = builder.Build();
+
+app.UseRouting()
+   .UseEndpoints(config =>
+   {
+       config.MapHealthChecks("healthz", new HealthCheckOptions
+       {
+           Predicate = _ => true,
+           ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+       });
+       config.MapHealthChecksUI();
+       config.MapDefaultControllerRoute();
+   });
+
+app.Run();
+
+internal class RandomHealthCheck : IHealthCheck
 {
-    public static void Main(string[] args)
+    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
-        CreateWebHostBuilder(args).Build().Run();
-    }
+        if (DateTime.UtcNow.Minute % 2 == 0)
+        {
+            return Task.FromResult(HealthCheckResult.Healthy());
+        }
 
-    public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-        WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>();
+        return Task.FromResult(HealthCheckResult.Unhealthy(description: "failed"));
+    }
 }

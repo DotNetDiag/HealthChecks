@@ -77,6 +77,7 @@
     <PackageVersion Include="Npgsql" Version="8.0.9" />
     <PackageVersion Include="Npgsql.DependencyInjection" Version="8.0.9" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
+    <PackageVersion Include="OpenTelemetry.Api" Version="1.15.3" />
     <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="2.19.300" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="23.26.100" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
     <PackageVersion Include="prometheus-net" Version="8.2.1" />

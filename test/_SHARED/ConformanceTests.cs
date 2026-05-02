@@ -53,39 +53,29 @@ public abstract class ConformanceTests<TClient, THealthCheck, THealthCheckOption
     [InlineData(HealthStatus.Degraded, false)]
     public async Task ReturnsProvidedFailureStatusWhenConnectionCanNotBeMade(HealthStatus failureStatus, bool useDiExtension)
     {
-        using IHost host = await new HostBuilder()
-            .ConfigureWebHost(webHostBuilder =>
-            {
-                webHostBuilder
-                    .UseTestServer()
-                    .ConfigureServices(services =>
-                    {
-                        if (useDiExtension)
-                        {
-                            services.AddSingleton(sp => CreateClientForNonExistingEndpoint());
-                            AddHealthCheck(builder: services.AddHealthChecks(), failureStatus: failureStatus);
-                        }
-                        else
-                        {
-                            TClient client = CreateClientForNonExistingEndpoint();
+        var builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseTestServer();
 
-                            services.AddHealthChecks()
-                                .Add(new HealthCheckRegistration(
-                                    name: "name",
-                                    instance: CreateHealthCheck(client, null),
-                                    failureStatus: failureStatus,
-                                    tags: null));
-                        }
-                    })
-                    .Configure(app =>
-                    {
-                        app.UseHealthChecks("/health", new HealthCheckOptions
-                        {
-                            Predicate = _ => true,
-                        });
-                    });
-            })
-            .StartAsync();
+        if (useDiExtension)
+        {
+            builder.Services.AddSingleton(sp => CreateClientForNonExistingEndpoint());
+            AddHealthCheck(builder: builder.Services.AddHealthChecks(), failureStatus: failureStatus);
+        }
+        else
+        {
+            TClient client = CreateClientForNonExistingEndpoint();
+            builder.Services.AddHealthChecks()
+                .Add(new HealthCheckRegistration(
+                    name: "name",
+                    instance: CreateHealthCheck(client, null),
+                    failureStatus: failureStatus,
+                    tags: null));
+        }
+
+        await using var app = builder.Build();
+        app.UseHealthChecks("/health", new HealthCheckOptions { Predicate = _ => true });
+        await app.StartAsync();
+        IHost host = app;
 
         using var response = await host.GetTestClient().GetAsync("/health");
 
