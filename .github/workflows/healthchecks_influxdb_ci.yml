@@ -42,7 +42,7 @@ jobs:
       release_mode: ${{ steps.scope.outputs.release_mode }}
       release_reason: ${{ steps.scope.outputs.release_reason }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Determine release scope
@@ -75,7 +75,7 @@ jobs:
     if: ${{ needs.release-scope.outputs.is_tag != 'true' || needs.release-scope.outputs.should_run == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
