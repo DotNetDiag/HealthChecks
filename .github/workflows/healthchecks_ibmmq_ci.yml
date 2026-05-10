@@ -42,7 +42,7 @@ jobs:
       release_mode: ${{ steps.scope.outputs.release_mode }}
       release_reason: ${{ steps.scope.outputs.release_reason }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Determine release scope
@@ -86,7 +86,7 @@ jobs:
           MQ_APP_PASSWORD: 12345678
           MQ_ENABLE_METRICS: true
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
