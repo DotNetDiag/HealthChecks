@@ -33,6 +33,20 @@ public class mysql_storage_should
         customOptionsInvoked.ShouldBeTrue();
     }
 
+#if NET10_0
+    [Fact]
+    public void target_microting_mysql_provider_assembly()
+    {
+        var referencedAssemblies = typeof(HealthChecks.UI.MySql.Storage.Migrations.Initial).Assembly
+            .GetReferencedAssemblies()
+            .Select(assembly => assembly.Name)
+            .ToArray();
+
+        referencedAssemblies.ShouldContain("Microting.EntityFrameworkCore.MySql");
+        referencedAssemblies.ShouldNotContain("Pomelo.EntityFrameworkCore.MySql");
+    }
+#endif
+
     [Fact]
     public async Task seed_database_and_serve_stored_executions()
     {
