@@ -103,7 +103,7 @@ jobs:
             DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
       - name: Upload Coverage
         if: ${{ steps.release_scope.outputs.is_tag != 'true' || steps.release_scope.outputs.should_run == 'true' }}
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           flags: ${{inputs.CODECOV_FLAGS}}
           directory: .coverage
