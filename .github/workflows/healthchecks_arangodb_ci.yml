@@ -41,7 +41,7 @@ jobs:
       release_mode: ${{ steps.scope.outputs.release_mode }}
       release_reason: ${{ steps.scope.outputs.release_reason }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Determine release scope
@@ -81,7 +81,7 @@ jobs:
         env:
           ARANGO_ROOT_PASSWORD: strongArangoDbPassword
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
