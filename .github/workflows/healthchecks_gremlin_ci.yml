@@ -113,7 +113,7 @@ jobs:
           --
           DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
       - name: Upload Coverage
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           flags: Gremlin
           directory: .coverage
