@@ -71,8 +71,8 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
     <PackageVersion Include="Milvus.Client" Version="2.3.0-preview.1" />
     <PackageVersion Include="MongoDB.Driver" Version="3.7.1" />
-    <PackageVersion Include="MySqlConnector" Version="2.5.0" />
-    <PackageVersion Include="MySqlConnector.DependencyInjection" Version="2.5.0" />
+    <PackageVersion Include="MySqlConnector" Version="2.6.1" />
+    <PackageVersion Include="MySqlConnector.DependencyInjection" Version="2.6.1" />
     <PackageVersion Include="NATS.Net" Version="2.7.3" />
     <PackageVersion Include="Npgsql" Version="8.0.9" />
     <PackageVersion Include="Npgsql.DependencyInjection" Version="8.0.9" />
