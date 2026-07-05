@@ -81,6 +81,7 @@
     <PackageVersion Include="Npgsql" Version="10.0.3" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
     <PackageVersion Include="Npgsql.DependencyInjection" Version="10.0.3" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
+    <PackageVersion Include="OpenSearch.Client" Version="1.8.0" />
     <PackageVersion Include="OpenTelemetry.Api" Version="1.16.0" />
     <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="2.19.300" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="23.26.200" Condition="'$(TargetFramework)' != 'netstandard2.0'" />

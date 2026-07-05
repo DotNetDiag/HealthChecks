@@ -77,6 +77,8 @@ flags:
     carryforward: true
   OpenIdConnectServer:
     carryforward: true
+  OpenSearch:
+    carryforward: true
   Oracle:
     carryforward: true
   Prometheus.Metrics:

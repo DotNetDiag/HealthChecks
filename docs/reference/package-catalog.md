@@ -66,6 +66,7 @@ Use this chapter to choose the right package family first, then open the [packag
 - [MySQL]({{ '/reference/readmes/src/HealthChecks-MySql/' | relative_url }})
 - [NATS]({{ '/reference/readmes/src/HealthChecks-Nats/' | relative_url }})
 - [PostgreSQL]({{ '/reference/readmes/src/HealthChecks-NpgSql/' | relative_url }})
+- [OpenSearch]({{ '/reference/readmes/src/HealthChecks-OpenSearch/' | relative_url }})
 - `DotNetDiag.HealthChecks.Oracle`
 - `DotNetDiag.HealthChecks.Qdrant`
 - [RabbitMQ]({{ '/reference/readmes/src/HealthChecks-Rabbitmq/' | relative_url }})

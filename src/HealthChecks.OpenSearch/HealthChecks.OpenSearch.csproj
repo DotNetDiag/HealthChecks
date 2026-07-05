@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);OpenSearch</PackageTags>
+    <Description>HealthChecks.OpenSearch is the health check package for OpenSearch.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenSearch.Client" />
+  </ItemGroup>
+
+</Project>
+
