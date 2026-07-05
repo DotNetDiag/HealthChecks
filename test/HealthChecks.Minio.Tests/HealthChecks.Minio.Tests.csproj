@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Testcontainers.Minio" />
+    <ProjectReference Include="..\..\src\HealthChecks.Minio\HealthChecks.Minio.csproj" />
+  </ItemGroup>
+
+</Project>

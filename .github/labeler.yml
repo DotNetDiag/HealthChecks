@@ -104,6 +104,10 @@ milvus:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.Milvus/**/*]
 
+minio:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Minio/**/*]
+
 mongodb:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.MongoDb/**/*]

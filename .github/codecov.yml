@@ -67,6 +67,8 @@ flags:
     carryforward: true
   Milvus:
     carryforward: true
+  Minio:
+    carryforward: true
   MySql:
     carryforward: true
   Nats:

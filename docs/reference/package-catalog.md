@@ -62,6 +62,7 @@ Use this chapter to choose the right package family first, then open the [packag
 - [InfluxDB]({{ '/reference/readmes/src/HealthChecks-InfluxDB/' | relative_url }})
 - `DotNetDiag.HealthChecks.Kafka`
 - `DotNetDiag.HealthChecks.Milvus` (preview)
+- [MinIO]({{ '/reference/readmes/src/HealthChecks-Minio/' | relative_url }})
 - [MongoDB]({{ '/reference/readmes/src/HealthChecks-MongoDb/' | relative_url }})
 - [MySQL]({{ '/reference/readmes/src/HealthChecks-MySql/' | relative_url }})
 - [NATS]({{ '/reference/readmes/src/HealthChecks-Nats/' | relative_url }})
