@@ -38,6 +38,7 @@
     <PackageVersion Include="EventStore.Client.Grpc.Streams" Version="23.3.9" />
     <PackageVersion Include="FluentAssertions" Version="8.10.0" />
     <PackageVersion Include="Google.Cloud.Firestore" Version="4.3.0" />
+    <PackageVersion Include="Google.Cloud.Storage.V1" Version="4.15.0" />
     <PackageVersion Include="Gremlin.Net" Version="3.8.1" />
     <PackageVersion Include="Hangfire.Core" Version="1.8.23" />
     <PackageVersion Include="IBMMQDotnetClient" Version="9.4.5.1" Condition="'$(TargetFramework)' == 'net8.0'" />

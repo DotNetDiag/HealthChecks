@@ -55,6 +55,7 @@ Use this chapter to choose the right package family first, then open the [packag
 - `DotNetDiag.HealthChecks.EventStore`
 - `DotNetDiag.HealthChecks.EventStore.gRPC`
 - `DotNetDiag.HealthChecks.Gcp.CloudFirestore`
+- [Google Cloud Storage]({{ '/reference/readmes/src/HealthChecks-Gcp-CloudStorage/' | relative_url }})
 - `DotNetDiag.HealthChecks.Gremlin`
 - `DotNetDiag.HealthChecks.Hangfire`
 - [IbmMQ]({{ '/reference/readmes/src/HealthChecks-IbmMQ/' | relative_url }})

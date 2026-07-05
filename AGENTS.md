@@ -25,6 +25,13 @@ dotnet format AspNetCore.Diagnostics.HealthChecks.sln --verify-no-changes --seve
 
 - When practical, also run representative `dotnet build` or `dotnet test` commands for the affected projects after formatting is clean.
 
+## New Health Check Package Standard
+
+- Treat a new health check package as incomplete unless it includes the same supporting surface as comparable packages in this repository.
+- Use the closest existing provider family as the baseline for completeness. At minimum, check for source and test projects, solution membership, central package versions, dependency-injection registration, API approval coverage, conformance or equivalent registration tests, behavior tests, package README, root README/package catalog entries, roadmap updates, GitHub workflow coverage, Codecov flags, and labeler entries when comparable packages have them.
+- Do not ship a new health check with a thinner public API, fewer registration options, missing docs, missing CI, or weaker validation than adjacent packages unless the user explicitly accepts that scope.
+- When adding future roadmap health checks, state any intentionally omitted supporting item and why before considering the task complete.
+
 ## Dependency Upgrade Rule
 
 - Before changing NuGet package versions, run the repository dependency checker:

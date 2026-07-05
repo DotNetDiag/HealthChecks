@@ -72,6 +72,10 @@ cloudfirestore:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.Gcp.CloudFirestore/**/*]
 
+cloudstorage:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Gcp.CloudStorage/**/*]
+
 gremlin:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.Gremlin/**/*]

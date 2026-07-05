@@ -49,6 +49,8 @@ flags:
     carryforward: true
   Gcp.CloudFirestore:
     carryforward: true
+  Gcp.CloudStorage:
+    carryforward: true
   Gremlin:
     carryforward: true
   Hangfire:
