@@ -2,6 +2,8 @@ namespace HealthChecks.UI.Tests;
 
 public class ProviderTestHelper
 {
+    // Used to populate IServerAddressesFeature for TestServer; no socket is bound.
+    public const string TestServerAddress = "http://localhost:5000";
     public const int DefaultHostTimeout = 1000;
     public const int DefaultCollectorTimeout = 15000;
 
@@ -17,6 +19,16 @@ public class ProviderTestHelper
     public static string MySqlConnectionString() => "Host=localhost;User Id=root;Password=Password12!;Database=UI";
     public static string MySqlServerConnectionString() => "Host=localhost;User Id=root;Password=Password12!;";
     public static string SqliteConnectionString() => "Data Source = sqlite.db";
+
+    public static void WaitForHost(ManualResetEventSlim resetEvent)
+    {
+        resetEvent.Wait(DefaultHostTimeout).ShouldBeTrue("The test host did not start before the timeout.");
+    }
+
+    public static void WaitForCollector(ManualResetEventSlim resetEvent)
+    {
+        resetEvent.Wait(DefaultCollectorTimeout).ShouldBeTrue("The health check collector did not complete before the timeout.");
+    }
 
     public static Task WaitForMySqlAsync() => WaitForDatabaseAsync(async () =>
     {

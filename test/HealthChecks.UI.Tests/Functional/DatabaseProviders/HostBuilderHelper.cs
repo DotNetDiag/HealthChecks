@@ -9,6 +9,7 @@ public class HostBuilderHelper
     public static IHost Create(ManualResetEventSlim hostReset, ManualResetEventSlim? collectorReset = null, Action<HealthChecksUIBuilder>? configureUI = null)
     {
         return TestHostHelper.Build(webHostBuilder => webHostBuilder
+            .UseUrls(ProviderTestHelper.TestServerAddress)
             .ConfigureServices(services =>
             {
                 var builder = services

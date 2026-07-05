@@ -45,7 +45,7 @@ public class postgre_storage_should
 
         var server = appHost.GetTestServer();
 
-        hostReset.Wait(ProviderTestHelper.DefaultHostTimeout);
+        ProviderTestHelper.WaitForHost(hostReset);
 
         var context = appHost.Services.GetRequiredService<HealthChecksDb>();
         var configurations = await context.Configurations.ToListAsync();
@@ -56,7 +56,7 @@ public class postgre_storage_should
 
         using var client = server.CreateClient();
 
-        collectorReset.Wait(ProviderTestHelper.DefaultCollectorTimeout);
+        ProviderTestHelper.WaitForCollector(collectorReset);
 
         var report = await client.GetAsJson<List<HealthCheckExecution>>("/healthchecks-api");
         report.First().Name.ShouldBe(host1.Name);
