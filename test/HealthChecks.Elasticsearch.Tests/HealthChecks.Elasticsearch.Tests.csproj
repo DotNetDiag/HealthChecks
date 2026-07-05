@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\HealthChecks.Elasticsearch\HealthChecks.Elasticsearch.csproj" />
     <PackageReference Include="Ductus.FluentDocker" />
+    <PackageReference Include="SharpCompress" />
   </ItemGroup>
 
   <ItemGroup>
