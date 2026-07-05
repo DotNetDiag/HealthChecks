@@ -7,7 +7,7 @@ public class surrealdb_registration_should
     private const string ConnectionString = "Server=http://localhost:8000;Namespace=test;Database=test;Username=root;Password=root";
 
     [Fact]
-    public void add_health_check_when_properly_configured()
+    public async Task add_health_check_when_properly_configured()
     {
         var services = new ServiceCollection();
         services.AddSurreal(ConnectionString);
@@ -15,7 +15,7 @@ public class surrealdb_registration_should
             .AddHealthChecks()
             .AddSurreal();
 
-        using var serviceProvider = services.BuildServiceProvider();
+        await using var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptions<HealthCheckServiceOptions>>();
 
         var registration = options.Value.Registrations.First();
@@ -26,7 +26,7 @@ public class surrealdb_registration_should
     }
 
     [Fact]
-    public void add_named_health_check_when_properly_configured()
+    public async Task add_named_health_check_when_properly_configured()
     {
         var services = new ServiceCollection();
         services.AddSurreal(ConnectionString);
@@ -34,7 +34,7 @@ public class surrealdb_registration_should
             .AddHealthChecks()
             .AddSurreal(name: "my-surrealdb-1");
 
-        using var serviceProvider = services.BuildServiceProvider();
+        await using var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptions<HealthCheckServiceOptions>>();
 
         var registration = options.Value.Registrations.First();
@@ -45,19 +45,19 @@ public class surrealdb_registration_should
     }
 
     [Fact]
-    public void add_health_check_with_connection_string_factory_when_properly_configured()
+    public async Task add_health_check_with_connection_string_factory_when_properly_configured()
     {
         var services = new ServiceCollection();
-        services.AddSurreal(ConnectionString);
+        services.AddSurreal(ConnectionString, ServiceLifetime.Singleton);
         bool factoryCalled = false;
         services.AddHealthChecks()
             .AddSurreal(sp =>
             {
                 factoryCalled = true;
-                return sp.GetRequiredService<SurrealDbClient>();
+                return sp.GetRequiredService<ISurrealDbClient>();
             });
 
-        using var serviceProvider = services.BuildServiceProvider();
+        await using var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptions<HealthCheckServiceOptions>>();
 
         var registration = options.Value.Registrations.First();
