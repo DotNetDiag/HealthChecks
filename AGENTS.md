@@ -25,6 +25,19 @@ dotnet format AspNetCore.Diagnostics.HealthChecks.sln --verify-no-changes --seve
 
 - When practical, also run representative `dotnet build` or `dotnet test` commands for the affected projects after formatting is clean.
 
+## Dependency Upgrade Rule
+
+- Before changing NuGet package versions, run the repository dependency checker:
+
+```powershell
+.\tools\Get-NuGetEraUpdates.ps1 -OnlyOutdated
+```
+
+- Treat target frameworks separately. Packages used by `net8.0` must stay on the latest version appropriate for the .NET 8 era; packages used by `net10.0` can move to the latest compatible .NET 10-era version.
+- Do not blindly apply the NuGet-wide latest version to every target framework. This is especially important for runtime/platform packages such as `Microsoft.AspNetCore.*`, `Microsoft.Extensions.*`, `Microsoft.Data.Sqlite`, `Microsoft.EntityFrameworkCore*`, common EF Core providers, and `System.*`.
+- If the checker marks `ConditionReviewNeeded`, inspect the MSBuild condition manually before changing the version.
+- Preserve intentional compatibility ranges such as RabbitMQ v6 package ranges unless the user explicitly asks to break that compatibility boundary.
+
 ## Completion Rule
 
 Before finishing any task that edits C# or MSBuild files, report which `dotnet format`, build, or test commands were run and whether they passed.
