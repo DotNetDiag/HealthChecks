@@ -55,6 +55,8 @@ flags:
     carryforward: true
   Hangfire:
     carryforward: true
+  Harbor:
+    carryforward: true
   IbmMQ:
     carryforward: true
   InfluxDB:
