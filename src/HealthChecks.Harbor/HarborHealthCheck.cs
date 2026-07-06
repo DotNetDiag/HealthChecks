@@ -109,7 +109,7 @@ public sealed class HarborHealthCheck : IHealthCheck
             throw new InvalidOperationException($"{nameof(HarborHealthCheckOptions.HealthEndpointPath)} must be configured.");
         }
 
-        if (Uri.TryCreate(_options.HealthEndpointPath, UriKind.Absolute, out Uri? absoluteUri))
+        if (Uri.TryCreate(_options.HealthEndpointPath, UriKind.Absolute, out Uri? absoluteUri) && !absoluteUri.IsFile)
         {
             return absoluteUri;
         }

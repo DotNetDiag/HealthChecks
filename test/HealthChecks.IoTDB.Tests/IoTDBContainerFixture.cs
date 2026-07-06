@@ -7,6 +7,7 @@ public class IoTDBContainerFixture : IAsyncLifetime
 {
     private const string Image = "apache/iotdb:2.0.2-standalone";
     private const int IoTDBPort = 6667;
+    private const string ReadyMessage = "Congratulations, IoTDB DataNode is set up successfully";
 
     public IContainer? Container { get; private set; }
 
@@ -30,7 +31,9 @@ public class IoTDBContainerFixture : IAsyncLifetime
     {
         var container = new ContainerBuilder(Image)
             .WithPortBinding(IoTDBPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilExternalTcpPortIsAvailable(IoTDBPort, _ => { }))
+            .WithWaitStrategy(Wait.ForUnixContainer()
+                .UntilExternalTcpPortIsAvailable(IoTDBPort, _ => { })
+                .UntilMessageIsLogged(ReadyMessage, _ => { }))
             .Build();
 
         await container.StartAsync();

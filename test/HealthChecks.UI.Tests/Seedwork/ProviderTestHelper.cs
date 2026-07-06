@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using HealthChecks.UI.Data;
+
 namespace HealthChecks.UI.Tests;
 
 public class ProviderTestHelper
@@ -28,6 +31,28 @@ public class ProviderTestHelper
     public static void WaitForCollector(ManualResetEventSlim resetEvent)
     {
         resetEvent.Wait(DefaultCollectorTimeout).ShouldBeTrue("The health check collector did not complete before the timeout.");
+    }
+
+    public static async Task<HealthCheckExecution> WaitForExecutionAsync(HttpClient client, string name)
+    {
+        var started = Stopwatch.GetTimestamp();
+        var timeout = TimeSpan.FromMilliseconds(DefaultCollectorTimeout);
+        List<HealthCheckExecution> report = [];
+
+        while (Stopwatch.GetElapsedTime(started) < timeout)
+        {
+            report = await client.GetAsJson<List<HealthCheckExecution>>("/healthchecks-api").ConfigureAwait(false);
+            var execution = report.FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.Ordinal));
+
+            if (execution is not null)
+            {
+                return execution;
+            }
+
+            await Task.Delay(250).ConfigureAwait(false);
+        }
+
+        throw new TimeoutException($"The health check execution '{name}' was not returned by the UI API before the timeout. Last response contained {report.Count} execution(s).");
     }
 
     public static Task WaitForMySqlAsync() => WaitForDatabaseAsync(async () =>

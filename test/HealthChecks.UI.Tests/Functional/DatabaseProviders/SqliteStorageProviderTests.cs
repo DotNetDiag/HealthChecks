@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthChecks.UI.Tests;
 
+[Collection("execution")]
 public class sqlite_storage_should
 {
     private const string ProviderName = "Microsoft.EntityFrameworkCore.Sqlite";
@@ -56,7 +57,7 @@ public class sqlite_storage_should
 
         ProviderTestHelper.WaitForCollector(collectorReset);
 
-        var report = await client.GetAsJson<List<HealthCheckExecution>>("/healthchecks-api");
-        report.First().Name.ShouldBe(host1.Name);
+        var execution = await ProviderTestHelper.WaitForExecutionAsync(client, host1.Name);
+        execution.Name.ShouldBe(host1.Name);
     }
 }
