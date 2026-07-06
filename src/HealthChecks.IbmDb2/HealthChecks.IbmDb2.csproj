@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- IBM Db2's .NET provider does not target netstandard. -->
+    <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);IbmDb2;Db2;IBM;Database</PackageTags>
+    <Description>HealthChecks.IbmDb2 is the health check package for IBM Db2.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Net.IBM.Data.Db2-lnx" />
+  </ItemGroup>
+
+</Project>

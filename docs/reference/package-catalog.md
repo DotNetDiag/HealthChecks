@@ -48,26 +48,35 @@ Use this chapter to choose the right package family first, then open the [packag
 
 ## Databases, search, and messaging systems
 
+- [ActiveMQ]({{ '/reference/readmes/src/HealthChecks-ActiveMQ/' | relative_url }})
 - [ArangoDb]({{ '/reference/readmes/src/HealthChecks-ArangoDb/' | relative_url }})
+- [Artemis]({{ '/reference/readmes/src/HealthChecks-Artemis/' | relative_url }})
 - [ClickHouse]({{ '/reference/readmes/src/HealthChecks-ClickHouse/' | relative_url }})
+- [CockroachDB]({{ '/reference/readmes/src/HealthChecks-CockroachDb/' | relative_url }})
 - [Cosmos DB]({{ '/reference/readmes/src/HealthChecks-CosmosDb/' | relative_url }})
 - `DotNetDiag.HealthChecks.Dapr`
+- [DuckDB]({{ '/reference/readmes/src/HealthChecks-DuckDb/' | relative_url }})
 - [etcd]({{ '/reference/readmes/src/HealthChecks-Etcd/' | relative_url }})
 - `DotNetDiag.HealthChecks.Elasticsearch`
 - `DotNetDiag.HealthChecks.EventStore`
 - `DotNetDiag.HealthChecks.EventStore.gRPC`
+- [Firebird]({{ '/reference/readmes/src/HealthChecks-Firebird/' | relative_url }})
 - `DotNetDiag.HealthChecks.Gcp.CloudFirestore`
 - [Google Cloud Storage]({{ '/reference/readmes/src/HealthChecks-Gcp-CloudStorage/' | relative_url }})
+- [Grafana]({{ '/reference/readmes/src/HealthChecks-Grafana/' | relative_url }})
 - `DotNetDiag.HealthChecks.Gremlin`
 - `DotNetDiag.HealthChecks.Hangfire`
 - [IbmMQ]({{ '/reference/readmes/src/HealthChecks-IbmMQ/' | relative_url }})
 - [InfluxDB]({{ '/reference/readmes/src/HealthChecks-InfluxDB/' | relative_url }})
 - `DotNetDiag.HealthChecks.Kafka`
+- [Apache Pulsar]({{ '/reference/readmes/src/HealthChecks-Apache-Pulsar/' | relative_url }})
+- [Memcached]({{ '/reference/readmes/src/HealthChecks-Memcached/' | relative_url }})
 - `DotNetDiag.HealthChecks.Milvus` (preview)
 - [MinIO]({{ '/reference/readmes/src/HealthChecks-Minio/' | relative_url }})
 - [MongoDB]({{ '/reference/readmes/src/HealthChecks-MongoDb/' | relative_url }})
 - [MySQL]({{ '/reference/readmes/src/HealthChecks-MySql/' | relative_url }})
 - [NATS]({{ '/reference/readmes/src/HealthChecks-Nats/' | relative_url }})
+- [Neo4j]({{ '/reference/readmes/src/HealthChecks-Neo4j/' | relative_url }})
 - [PostgreSQL]({{ '/reference/readmes/src/HealthChecks-NpgSql/' | relative_url }})
 - [OpenSearch]({{ '/reference/readmes/src/HealthChecks-OpenSearch/' | relative_url }})
 - `DotNetDiag.HealthChecks.Oracle`
@@ -76,6 +85,7 @@ Use this chapter to choose the right package family first, then open the [packag
 - [RabbitMQ v6]({{ '/reference/readmes/src/HealthChecks-Rabbitmq-v6/' | relative_url }})
 - `DotNetDiag.HealthChecks.RavenDB`
 - `DotNetDiag.HealthChecks.Redis`
+- [Valkey]({{ '/reference/readmes/src/HealthChecks-Valkey/' | relative_url }})
 - `DotNetDiag.HealthChecks.SendGrid`
 - `DotNetDiag.HealthChecks.Solr`
 - `DotNetDiag.HealthChecks.Sqlite`

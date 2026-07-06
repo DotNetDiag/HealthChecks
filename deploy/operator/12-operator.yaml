@@ -16,7 +16,7 @@ spec:
       serviceAccountName: healthchecks-admin
       containers:
         - name: healthchecks-ui-k8s-operator
-          image: xabarilcoding/healthchecksui-k8s-operator:latest
+          image: ghcr.io/dotnetdiag/healthchecksui-k8s-operator:latest
           imagePullPolicy: Always
           resources:
             requests:

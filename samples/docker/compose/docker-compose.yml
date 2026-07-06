@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   ui:
-    image: xabarilcoding/healthchecksui
+    image: ghcr.io/dotnetdiag/healthchecksui
     depends_on:
       - sqlserver
       - webapp
@@ -16,7 +16,7 @@ services:
       - HealthChecksUI:HealthChecks:0:Uri=http://webapp/health
       - HealthChecksUI:EvaluationTimeInSeconds=5
     ports:
-      - 80:80
+      - 8080:8080
 
   webapp:
     image: carloslanderas/webapp

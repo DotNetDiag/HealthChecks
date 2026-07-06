@@ -1,19 +1,16 @@
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble AS base
 WORKDIR /app
-EXPOSE 80
+EXPOSE 8080
+
+FROM node:latest AS node
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0-noble AS sdk-with-node
 
-ENV NODE_VERSION 18.16.0
-ENV NODE_DOWNLOAD_SHA fc83046a93d2189d919005a348db3b2372b598a145d84eb9781a3a4b0f032e95
-RUN curl -SL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz" --output nodejs.tar.gz \
-    && echo "$NODE_DOWNLOAD_SHA nodejs.tar.gz" | sha256sum -c - \
-    && tar -xzf "nodejs.tar.gz" -C /usr/local --strip-components=1 \
-    && rm nodejs.tar.gz \
-    && ln -s /usr/local/bin/node /usr/local/bin/nodejs
+COPY --from=node /usr/local /usr/local
+RUN ln -sf /usr/local/bin/node /usr/local/bin/nodejs
 
 FROM sdk-with-node AS updated-npm
-RUN npm i -g npm@9
+RUN npm i -g npm@latest
 
 FROM updated-npm AS build
 WORKDIR /src

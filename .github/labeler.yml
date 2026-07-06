@@ -20,6 +20,10 @@ samples:
   - changed-files:
     - any-glob-to-any-file: [samples/**/*]
 
+activemq:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.ActiveMQ/**/*]
+
 applicationstatus:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.ApplicationStatus/**/*]
@@ -27,6 +31,10 @@ applicationstatus:
 arrangodb:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.ArangoDb/**/*]
+
+artemis:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Artemis/**/*]
 
 aws:
   - changed-files:
@@ -39,6 +47,10 @@ azure:
 clickhouse:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.ClickHouse/**/*]
+
+cockroachdb:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.CockroachDb/**/*]
 
 consul:
   - changed-files:
@@ -60,6 +72,10 @@ documentdb:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.DocumentDb/**/*]
 
+duckdb:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.DuckDb/**/*]
+
 dynamodb:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.DynamoDb/**/*]
@@ -76,6 +92,10 @@ eventstore:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.EventStore*/**/*]
 
+firebird:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Firebird/**/*]
+
 cloudfirestore:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.Gcp.CloudFirestore/**/*]
@@ -83,6 +103,10 @@ cloudfirestore:
 cloudstorage:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.Gcp.CloudStorage/**/*]
+
+grafana:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Grafana/**/*]
 
 gremlin:
   - changed-files:
@@ -95,6 +119,10 @@ hangfire:
 harbor:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.Harbor/**/*]
+
+ibmdb2:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.IbmDb2/**/*]
 
 ibmmq:
   - changed-files:
@@ -111,6 +139,10 @@ kafka:
 kubernetes:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.Kubernetes/**/*]
+
+memcached:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Memcached/**/*]
 
 milvus:
   - changed-files:
@@ -132,6 +164,10 @@ nats:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.Nats/**/*]
 
+neo4j:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Neo4j/**/*]
+
 network:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.Network/**/*]
@@ -147,6 +183,10 @@ openidconnect:
 opensearch:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.OpenSearch/**/*]
+
+pulsar:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Apache.Pulsar/**/*]
 
 oracle:
   - changed-files:
@@ -187,6 +227,10 @@ ravendb:
 redis:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.Redis/**/*]
+
+valkey:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Valkey/**/*]
 
 sendgrid:
   - changed-files:

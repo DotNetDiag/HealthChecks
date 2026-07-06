@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Testcontainers.Db2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HealthChecks.IbmDb2\HealthChecks.IbmDb2.csproj" />
+  </ItemGroup>
+
+</Project>

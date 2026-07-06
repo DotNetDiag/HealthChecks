@@ -1,42 +1,53 @@
 Param(
-    [parameter(Mandatory=$false)][bool]$PublishToDockerHub=$false
+    [Parameter(Mandatory = $false)][bool]$PublishToGitHubContainerRegistry = $false,
+    [Parameter(Mandatory = $false)][string]$Tag,
+    [Parameter(Mandatory = $false)][string]$ImageRepository = "ghcr.io/dotnetdiag/healthchecksui"
 )
 
+Set-StrictMode -Version Latest
 
-function Exec
-{
+function Exec {
     [CmdletBinding()]
     param(
-        [Parameter(Position=0,Mandatory=1)][scriptblock]$cmd,
-        [Parameter(Position=1,Mandatory=0)][string]$errorMessage = ($msgs.error_bad_command -f $cmd)
+        [Parameter(Position = 0, Mandatory = 1)][scriptblock]$cmd,
+        [Parameter(Position = 1, Mandatory = 0)][string]$errorMessage = "Command failed: $cmd"
     )
     & $cmd
-    if ($lastexitcode -ne 0) {
+    if ($LASTEXITCODE -ne 0) {
         throw ("Exec: " + $errorMessage)
     }
 }
 
-#Select the UI version from dependencies.props and use it as image version
+function Get-DefaultTag {
+    $propsPath = Join-Path $PSScriptRoot "Directory.Build.props"
+    $version = Select-Xml -Path $propsPath -XPath "/Project/PropertyGroup/VersionPrefix" | Select-Object -First 1
 
+    if ($null -eq $version) {
+        throw "Unable to find VersionPrefix in $propsPath. Pass -Tag explicitly."
+    }
 
-$version = select-xml -Path ${PSScriptRoot}/build/dependencies.props -XPath "/Project/PropertyGroup[contains(@Label,'Health Checks Package Versions')]/HealthCheckUI"
+    return $version.Node.InnerText
+}
 
-$tag = $version.node.InnerXML
+if ([string]::IsNullOrWhiteSpace($Tag)) {
+    $Tag = Get-DefaultTag
+}
 
 #Building docker image
 
-echo "Building docker image with tag: $tag"
-echo "Publish to Docker Hub : $PublishToDockerHub"
+Write-Host "Building docker image with tag: $Tag"
+Write-Host "Image repository: $ImageRepository"
+Write-Host "Publish to GitHub Container Registry: $PublishToGitHubContainerRegistry"
 
-exec { & docker build . -f ${PSScriptRoot}/build/docker-images/HealthChecks.UI.Image/Dockerfile -t xabarilcoding/healthchecksui:$tag }
-exec { & docker tag xabarilcoding/healthchecksui:$tag xabarilcoding/healthchecksui:latest }
+Exec { & docker build . -f "$PSScriptRoot/build/docker-images/HealthChecks.UI.Image/Dockerfile" -t "${ImageRepository}:$Tag" }
+Exec { & docker tag "${ImageRepository}:$Tag" "${ImageRepository}:latest" }
 
-echo "Created docker image healthchecksui:$tag. You can execute this image using docker run"
-echo "Sample: docker run --name ui -p 5000:80 -e 'HealthChecksUI:HealthChecks:0:Name=httpBasic' -e 'HealthChecksUI:HealthChecks:0:Uri=http://www.google.es' -d healthchecksui:dev"
+Write-Host "Created docker image ${ImageRepository}:$Tag. You can execute this image using docker run"
+Write-Host "Sample: docker run --name ui -p 5000:8080 -e 'HealthChecksUI:HealthChecks:0:Name=httpBasic' -e 'HealthChecksUI:HealthChecks:0:Uri=http://www.google.es' -d ${ImageRepository}:$Tag"
 
 #Publish it
 
-if($PublishToDockerHub){
-    docker push xabarilcoding/healthchecksui:$tag
-    docker push xabarilcoding/healthchecksui:latest
+if ($PublishToGitHubContainerRegistry) {
+    Exec { & docker push "${ImageRepository}:$Tag" }
+    Exec { & docker push "${ImageRepository}:latest" }
 }

@@ -7,10 +7,10 @@ Use this chapter for container, Kubernetes, Azure DevOps, and protected UI integ
 
 ## Container images
 
-The published images still use the `xabarilcoding/*` namespace.
+Container images are published to GitHub Container Registry under the current GitHub organization namespace.
 
-- UI image: `xabarilcoding/healthchecksui`
-- Kubernetes operator image: `xabarilcoding/healthchecksui-k8s-operator`
+- UI image: `ghcr.io/dotnetdiag/healthchecksui`
+- Kubernetes operator image: `ghcr.io/dotnetdiag/healthchecksui-k8s-operator`
 
 Use the [UI Docker image guide]({{ '/ui-docker/' | relative_url }}) when you are deploying the dashboard in a containerized environment.
 

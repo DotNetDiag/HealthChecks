@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);ActiveMQ;Messaging;Apache.NMS</PackageTags>
+    <Description>HealthChecks.ActiveMQ is the health check package for Apache ActiveMQ Classic broker connectivity.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Apache.NMS" />
+    <PackageReference Include="Apache.NMS.ActiveMQ" />
+  </ItemGroup>
+
+</Project>

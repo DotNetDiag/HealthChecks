@@ -1,0 +1,43 @@
+name: HealthChecks IbmDb2 CI
+
+permissions:
+  contents: read
+  packages: write
+
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - src/HealthChecks.IbmDb2/**
+      - test/HealthChecks.IbmDb2.Tests/**
+      - test/_SHARED/**
+      - .github/workflows/healthchecks_ibmdb2_ci.yml
+      - .github/workflows/reusable_ci_workflow.yml
+      - Directory.Build.props
+      - Directory.Build.targets
+      - Directory.Packages.props
+    tags:
+      - v*
+
+  pull_request:
+    branches: [ master ]
+    paths:
+      - src/HealthChecks.IbmDb2/**
+      - test/HealthChecks.IbmDb2.Tests/**
+      - test/_SHARED/**
+      - .github/workflows/healthchecks_ibmdb2_ci.yml
+      - .github/workflows/reusable_ci_workflow.yml
+      - Directory.Build.props
+      - Directory.Build.targets
+      - Directory.Packages.props
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable_ci_workflow.yml
+    secrets: inherit
+    with:
+      PROJECT_PATH: ./src/HealthChecks.IbmDb2/HealthChecks.IbmDb2.csproj
+      TEST_PROJECT_PATH: ./test/HealthChecks.IbmDb2.Tests/HealthChecks.IbmDb2.Tests.csproj
+      CODECOV_FLAGS: IbmDb2

@@ -59,7 +59,7 @@ Note: The UI resources created by the operator (deployment, service, configmap, 
 | Field                 | Description                                                               | Default                                              |
 | --------------------- | :------------------------------------------------------------------------ | ---------------------------------------------------- |
 | serviceType           | How the UI should be published (ClusterIP, LoadBalancer or NodePort)      | ClusterIP                                            |
-| portNumber            | What port will be used to expose the UI service                           | 80                                                   |
+| portNumber            | What port will be used to expose the UI service                           | 8080                                                 |
 | uiPath                | Location where the UI frontend will be served                             | /healthchecks                                        |
 | uiApiPath             | Location where the UI backend API will be served                          | UI defaults                                          |
 | uiResourcesPath       | Location where the UI static files resources will be served               | UI defaults                                          |
@@ -67,7 +67,7 @@ Note: The UI resources created by the operator (deployment, service, configmap, 
 | uiNoRelativePaths     | Disable UI front-end relative paths                                       | false                                                |
 | healthChecksPath      | Path where the UI will collect health from endpoints                      | /health (Can be overriden with a service annotation) |
 | healthChecksScheme    | Scheme to be used to collect health from endpoints                        | http (Can be overriden with a service annotation)    |
-| image                 | Image to be used by the UI                                                | xabarilcoding/healthchecksui:latest                  |
+| image                 | Image to be used by the UI                                                | ghcr.io/dotnetdiag/healthchecksui:latest             |
 | imagePullPolicy       | Deployment image pull policy                                              | Always                                               |
 | stylesheetContent     | css content used to brand the UI                                          | none                                                 |
 | serviceAnnotations    | name / value array to use custom annotations in UI service                | none                                                 |
@@ -75,7 +75,7 @@ Note: The UI resources created by the operator (deployment, service, configmap, 
 | webhooks              | webhook array object (name, uri, payload and restoredPayload)             | none                                                 |
 | tolerations           | toleration array object (key, operator, value, effect and seconds)        | none                                                 |
 
-The container image examples in this section still use the currently published `xabarilcoding/*` namespace.
+Container image examples use GitHub Container Registry under the current GitHub organization namespace.
 
 ## Sample HealthChecks Operator Tutorial
 

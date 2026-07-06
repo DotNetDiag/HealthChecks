@@ -14,19 +14,19 @@ title: HealthChecks UI Docker Image
 - [Samples](#samples)
 - [Docker Compose Sample](#sample-docker-compose)
 
-_HealthChecks_ is available as a docker image on [DockerHub](https://hub.docker.com/r/xabarilcoding/healthchecksui/). This image is a simple ASP.NET Core project with the _HealthCheckUI_ middleware.
+_HealthChecks_ is available as a container image on GitHub Container Registry. This image is a simple ASP.NET Core project with the _HealthCheckUI_ middleware.
 
-> Note: the currently published container image namespace remains `xabarilcoding/*`. The package catalog, repository links, and project documentation have moved to DotNetDiag.
+The image follows the current ASP.NET Core container default and listens on port `8080`. Map host ports to container port `8080`.
 
 ```bash
-docker pull xabarilcoding/healthchecksui
-docker run --name ui -p 5000:80 -d xabarilcoding/healthchecksui:latest
+docker pull ghcr.io/dotnetdiag/healthchecksui
+docker run --name ui -p 5000:8080 -d ghcr.io/dotnetdiag/healthchecksui:latest
 ```
 
 You can use environment variables to configure all properties on _HealthChecksUI_.
 
 ```bash
-docker run --name ui -p 5000:80 -e 'HealthChecksUI:HealthChecks:0:Name=httpBasic' -e 'HealthChecksUI:HealthChecks:0:Uri=http://the-healthchecks-server-path' -d xabarilcoding/healthchecksui:latest
+docker run --name ui -p 5000:8080 -e 'HealthChecksUI:HealthChecks:0:Name=httpBasic' -e 'HealthChecksUI:HealthChecks:0:Uri=http://the-healthchecks-server-path' -d ghcr.io/dotnetdiag/healthchecksui:latest
 ```
 
 ## Custom Branding
@@ -34,7 +34,7 @@ docker run --name ui -p 5000:80 -e 'HealthChecksUI:HealthChecks:0:Name=httpBasic
 Since version 3.0.3 you can use an environment variable and a volume to configure your own css stylesheet and display your own branding within the UI:
 
 ```bash
-docker run -v /c/temp/css:/app/css -e ui_stylesheet=/app/css/dotnet.css -p 5000:80 xabarilcoding/healthchecksui:latest
+docker run -v /c/temp/css:/app/css -e ui_stylesheet=/app/css/dotnet.css -p 5000:8080 ghcr.io/dotnetdiag/healthchecksui:latest
 ```
 
 ## Configure UI paths (UI path, Api path and resources path)
@@ -50,7 +50,7 @@ The environment variables are:
 - **ui_no_relative_paths** to disable relative paths in the ui frontend resources
 
 ```bash
-docker run -e ui_path=/healthchecks-e ui_resources_path=/static -e ui_api_path=/health-api -p 5000:80 xabarilcoding/healthchecksui:latest
+docker run -e ui_path=/healthchecks-e ui_resources_path=/static -e ui_api_path=/health-api -p 5000:8080 ghcr.io/dotnetdiag/healthchecksui:latest
 ```
 
 ## Storage Providers Configuration
@@ -95,7 +95,7 @@ If you want to connect using managed identity service only specify **AAC_Managed
 
 ```bash
 
-az container create --resource-group group-name --name container-name -e 'AAC_Enabled=true' 'AAC_Label=HealthChecksConfig' 'AAC_ConnectionString=Endpoint={your_connectionstring}' --image xabarilcoding/healthchecksui:latest --dns-name-label dns-checks --ports 80
+az container create --resource-group group-name --name container-name -e 'AAC_Enabled=true' 'AAC_Label=HealthChecksConfig' 'AAC_ConnectionString=Endpoint={your_connectionstring}' --image ghcr.io/dotnetdiag/healthchecksui:latest --dns-name-label dns-checks --ports 8080
 
 ```
 
@@ -103,11 +103,11 @@ az container create --resource-group group-name --name container-name -e 'AAC_En
 
 ```bash
 
-az container create --resource-group group-name  --name container-name -e 'AAC_Enabled=true' 'AAC_Label=HealthChecksConfig' 'AAC_ManagedIdentityEndpoint=https://your-endpoint.azconfig.io' --image xabarilcoding/healthchecksui:latest  --dns-name-label dns-checks-msi --ports 80 --assign-identity
+az container create --resource-group group-name  --name container-name -e 'AAC_Enabled=true' 'AAC_Label=HealthChecksConfig' 'AAC_ManagedIdentityEndpoint=https://your-endpoint.azconfig.io' --image ghcr.io/dotnetdiag/healthchecksui:latest  --dns-name-label dns-checks-msi --ports 8080 --assign-identity
 
 ```
 
-Read the [DockerHub full description](https://hub.docker.com/r/xabarilcoding/healthchecksui/) to get more information about HealthChecksUI docker configuration.
+Read the GitHub Container Registry package page for published image versions.
 
 ## Sample Docker Compose
 
@@ -115,7 +115,7 @@ Read the [DockerHub full description](https://hub.docker.com/r/xabarilcoding/hea
 version: "3.7"
 services:
   healthchecks:
-    image: xabarilcoding/healthchecksui
+    image: ghcr.io/dotnetdiag/healthchecksui
     depends_on:
       sqlserver:
         condition: service_healthy
@@ -126,7 +126,7 @@ services:
       - Logging:Loglevel:Microsoft=Warning
       - Logging:LogLevel:HealthChecks=Debug
     ports:
-      - 5000:80
+      - 5000:8080
     volumes:
       - config:/config
   sqlserver:

@@ -56,7 +56,25 @@ public sealed class ZooKeeperHealthCheck : IHealthCheck
             zooKeeper => zooKeeper.existsAsync(_options.Path, watch: false),
             _options.CanBeReadOnly);
 
-        return await checkTask.WaitAsync(cancellationToken).ConfigureAwait(false);
+        return await WaitAsync(checkTask, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task<T> WaitAsync<T>(Task<T> task, CancellationToken cancellationToken)
+    {
+        if (!cancellationToken.CanBeCanceled)
+        {
+            return await task.ConfigureAwait(false);
+        }
+
+        var cancellationTask = Task.Delay(Timeout.Infinite, cancellationToken);
+        var completedTask = await Task.WhenAny(task, cancellationTask).ConfigureAwait(false);
+
+        if (completedTask != task)
+        {
+            await cancellationTask.ConfigureAwait(false);
+        }
+
+        return await task.ConfigureAwait(false);
     }
 
     private void ValidateOptions()

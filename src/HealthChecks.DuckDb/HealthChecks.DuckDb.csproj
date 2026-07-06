@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- DuckDB.NET.Data.Full does not target netstandard. -->
+    <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);DuckDb;DuckDB;Database;SQL;OLAP;Embedded</PackageTags>
+    <Description>HealthChecks.DuckDb is the health check package for DuckDB databases.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DuckDB.NET.Data.Full" />
+  </ItemGroup>
+
+</Project>

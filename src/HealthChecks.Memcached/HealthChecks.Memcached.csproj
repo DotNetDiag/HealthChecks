@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);Memcached;Cache;DistributedCache</PackageTags>
+    <Description>HealthChecks.Memcached is the health check package for Memcached.</Description>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EnyimMemcachedCore" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="System.Text.Encodings.Web" />
+  </ItemGroup>
+
+</Project>

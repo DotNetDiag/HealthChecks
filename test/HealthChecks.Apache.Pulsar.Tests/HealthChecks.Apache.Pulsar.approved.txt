@@ -1,0 +1,35 @@
+namespace HealthChecks.Apache.Pulsar
+{
+    public sealed class PulsarAdminHealthCheck : Microsoft.Extensions.Diagnostics.HealthChecks.IHealthCheck
+    {
+        public PulsarAdminHealthCheck(System.Net.Http.HttpClient httpClient, HealthChecks.Apache.Pulsar.PulsarAdminHealthCheckOptions? options = null) { }
+        public System.Threading.Tasks.Task<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult> CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext context, System.Threading.CancellationToken cancellationToken = default) { }
+    }
+    public sealed class PulsarAdminHealthCheckOptions
+    {
+        public PulsarAdminHealthCheckOptions() { }
+        public string HealthEndpoint { get; set; }
+        public System.Func<System.Net.Http.HttpResponseMessage, bool> ResponseValidator { get; set; }
+    }
+    public sealed class PulsarHealthCheck : Microsoft.Extensions.Diagnostics.HealthChecks.IHealthCheck
+    {
+        public PulsarHealthCheck(DotPulsar.Abstractions.IPulsarClient client, HealthChecks.Apache.Pulsar.PulsarHealthCheckOptions? options = null) { }
+        public System.Threading.Tasks.Task<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult> CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext context, System.Threading.CancellationToken cancellationToken = default) { }
+    }
+    public sealed class PulsarHealthCheckOptions
+    {
+        public PulsarHealthCheckOptions() { }
+        public System.Func<HealthChecks.Apache.Pulsar.PulsarHealthCheckOptions, System.ReadOnlyMemory<byte>> MessageBuilder { get; set; }
+        public string Topic { get; set; }
+    }
+}
+namespace Microsoft.Extensions.DependencyInjection
+{
+    public static class PulsarHealthCheckBuilderExtensions
+    {
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddPulsar(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, DotPulsar.Abstractions.IPulsarClient client, System.Action<HealthChecks.Apache.Pulsar.PulsarHealthCheckOptions>? setup = null, string? name = "pulsar", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddPulsar(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, System.Func<System.IServiceProvider, DotPulsar.Abstractions.IPulsarClient>? clientFactory = null, System.Func<System.IServiceProvider, HealthChecks.Apache.Pulsar.PulsarHealthCheckOptions>? optionsFactory = null, string? name = "pulsar", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddPulsarAdmin(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, System.Func<System.IServiceProvider, System.Net.Http.HttpClient>? clientFactory = null, System.Func<System.IServiceProvider, HealthChecks.Apache.Pulsar.PulsarAdminHealthCheckOptions>? optionsFactory = null, string? name = "pulsar_admin", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default, System.Action<System.IServiceProvider, System.Net.Http.HttpClient>? configureClient = null, System.Func<System.IServiceProvider, System.Net.Http.HttpMessageHandler>? configurePrimaryHttpMessageHandler = null) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddPulsarAdmin(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, System.Uri serviceUri, System.Action<HealthChecks.Apache.Pulsar.PulsarAdminHealthCheckOptions>? setup = null, string? name = "pulsar_admin", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default, System.Action<System.IServiceProvider, System.Net.Http.HttpClient>? configureClient = null, System.Func<System.IServiceProvider, System.Net.Http.HttpMessageHandler>? configurePrimaryHttpMessageHandler = null) { }
+    }
+}

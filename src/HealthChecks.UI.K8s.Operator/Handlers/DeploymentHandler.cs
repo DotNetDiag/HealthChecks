@@ -85,7 +85,7 @@ internal class DeploymentHandler
             {
                 new()
                 {
-                    ContainerPort = 80
+                    ContainerPort = 8080
                 }
             },
             Env = new List<V1EnvVar>

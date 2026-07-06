@@ -1,39 +1,53 @@
 Param(
-    [parameter(Mandatory = $false)][bool]$PublishToDockerHub = $false
+    [Parameter(Mandatory = $false)][bool]$PublishToGitHubContainerRegistry = $false,
+    [Parameter(Mandatory = $false)][string]$Tag,
+    [Parameter(Mandatory = $false)][string]$ImageRepository = "ghcr.io/dotnetdiag/healthchecksui-k8s-operator",
+    [Parameter(Mandatory = $false)][string]$TargetFramework = "net10.0"
 )
 
+Set-StrictMode -Version Latest
 
 function Exec {
     [CmdletBinding()]
     param(
         [Parameter(Position = 0, Mandatory = 1)][scriptblock]$cmd,
-        [Parameter(Position = 1, Mandatory = 0)][string]$errorMessage = ($msgs.error_bad_command -f $cmd)
+        [Parameter(Position = 1, Mandatory = 0)][string]$errorMessage = "Command failed: $cmd"
     )
     & $cmd
-    if ($lastexitcode -ne 0) {
+    if ($LASTEXITCODE -ne 0) {
         throw ("Exec: " + $errorMessage)
     }
 }
 
-#Select the UI version from dependencies.props and use it as image version
+function Get-DefaultTag {
+    $propsPath = Join-Path $PSScriptRoot "Directory.Build.props"
+    $version = Select-Xml -Path $propsPath -XPath "/Project/PropertyGroup/VersionPrefix" | Select-Object -First 1
 
+    if ($null -eq $version) {
+        throw "Unable to find VersionPrefix in $propsPath. Pass -Tag explicitly."
+    }
 
-$version = select-xml -Path .\build\dependencies.props -XPath "/Project/PropertyGroup[contains(@Label,'Health Checks Package Versions')]/HealthChecksUIK8sOperator"
+    return $version.Node.InnerText
+}
 
-$tag = $version.node.InnerXML
+if ([string]::IsNullOrWhiteSpace($Tag)) {
+    $Tag = Get-DefaultTag
+}
 
 #Building docker image
 
-echo "Building k8s operator docker image with tag: $tag"
-echo "Publishing to Docker Hub : $PublishToDockerHub"
+Write-Host "Building k8s operator docker image with tag: $Tag"
+Write-Host "Image repository: $ImageRepository"
+Write-Host "Target framework: $TargetFramework"
+Write-Host "Publishing to GitHub Container Registry: $PublishToGitHubContainerRegistry"
 
-exec { & docker build . -f .\src\HealthChecks.UI.K8s.Operator\Dockerfile -t xabarilcoding/healthchecksui-k8s-operator:$tag }
-exec { & docker tag xabarilcoding/healthchecksui-k8s-operator:$tag xabarilcoding/healthchecksui-k8s-operator:latest }
+Exec { & docker build . -f "$PSScriptRoot/src/HealthChecks.UI.K8s.Operator/Dockerfile" --build-arg "TARGET_FRAMEWORK=$TargetFramework" -t "${ImageRepository}:$Tag" }
+Exec { & docker tag "${ImageRepository}:$Tag" "${ImageRepository}:latest" }
 
-echo "Created docker image healthchecksui-k8s-operator:$tag. You can execute this image using docker run"
+Write-Host "Created docker image ${ImageRepository}:$Tag. You can execute this image using docker run"
 
 #Publish it
-if ($PublishToDockerHub) {
-    docker push xabarilcoding/healthchecksui-k8s-operator:$tag
-    docker push xabarilcoding/healthchecksui-k8s-operator:latest
+if ($PublishToGitHubContainerRegistry) {
+    Exec { & docker push "${ImageRepository}:$Tag" }
+    Exec { & docker push "${ImageRepository}:latest" }
 }
