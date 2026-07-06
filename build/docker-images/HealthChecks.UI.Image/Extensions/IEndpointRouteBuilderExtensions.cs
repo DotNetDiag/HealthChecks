@@ -14,24 +14,29 @@ public static class IEndpointRouteBuilderExtensions
     {
         if (bool.TryParse(configuration[PushServiceKeys.ENABLED], out bool enabled) && enabled)
         {
-            builder.MapHealthCheckPushEndpoint(/*configuration*/);
+            builder.MapHealthCheckPushEndpoint(configuration);
         }
 
-        return builder.MapHealthChecksUI(setup =>
+        var uiEndpoint = builder.MapHealthChecksUI(setup =>
         {
             setup.ConfigureStylesheet(configuration);
             setup.ConfigurePaths(configuration);
         });
+
+        builder.MapGet("/healthz", static () => Results.Ok());
+
+        return uiEndpoint;
     }
 
-    private static void MapHealthCheckPushEndpoint(this IEndpointRouteBuilder builder/*, IConfiguration configuration*/)
+    private static void MapHealthCheckPushEndpoint(this IEndpointRouteBuilder builder, IConfiguration configuration)
     {
         var logger = builder.ServiceProvider.GetRequiredService<ILogger<Program>>();
         logger.LogInformation("HealthChecks Push Endpoint Enabled");
+        var pushEndpointSecret = configuration[PushServiceKeys.PUSH_ENDPOINT_SECRET];
 
         builder.MapPost("/healthchecks/push", async context =>
         {
-            if (context.Request.IsAuthenticated())
+            if (context.Request.IsAuthenticated(pushEndpointSecret!))
             {
                 using var streamReader = new StreamReader(context.Request.Body);
                 var content = await streamReader.ReadToEndAsync().ConfigureAwait(false);

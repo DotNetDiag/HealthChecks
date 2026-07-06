@@ -17,6 +17,7 @@ title: HealthChecks UI Docker Image
 _HealthChecks_ is available as a container image on GitHub Container Registry. This image is a simple ASP.NET Core project with the _HealthCheckUI_ middleware.
 
 The image follows the current ASP.NET Core container default and listens on port `8080`. Map host ports to container port `8080`.
+The image also exposes a lightweight `/healthz` endpoint for container and Kubernetes probes.
 
 ```bash
 docker pull ghcr.io/dotnetdiag/healthchecksui
@@ -80,6 +81,8 @@ The existing environment variables are explained below:
 | ui_webhooks_path            | Configures the path where webhooksm middleware will be served                                           | /healthchecks-webhooks                         |
 | ui_resources_path           | Configures the path where static files will be served                                                   | /ui/resources                                  |
 | ui_no_relative_paths        | Disables relative paths for UI frontend resources                                                       | false                                          |
+| enable_push_endpoint        | Enables the Kubernetes operator push endpoint at `/healthchecks/push`                                   | false                                          |
+| push_endpoint_secret        | Token required by the push endpoint                                                                     | Required when push endpoint is enabled         |
 | AAC_Enabled                 | Enables AAC config provider                                                                             | Not set by default                             |
 | AAC_ConnectionString        | Connection string to configuration service                                                              | If set, Managed Service Identity won't be used |
 | AAC_ManagedIdentityEndpoint | Your AAC endpoint to connect using Managed Identity                                                     | Sample: <https://your-endpoint.azconfig.io>    |
@@ -88,6 +91,8 @@ The existing environment variables are explained below:
 
 As table explains, if **AAC_ConnectionString** is set, the image will connect to AAC using that connection string.
 If you want to connect using managed identity service only specify **AAC_ManagedIdentityEndpoint** environment variable.
+
+When the push endpoint is enabled, clients should send the token in the `X-HealthChecks-Push-Token` header or as `Authorization: Bearer <token>`. The legacy `?key=<token>` query string remains accepted for temporary compatibility.
 
 ## Samples
 

@@ -40,12 +40,10 @@ The [HealthCheck operator definition](https://github.com/DotNetDiag/HealthChecks
 | Field         | Description                                                                        |
 | ------------- | :--------------------------------------------------------------------------------- |
 | name          | Name of the healthcheck resource                                                   |
-| scope         | Cluster / Namespaced                                                               |
-| servicesLabel | The label the operator service watcher will use to detected healthchecks endpoints |
 
 ### Scope definition (Cluster or Namespaced)
 
-The scope field (Cluster or Namespaced) is mandatory and will specify to the operator whether it should watch for healthchecks services in the
+The scope field (Cluster or Namespaced) specifies to the operator whether it should watch for healthchecks services in the
 same namespace where the UI resource is created or watch to all services in all namespaces.
 
 If you wan't to have different UI's for different namespaced services you should use **Namespaced**
@@ -58,6 +56,8 @@ Note: The UI resources created by the operator (deployment, service, configmap, 
 
 | Field                 | Description                                                               | Default                                              |
 | --------------------- | :------------------------------------------------------------------------ | ---------------------------------------------------- |
+| scope                 | Cluster / Namespaced                                                      | Cluster                                              |
+| servicesLabel         | The label the operator service watcher will use to detect endpoints       | HealthChecks                                         |
 | serviceType           | How the UI should be published (ClusterIP, LoadBalancer or NodePort)      | ClusterIP                                            |
 | portNumber            | What port will be used to expose the UI service                           | 8080                                                 |
 | uiPath                | Location where the UI frontend will be served                             | /healthchecks                                        |
@@ -65,17 +65,22 @@ Note: The UI resources created by the operator (deployment, service, configmap, 
 | uiResourcesPath       | Location where the UI static files resources will be served               | UI defaults                                          |
 | uiWebhooksPath        | Location where the Webhooks api                                           | UI defaults                                          |
 | uiNoRelativePaths     | Disable UI front-end relative paths                                       | false                                                |
-| healthChecksPath      | Path where the UI will collect health from endpoints                      | /health (Can be overriden with a service annotation) |
+| healthChecksPath      | Path where the UI will collect health from endpoints                      | health (Can be overriden with a service annotation)  |
 | healthChecksScheme    | Scheme to be used to collect health from endpoints                        | http (Can be overriden with a service annotation)    |
-| image                 | Image to be used by the UI                                                | ghcr.io/dotnetdiag/healthchecksui:latest             |
+| image                 | Image to be used by the UI                                                | Operator configured default UI image                 |
 | imagePullPolicy       | Deployment image pull policy                                              | Always                                               |
 | stylesheetContent     | css content used to brand the UI                                          | none                                                 |
+| livenessProbe         | UI liveness probe object (path, delay, period, timeout, failureThreshold) | /healthz                                             |
+| readinessProbe        | UI readiness probe object (path, delay, period, timeout, failureThreshold)| /healthz                                             |
+| resources             | UI container resources object with requests and limits                    | none                                                 |
 | serviceAnnotations    | name / value array to use custom annotations in UI service                | none                                                 |
 | deploymentAnnotations | name / value array to use custom annotations in UI Deployment             | none                                                 |
 | webhooks              | webhook array object (name, uri, payload and restoredPayload)             | none                                                 |
 | tolerations           | toleration array object (key, operator, value, effect and seconds)        | none                                                 |
 
 Container image examples use GitHub Container Registry under the current GitHub organization namespace.
+
+The operator deployment can override the default UI image for all generated HealthCheck resources with the `HealthChecksOperator__DefaultUIImage` environment variable. A per-resource `spec.image` still takes precedence.
 
 ## Sample HealthChecks Operator Tutorial
 
@@ -122,6 +127,8 @@ You can now check your created HealthCheck resource using:
 ### Operator controller
 
 Once you apply a HealthCheck kind resource, the operator will automatically create some resources in the namespace. The UI deployment and service to expose the dashboard, a secret that enables secure communication from the operator to the UI service, and an optional configmap volume source depending if you configured the stylesheetContent branding.
+
+The generated UI deployment includes HTTP liveness and readiness probes against `/healthz`, drops Linux capabilities, disables privilege escalation, and runs with the non-root user from the UI image. The operator also updates the HealthCheck resource status with the current phase, deployment name, service name, available replica count, and last transition time when the CRD status subresource is available.
 
 All this resources are created using OwnerReferences so that means if you delete the HealthCheck resource, all the child resources will be automatically purged with it.
 

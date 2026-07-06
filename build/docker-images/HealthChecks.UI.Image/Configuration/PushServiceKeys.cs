@@ -8,4 +8,6 @@ public static class PushServiceKeys
     public const int SERVICE_UPDATED = 1;
     public const int SERVICE_REMOVED = 2;
     public const string AUTH_PARAMETER = "key";
+    public const string AUTH_HEADER = "X-HealthChecks-Push-Token";
+    public const string AUTH_SCHEME = "Bearer";
 }

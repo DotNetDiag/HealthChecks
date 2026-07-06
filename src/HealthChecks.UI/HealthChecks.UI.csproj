@@ -6,6 +6,8 @@
     <Description>HealthChecks.UI is a ASP.NET Core UI viewer of ASP.NET Core HealthChecks. For more information see https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks</Description>
     <TypeScriptCompileBlocked>True</TypeScriptCompileBlocked>
     <WarningsNotAsErrors>$(WarningsNotAsErrors);RCS1090</WarningsNotAsErrors>
+    <NpmInstallCommand Condition="'$(NpmInstallCommand)' == ''">npm ci</NpmInstallCommand>
+    <SkipNpmInstall Condition="'$(SkipNpmInstall)' == ''">false</SkipNpmInstall>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,9 +32,9 @@
     <InternalsVisibleTo Include="HealthChecks.UI.Image" />
   </ItemGroup>
 
-  <Target Name="InstallPackages" BeforeTargets="DispatchToInnerBuilds;BeforeBuild" Condition="'$(IsCrossTargetingBuild)' == 'true' Or '$(TargetFrameworks)' == ''">
+  <Target Name="InstallPackages" BeforeTargets="DispatchToInnerBuilds;BeforeBuild" Condition="('$(IsCrossTargetingBuild)' == 'true' Or '$(TargetFrameworks)' == '') And '$(SkipNpmInstall)' != 'true'">
     <Message Importance="high" Text="*** Installing npm packages ***" />
-    <Exec Command="npm install" ContinueOnError="false" />
+    <Exec Command="$(NpmInstallCommand)" ContinueOnError="false" />
   </Target>
 
   <Target Name="BuildClient" BeforeTargets="DispatchToInnerBuilds;BeforeBuild" DependsOnTargets="InstallPackages" Condition="'$(IsCrossTargetingBuild)' == 'true' Or '$(TargetFrameworks)' == ''">

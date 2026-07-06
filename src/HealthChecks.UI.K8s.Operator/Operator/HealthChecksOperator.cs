@@ -1,6 +1,7 @@
 using System.Threading.Channels;
 using HealthChecks.UI.K8s.Operator.Controller;
 using HealthChecks.UI.K8s.Operator.Diagnostics;
+using HealthChecks.UI.K8s.Operator.Handlers;
 using HealthChecks.UI.K8s.Operator.Operator;
 using k8s;
 using Microsoft.Extensions.Hosting;
@@ -17,6 +18,7 @@ internal class HealthChecksOperator : IHostedService
     private readonly IHealthChecksController _controller;
     private readonly NamespacedServiceWatcher _serviceWatcher;
     private readonly ClusterServiceWatcher _clusterServiceWatcher;
+    private readonly StatusHandler _statusHandler;
     private readonly OperatorDiagnostics _diagnostics;
     private readonly ILogger<K8sOperator> _logger;
     private readonly CancellationTokenSource _operatorCts = new();
@@ -29,6 +31,7 @@ internal class HealthChecksOperator : IHostedService
         IHealthChecksController controller,
         NamespacedServiceWatcher serviceWatcher,
         ClusterServiceWatcher clusterServiceWatcher,
+        StatusHandler statusHandler,
         OperatorDiagnostics diagnostics,
         ILogger<K8sOperator> logger)
     {
@@ -36,6 +39,7 @@ internal class HealthChecksOperator : IHostedService
         _controller = Guard.ThrowIfNull(controller);
         _serviceWatcher = Guard.ThrowIfNull(serviceWatcher);
         _clusterServiceWatcher = Guard.ThrowIfNull(clusterServiceWatcher);
+        _statusHandler = Guard.ThrowIfNull(statusHandler);
         _diagnostics = Guard.ThrowIfNull(diagnostics);
         _logger = Guard.ThrowIfNull(logger);
 
@@ -102,6 +106,12 @@ internal class HealthChecksOperator : IHostedService
                 catch (Exception ex)
                 {
                     _diagnostics.OperatorThrow(ex);
+
+                    await _statusHandler.PatchAsync(item.Resource, new HealthCheckResourceStatus
+                    {
+                        Phase = "Failed",
+                        Message = ex.Message
+                    }, _operatorCts.Token);
                 }
             }
         }
@@ -155,6 +165,13 @@ internal class HealthChecksOperator : IHostedService
                 retries++;
             }
         }
+
+        await _statusHandler.PatchAsync(resource, new HealthCheckResourceStatus
+        {
+            Phase = availableReplicas > 0 ? "Ready" : "Progressing",
+            Message = availableReplicas > 0 ? "UI deployment has available replicas" : "UI deployment was created but no replicas are available yet",
+            AvailableReplicas = availableReplicas
+        }, _operatorCts.Token);
     }
 
     private async Task WatchResourcesAsync(CancellationToken token)

@@ -46,10 +46,12 @@ public class HealthChecksPushService
 
             var key = Encoding.UTF8.GetString(endpointSecret.Data["key"]);
 
-            using var request = new HttpRequestMessage(HttpMethod.Post, $"{uiAddress}{Constants.PUSH_SERVICE_PATH}?{Constants.PUSH_SERVICE_AUTH_KEY}={key}")
+            using var request = new HttpRequestMessage(HttpMethod.Post, $"{uiAddress}{Constants.PUSH_SERVICE_PATH}")
             {
                 Content = new StringContent(JsonSerializer.Serialize(healthCheck, _options), Encoding.UTF8, "application/json")
             };
+
+            request.Headers.TryAddWithoutValidation(Constants.PUSH_SERVICE_AUTH_HEADER, key);
 
             using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 

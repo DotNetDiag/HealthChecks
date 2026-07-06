@@ -68,7 +68,20 @@ jobs:
           auth_header="Authorization: Bearer ${GH_TOKEN}"
           accept_header="Accept: application/vnd.github+json"
 
-          user_response="$(curl -fsSL -H "$auth_header" -H "$accept_header" "$user_api")"
+          user_status="$(curl -sS -o "$RUNNER_TEMP/docs-pages-token-user.json" -w '%{http_code}' -H "$auth_header" -H "$accept_header" "$user_api")"
+
+          if [ "$user_status" != "200" ]; then
+            user_error="$(jq -r '.message // empty' "$RUNNER_TEMP/docs-pages-token-user.json" 2>/dev/null || true)"
+            if [ -n "$user_error" ]; then
+              echo "::error::PAGES_DEPLOY_TOKEN could not authenticate with the GitHub API. GET /user returned HTTP $user_status: $user_error."
+            else
+              echo "::error::PAGES_DEPLOY_TOKEN could not authenticate with the GitHub API. GET /user returned HTTP $user_status."
+            fi
+            echo "::error::Update the secret with the raw value of an unexpired PAT, without a Bearer prefix or surrounding quotes."
+            exit 1
+          fi
+
+          user_response="$(cat "$RUNNER_TEMP/docs-pages-token-user.json")"
           actor_login="$(printf '%s' "$user_response" | jq -r '.login // empty')"
 
           repo_status="$(curl -sS -o "$RUNNER_TEMP/docs-pages-target-repo.json" -w '%{http_code}' -H "$auth_header" -H "$accept_header" "$repo_api")"

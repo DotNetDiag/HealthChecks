@@ -79,7 +79,7 @@ internal class ServiceHandler
             Ports = new List<V1ServicePort> {
                 new V1ServicePort {
                     Name = "httport",
-                    Port = int.Parse(resource.Spec.PortNumber ?? Constants.DEFAULT_PORT),
+                    Port = resource.Spec.PortNumber ?? Constants.DEFAULT_PORT,
                     TargetPort = 8080
                 }
             }

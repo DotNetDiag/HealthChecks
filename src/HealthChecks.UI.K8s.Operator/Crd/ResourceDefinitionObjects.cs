@@ -15,6 +15,21 @@ public class TolerationObject
     public long? Seconds { get; set; }
 }
 
+public class ResourceRequirementsObject
+{
+    public Dictionary<string, string> Limits { get; set; } = new();
+    public Dictionary<string, string> Requests { get; set; } = new();
+}
+
+public class ProbeObject
+{
+    public string? Path { get; set; }
+    public int? InitialDelaySeconds { get; set; }
+    public int? PeriodSeconds { get; set; }
+    public int? TimeoutSeconds { get; set; }
+    public int? FailureThreshold { get; set; }
+}
+
 public class WebHookObject
 {
     public string? Name { get; set; }

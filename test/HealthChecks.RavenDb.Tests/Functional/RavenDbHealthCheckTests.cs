@@ -67,7 +67,7 @@ public class ravendb_healthcheck_should(RavenDbContainerFixture ravenDbFixture) 
     }
 
     [Fact]
-    public async Task be_unhealthy_if_ravendb_is_available_but_timeout_is_too_low()
+    public async Task be_unhealthy_if_ravendb_is_available_but_timeout_is_immediate()
     {
         using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
@@ -78,7 +78,7 @@ public class ravendb_healthcheck_should(RavenDbContainerFixture ravenDbFixture) 
                     {
                         _.Urls = _urls;
                         _.Database = "Demo";
-                        _.RequestTimeout = TimeSpan.FromMilliseconds(0.001);
+                        _.RequestTimeout = TimeSpan.Zero;
                     }, tags: ["ravendb"]);
             })
             .Configure(app =>
