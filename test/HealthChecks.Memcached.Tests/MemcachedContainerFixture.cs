@@ -35,7 +35,45 @@ public sealed class MemcachedContainerFixture : IAsyncLifetime
             .Build();
 
         await container.StartAsync();
+        await WaitUntilMemcachedRespondsAsync(container);
 
         return container;
+    }
+
+    private static async Task WaitUntilMemcachedRespondsAsync(IContainer container)
+    {
+        DateTimeOffset timeoutAt = DateTimeOffset.UtcNow.AddSeconds(30);
+        Exception? lastException = null;
+
+        while (DateTimeOffset.UtcNow < timeoutAt)
+        {
+            try
+            {
+                using var client = MemcachedClientFactory.Create(container.Hostname, container.GetMappedPublicPort(MemcachedPort), TimeSpan.FromSeconds(1));
+
+                string key = $"healthchecks_memcached_ready_{Guid.NewGuid():N}";
+                string expectedValue = Guid.NewGuid().ToString("N");
+
+                bool stored = await client.SetAsync(key, expectedValue, TimeSpan.FromSeconds(5));
+                if (stored)
+                {
+                    string? actualValue = await client.GetValueAsync<string>(key);
+                    await client.RemoveAsync(key);
+
+                    if (string.Equals(expectedValue, actualValue, StringComparison.Ordinal))
+                    {
+                        return;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                lastException = ex;
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(250));
+        }
+
+        throw new InvalidOperationException("The Memcached test container did not become ready.", lastException);
     }
 }
