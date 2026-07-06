@@ -43,12 +43,26 @@ function Get-DefaultRevision {
     return "unknown"
 }
 
+function Assert-GitHubContainerRegistryRepository {
+    param(
+        [Parameter(Mandatory = 1)][string]$Repository
+    )
+
+    if (-not $Repository.StartsWith("ghcr.io/", [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw "Publishing the UI image is restricted to GitHub Container Registry. Use an ImageRepository that starts with 'ghcr.io/' or omit -PublishToGitHubContainerRegistry to build/load locally."
+    }
+}
+
 if ([string]::IsNullOrWhiteSpace($Tag)) {
     $Tag = Get-DefaultTag
 }
 
 if ([string]::IsNullOrWhiteSpace($ImageRevision)) {
     $ImageRevision = Get-DefaultRevision
+}
+
+if ($PublishToGitHubContainerRegistry) {
+    Assert-GitHubContainerRegistryRepository $ImageRepository
 }
 
 if ([string]::IsNullOrWhiteSpace($Platforms)) {
