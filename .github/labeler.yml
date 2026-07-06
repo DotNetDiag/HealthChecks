@@ -192,6 +192,10 @@ solr:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.Solr/**/*]
 
+sonnetdb:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.SonnetDB/**/*]
+
 sqlite:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.Sqlite/**/*]

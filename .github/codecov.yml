@@ -111,6 +111,8 @@ flags:
     carryforward: true
   Solr:
     carryforward: true
+  SonnetDB:
+    carryforward: true
   Sqlite:
     carryforward: true
   SqlServer:
