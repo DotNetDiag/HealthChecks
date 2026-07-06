@@ -1,5 +1,6 @@
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Images;
 
 namespace HealthChecks.ActiveMQ.Tests;
 
@@ -32,8 +33,11 @@ public sealed class ActiveMQContainerFixture : IAsyncLifetime
     private static async Task<IContainer> CreateContainerAsync()
     {
         var container = new ContainerBuilder($"{Registry}/{Image}:{Tag}")
+            .WithImagePullPolicy(PullPolicy.Missing)
             .WithPortBinding(BrokerPort, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilExternalTcpPortIsAvailable(BrokerPort, _ => { }))
+            .WithWaitStrategy(Wait.ForUnixContainer()
+                .UntilExternalTcpPortIsAvailable(BrokerPort, _ => { })
+                .UntilMessageIsLogged("Connector openwire started"))
             .Build();
 
         await container.StartAsync();

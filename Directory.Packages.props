@@ -54,6 +54,8 @@
     <PackageVersion Include="IBMMQDotnetClient" Version="10.0.0" Condition="'$(TargetFramework)' == 'net10.0'" />
     <PackageVersion Include="InfluxDB.Client" Version="5.1.0" />
     <PackageVersion Include="KubernetesClient" Version="19.0.2" />
+    <PackageVersion Include="MessagePack" Version="2.5.302" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+    <PackageVersion Include="MessagePack" Version="3.1.7" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
     <PackageVersion Include="Microsoft.ApplicationInsights" Version="3.1.2" />
     <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="3.1.2" />
     <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.61.0" />
@@ -92,6 +94,7 @@
     <PackageVersion Include="Net.IBM.Data.Db2-lnx" Version="9.0.0.400" Condition="'$(TargetFramework)' == 'net8.0'" />
     <PackageVersion Include="Net.IBM.Data.Db2-lnx" Version="10.0.0.200" Condition="'$(TargetFramework)' == 'net10.0'" />
     <PackageVersion Include="Neo4j.Driver" Version="6.2.1" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     <PackageVersion Include="Npgsql" Version="8.0.9" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     <PackageVersion Include="Npgsql" Version="10.0.3" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
     <PackageVersion Include="Npgsql.DependencyInjection" Version="10.0.3" />

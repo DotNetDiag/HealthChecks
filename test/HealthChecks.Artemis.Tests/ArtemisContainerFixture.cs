@@ -1,5 +1,6 @@
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Images;
 
 namespace HealthChecks.Artemis.Tests;
 
@@ -32,10 +33,13 @@ public sealed class ArtemisContainerFixture : IAsyncLifetime
     private static async Task<IContainer> CreateContainerAsync()
     {
         var container = new ContainerBuilder($"{Registry}/{Image}:{Tag}")
+            .WithImagePullPolicy(PullPolicy.Missing)
             .WithPortBinding(BrokerPort, true)
             .WithEnvironment("ARTEMIS_USER", "artemis")
             .WithEnvironment("ARTEMIS_PASSWORD", "artemis")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilExternalTcpPortIsAvailable(BrokerPort, _ => { }))
+            .WithWaitStrategy(Wait.ForUnixContainer()
+                .UntilExternalTcpPortIsAvailable(BrokerPort, _ => { })
+                .UntilMessageIsLogged("AMQ221007: Server is now active"))
             .Build();
 
         await container.StartAsync();

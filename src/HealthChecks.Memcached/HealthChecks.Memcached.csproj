@@ -9,7 +9,9 @@
 
   <ItemGroup>
     <PackageReference Include="EnyimMemcachedCore" />
+    <PackageReference Include="MessagePack" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Newtonsoft.Json" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     <PackageReference Include="System.Text.Encodings.Web" />
   </ItemGroup>
 

@@ -72,6 +72,11 @@ jobs:
             echo "- Should run: \`${{ steps.release_scope.outputs.should_run }}\`"
             echo "- Reason: ${{ steps.release_scope.outputs.release_reason }}"
           } >> "$GITHUB_STEP_SUMMARY"
+      - name: Install IBM Db2 native dependencies
+        if: ${{ inputs.PROJECT_PATH == './src/HealthChecks.IbmDb2/HealthChecks.IbmDb2.csproj' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxml2
       - name: Restore
         if: ${{ steps.release_scope.outputs.is_tag != 'true' || steps.release_scope.outputs.should_run == 'true' }}
         run: |
