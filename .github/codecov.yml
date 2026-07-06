@@ -125,3 +125,5 @@ flags:
     carryforward: true
   Uris:
     carryforward: true
+  Vault:
+    carryforward: true

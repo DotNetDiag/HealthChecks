@@ -220,3 +220,7 @@ UI:
 uris:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.Uris/**/*]
+
+vault:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Vault/**/*]

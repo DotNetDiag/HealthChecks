@@ -36,93 +36,92 @@ This roadmap tracks health check packages that core maintainers are actively con
 5. ✅ `HealthChecks.SonnetDB`
    - SonnetDB `/healthz` status checks, readiness metadata capture, optional authenticated probes, and optional Copilot readiness enforcement.
 
+6. ✅ `HealthChecks.Vault`
+   - HashiCorp Vault `/sys/health` checks, including sealed, standby, initialized, active, performance standby, disaster recovery secondary, HA unhealthy, and removed-from-cluster states.
+
 ## Priority Roadmap
 
-1. 📝 `HealthChecks.Vault`
-   - Summary: HashiCorp Vault `/sys/health` checks, including sealed, standby, initialized, and active states.
-   - Why it matters: Vault is often on the critical path for secrets, certificates, and service credentials. A health check helps applications fail fast when secret infrastructure is unavailable or intentionally sealed.
-
-2. 📝 `HealthChecks.Etcd`
+1. 📝 `HealthChecks.Etcd`
    - Summary: etcd endpoint status, leader, and cluster health checks.
    - Why it matters: etcd backs Kubernetes and many distributed systems. When it is degraded, service discovery, configuration, and orchestration can fail even when application pods are still running.
 
-3. 📝 `HealthChecks.ZooKeeper`
+2. 📝 `HealthChecks.ZooKeeper`
    - Summary: ZooKeeper server connectivity, ruok/stat-style health checks, and quorum-aware validation where available.
    - Why it matters: ZooKeeper is still widely used by messaging, coordination, and legacy distributed platforms. A health check covers a real operational dependency that many .NET services inherit indirectly.
 
-4. 📝 `HealthChecks.ContainerRegistry`
+3. 📝 `HealthChecks.ContainerRegistry`
    - Summary: Generic OCI/Docker Registry HTTP API checks for registry reachability and authentication readiness.
    - Why it matters: Not every team uses Harbor or a cloud registry. A generic registry check covers self-hosted and vendor-neutral image registries that are essential to deployment and recovery workflows.
 
-5. 📝 `HealthChecks.Neo4j`
+4. 📝 `HealthChecks.Neo4j`
    - Summary: Neo4j driver connectivity and database health checks.
    - Why it matters: Neo4j is a mature graph database with clear application dependencies. Promoting it keeps the roadmap grounded in recognizable data stores rather than newer niche vector-only services.
 
-6. 📝 `HealthChecks.Memcached`
+5. 📝 `HealthChecks.Memcached`
    - Summary: Memcached connectivity and lightweight cache operation checks.
    - Why it matters: Memcached remains a simple, common distributed cache. Applications often rely on it for latency and load shedding, so explicit health reporting is more useful than treating cache failures as incidental.
 
-7. 📝 `HealthChecks.Valkey`
+6. 📝 `HealthChecks.Valkey`
    - Summary: Valkey connectivity and lightweight command checks.
    - Why it matters: Valkey is an open Redis-compatible datastore with growing adoption. Supporting it gives users a path that matches newer open-source infrastructure choices while staying close to the existing Redis package family.
 
-8. 📝 `HealthChecks.CockroachDb`
+7. 📝 `HealthChecks.CockroachDb`
     - Summary: CockroachDB SQL connectivity and node health endpoint checks.
     - Why it matters: CockroachDB is a distributed SQL database used where PostgreSQL-like access and horizontal resilience matter. A package can reuse familiar SQL health-check patterns while exposing distributed-node readiness.
 
-9. 📝 `HealthChecks.ActiveMQ` / `HealthChecks.Artemis`
+8. 📝 `HealthChecks.ActiveMQ` / `HealthChecks.Artemis`
     - Summary: ActiveMQ Classic or Artemis broker connectivity and management health checks.
     - Why it matters: ActiveMQ and Artemis are established message brokers in enterprise systems. They fit the existing messaging package family and cover teams that are not on Kafka, RabbitMQ, NATS, or cloud queues.
 
-10. 📝 `HealthChecks.Apache.Pulsar`
+9. 📝 `HealthChecks.Apache.Pulsar`
     - Summary: Pulsar broker and admin API health checks.
     - Why it matters: Pulsar is a durable messaging and streaming platform with clear broker/admin health surfaces. It fills a gap for distributed messaging users without making cloud services a roadmap dependency.
 
-11. 📝 `HealthChecks.IbmDb2`
+10. 📝 `HealthChecks.IbmDb2`
     - Summary: IBM Db2 connection and lightweight query health checks.
     - Why it matters: Db2 remains important in enterprise and regulated environments. A package gives those users the same first-class database health-check story as PostgreSQL, SQL Server, MySQL, and Oracle users.
 
-12. 📝 `HealthChecks.Firebird`
+11. 📝 `HealthChecks.Firebird`
     - Summary: Firebird connection and lightweight query health checks.
     - Why it matters: Firebird is a long-lived embedded and server database used in packaged and vertical applications. Supporting it broadens the database coverage without tying the roadmap to a cloud vendor.
 
 ## Research Backlog
 
-13. 🔎 `HealthChecks.SapHana`
-14. 🔎 `HealthChecks.DuckDb`
-15. 🔎 `HealthChecks.Weaviate`
-16. 🔎 `HealthChecks.Chroma`
-17. 🔎 `HealthChecks.Trino`
-18. 🔎 `HealthChecks.Apache.Druid`
-19. 🔎 `HealthChecks.Apache.Pinot`
-20. 🔎 `HealthChecks.OpenTelemetryCollector`
-21. 🔎 `HealthChecks.Grafana`
-22. 🔎 `HealthChecks.Loki`
-23. 🔎 `HealthChecks.Tempo`
-24. 🔎 `HealthChecks.Jaeger`
-25. 🔎 `HealthChecks.Alertmanager`
-26. 🔎 `HealthChecks.Keycloak`
+12. 🔎 `HealthChecks.SapHana`
+13. 🔎 `HealthChecks.DuckDb`
+14. 🔎 `HealthChecks.Weaviate`
+15. 🔎 `HealthChecks.Chroma`
+16. 🔎 `HealthChecks.Trino`
+17. 🔎 `HealthChecks.Apache.Druid`
+18. 🔎 `HealthChecks.Apache.Pinot`
+19. 🔎 `HealthChecks.OpenTelemetryCollector`
+20. 🔎 `HealthChecks.Grafana`
+21. 🔎 `HealthChecks.Loki`
+22. 🔎 `HealthChecks.Tempo`
+23. 🔎 `HealthChecks.Jaeger`
+24. 🔎 `HealthChecks.Alertmanager`
+25. 🔎 `HealthChecks.Keycloak`
 
 ## Community-Owned Cloud And SaaS Candidates
 
 These are possible contributions, not core maintainer roadmap commitments.
 
-27. 🤝 `HealthChecks.Aws.Kinesis`
-28. 🤝 `HealthChecks.Aws.EventBridge`
-29. 🤝 `HealthChecks.Aws.Redshift`
-30. 🤝 `HealthChecks.Azure.Synapse`
-31. 🤝 `HealthChecks.Azure.AppConfiguration`
-32. 🤝 `HealthChecks.Gcp.PubSub`
-33. 🤝 `HealthChecks.Gcp.BigQuery`
-34. 🤝 `HealthChecks.Gcp.Spanner`
-35. 🤝 `HealthChecks.Gcp.SecretManager`
-36. 🤝 `HealthChecks.Microsoft.Fabric`
-37. 🤝 `HealthChecks.Databricks`
-38. 🤝 `HealthChecks.Snowflake`
-39. 🤝 `HealthChecks.Pinecone`
-40. 🤝 `HealthChecks.Auth0`
-41. 🤝 `HealthChecks.Okta`
-42. 🤝 `HealthChecks.LaunchDarkly`
+26. 🤝 `HealthChecks.Aws.Kinesis`
+27. 🤝 `HealthChecks.Aws.EventBridge`
+28. 🤝 `HealthChecks.Aws.Redshift`
+29. 🤝 `HealthChecks.Azure.Synapse`
+30. 🤝 `HealthChecks.Azure.AppConfiguration`
+31. 🤝 `HealthChecks.Gcp.PubSub`
+32. 🤝 `HealthChecks.Gcp.BigQuery`
+33. 🤝 `HealthChecks.Gcp.Spanner`
+34. 🤝 `HealthChecks.Gcp.SecretManager`
+35. 🤝 `HealthChecks.Microsoft.Fabric`
+36. 🤝 `HealthChecks.Databricks`
+37. 🤝 `HealthChecks.Snowflake`
+38. 🤝 `HealthChecks.Pinecone`
+39. 🤝 `HealthChecks.Auth0`
+40. 🤝 `HealthChecks.Okta`
+41. 🤝 `HealthChecks.LaunchDarkly`
 
 ## Notes
 

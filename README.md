@@ -123,6 +123,7 @@ HealthChecks packages include health checks for:
 | SurrealDB | [![Nuget](https://img.shields.io/nuget/dt/DotNetDiag.HealthChecks.SurrealDb)](https://www.nuget.org/packages/DotNetDiag.HealthChecks.SurrealDb) | [![Nuget](https://img.shields.io/nuget/v/DotNetDiag.HealthChecks.SurrealDb)](https://www.nuget.org/packages/DotNetDiag.HealthChecks.SurrealDb) | [![view](https://img.shields.io/github/issues/DotNetDiag/HealthChecks/surrealdb)](https://github.com/DotNetDiag/HealthChecks/labels/surrealdb) | |
 | System | [![Nuget](https://img.shields.io/nuget/dt/DotNetDiag.HealthChecks.System)](https://www.nuget.org/packages/DotNetDiag.HealthChecks.System) | [![Nuget](https://img.shields.io/nuget/v/DotNetDiag.HealthChecks.System)](https://www.nuget.org/packages/DotNetDiag.HealthChecks.System) | [![view](https://img.shields.io/github/issues/DotNetDiag/HealthChecks/system)](https://github.com/DotNetDiag/HealthChecks/labels/system) | Disk Storage, Folder, File, Private Memory, Virtual Memory, Process, Windows Service |
 | Uris | [![Nuget](https://img.shields.io/nuget/dt/DotNetDiag.HealthChecks.Uris)](https://www.nuget.org/packages/DotNetDiag.HealthChecks.Uris) | [![Nuget](https://img.shields.io/nuget/v/DotNetDiag.HealthChecks.Uris)](https://www.nuget.org/packages/DotNetDiag.HealthChecks.Uris) | [![view](https://img.shields.io/github/issues/DotNetDiag/HealthChecks/uris)](https://github.com/DotNetDiag/HealthChecks/labels/uris) | Single uri and uri groups |
+| Vault | [![Nuget](https://img.shields.io/nuget/dt/DotNetDiag.HealthChecks.Vault)](https://www.nuget.org/packages/DotNetDiag.HealthChecks.Vault) | [![Nuget](https://img.shields.io/nuget/v/DotNetDiag.HealthChecks.Vault)](https://www.nuget.org/packages/DotNetDiag.HealthChecks.Vault) | [![view](https://img.shields.io/github/issues/DotNetDiag/HealthChecks/vault)](https://github.com/DotNetDiag/HealthChecks/labels/vault) | HashiCorp Vault `/sys/health` states |
 
 > We support netcoreapp 2.2, 3.0 and 3.1. Please use package versions 2.2.X, 3.0.X and 3.1.X to target different versions.
 
@@ -186,6 +187,7 @@ Install-Package DotNetDiag.HealthChecks.SqlServer
 Install-Package DotNetDiag.HealthChecks.SurrealDb
 Install-Package DotNetDiag.HealthChecks.System
 Install-Package DotNetDiag.HealthChecks.Uris
+Install-Package DotNetDiag.HealthChecks.Vault
 ```
 
 Once the package is installed you can add the HealthCheck using the **AddXXX** `IServiceCollection` extension methods.

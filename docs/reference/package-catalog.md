@@ -20,6 +20,7 @@ Use this chapter to choose the right package family first, then open the [packag
 - `DotNetDiag.HealthChecks.SignalR`
 - `DotNetDiag.HealthChecks.System`
 - `DotNetDiag.HealthChecks.Uris`
+- [HashiCorp Vault]({{ '/reference/readmes/src/HealthChecks-Vault/' | relative_url }})
 
 ## AWS packages
 
