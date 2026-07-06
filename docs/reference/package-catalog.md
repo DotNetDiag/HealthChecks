@@ -52,6 +52,7 @@ Use this chapter to choose the right package family first, then open the [packag
 - [ClickHouse]({{ '/reference/readmes/src/HealthChecks-ClickHouse/' | relative_url }})
 - [Cosmos DB]({{ '/reference/readmes/src/HealthChecks-CosmosDb/' | relative_url }})
 - `DotNetDiag.HealthChecks.Dapr`
+- [etcd]({{ '/reference/readmes/src/HealthChecks-Etcd/' | relative_url }})
 - `DotNetDiag.HealthChecks.Elasticsearch`
 - `DotNetDiag.HealthChecks.EventStore`
 - `DotNetDiag.HealthChecks.EventStore.gRPC`
@@ -80,6 +81,7 @@ Use this chapter to choose the right package family first, then open the [packag
 - `DotNetDiag.HealthChecks.Sqlite`
 - `DotNetDiag.HealthChecks.SqlServer`
 - [SurrealDB]({{ '/reference/readmes/src/HealthChecks-SurrealDb/' | relative_url }})
+- [ZooKeeper]({{ '/reference/readmes/src/HealthChecks-ZooKeeper/' | relative_url }})
 
 ## How to use this catalog effectively
 

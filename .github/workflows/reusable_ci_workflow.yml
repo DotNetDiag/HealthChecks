@@ -40,6 +40,19 @@ jobs:
         shell: pwsh
         run: |
           ./.github/scripts/get-release-scope.ps1 -ProjectPath "${{ inputs.PROJECT_PATH }}"
+      - name: Resolve package version
+        id: package_version
+        shell: bash
+        run: |
+          package_version='${{ steps.release_scope.outputs.package_version }}'
+          project_path='${{ inputs.PROJECT_PATH }}'
+          project_path="${project_path#./}"
+
+          if [ "$project_path" = 'src/HealthChecks.Milvus/HealthChecks.Milvus.csproj' ] && [ -n "$package_version" ] && [[ "$package_version" != *-* ]]; then
+            package_version="${package_version}-preview.1"
+          fi
+
+          echo "package_version=$package_version" >> "$GITHUB_OUTPUT"
       - name: Summarize tag release scope
         if: ${{ steps.release_scope.outputs.is_tag == 'true' }}
         shell: bash
@@ -54,7 +67,7 @@ jobs:
             echo
             echo "- Project: \`${{ inputs.PROJECT_PATH }}\`"
             echo "- Previous tag: \`$previous_tag\`"
-            echo "- Package version: \`${{ steps.release_scope.outputs.package_version }}\`"
+            echo "- Package version: \`${{ steps.package_version.outputs.package_version }}\`"
             echo "- Release mode: \`${{ steps.release_scope.outputs.release_mode }}\`"
             echo "- Should run: \`${{ steps.release_scope.outputs.should_run }}\`"
             echo "- Reason: ${{ steps.release_scope.outputs.release_reason }}"
@@ -77,7 +90,7 @@ jobs:
           test_args=()
 
           if [ '${{ steps.release_scope.outputs.is_tag }}' = 'true' ]; then
-            project_args+=('-c' 'Release' '-p:PackageVersion=${{ steps.release_scope.outputs.package_version }}')
+            project_args+=('-c' 'Release' '-p:PackageVersion=${{ steps.package_version.outputs.package_version }}')
             test_args+=('-c' 'Release')
           fi
 
@@ -120,14 +133,14 @@ jobs:
         run: |
           dotnet pack --no-build '${{ inputs.PROJECT_PATH }}' \
             -c Release \
-            -p:PackageVersion='${{ steps.release_scope.outputs.package_version }}' \
+            -p:PackageVersion='${{ steps.package_version.outputs.package_version }}' \
             -o ./artifacts
       - name: Validate packed package version
         if: ${{ steps.release_scope.outputs.is_tag == 'true' && steps.release_scope.outputs.should_run == 'true' }}
         shell: bash
         run: |
           shopt -s nullglob
-          expected_package="./artifacts/${{ steps.package.outputs.id }}.${{ steps.release_scope.outputs.package_version }}.nupkg"
+          expected_package="./artifacts/${{ steps.package.outputs.id }}.${{ steps.package_version.outputs.package_version }}.nupkg"
           packages=(./artifacts/${{ steps.package.outputs.id }}.*.nupkg)
 
           if [ ${#packages[@]} -eq 0 ]; then

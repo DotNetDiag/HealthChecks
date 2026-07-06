@@ -35,11 +35,15 @@ flags:
     carryforward: true
   Consul:
     carryforward: true
+  ContainerRegistry:
+    carryforward: true
   CosmosDb:
     carryforward: true
   DocumentDb:
     carryforward: true
   DynamoDb:
+    carryforward: true
+  Etcd:
     carryforward: true
   Elasticsearch:
     carryforward: true
@@ -126,4 +130,6 @@ flags:
   Uris:
     carryforward: true
   Vault:
+    carryforward: true
+  ZooKeeper:
     carryforward: true

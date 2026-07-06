@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);ZooKeeper;Apache;Coordination</PackageTags>
+    <Description>HealthChecks.ZooKeeper is the health check package for Apache ZooKeeper.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ZooKeeperNetEx" />
+  </ItemGroup>
+
+</Project>

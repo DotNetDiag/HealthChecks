@@ -32,6 +32,7 @@
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
     <PackageVersion Include="Dapr.Client" Version="1.18.4" />
     <PackageVersion Include="DogStatsD-CSharp-Client" Version="9.2.0" />
+    <PackageVersion Include="dotnet-etcd" Version="9.1.0" />
     <PackageVersion Include="Ductus.FluentDocker" Version="2.85.0" />
     <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="9.4.2" />
     <PackageVersion Include="EventStore.Client" Version="22.0.0" />
@@ -128,6 +129,7 @@
     <PackageVersion Include="Testcontainers.RabbitMq" Version="4.13.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageVersion Include="ZooKeeperNetEx" Version="3.4.12.4" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsPackable)' == 'true'">
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.300" />

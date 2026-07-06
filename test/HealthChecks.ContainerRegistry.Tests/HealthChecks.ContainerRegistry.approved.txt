@@ -1,0 +1,25 @@
+namespace HealthChecks.ContainerRegistry
+{
+    public sealed class ContainerRegistryHealthCheck : Microsoft.Extensions.Diagnostics.HealthChecks.IHealthCheck
+    {
+        public ContainerRegistryHealthCheck(System.Net.Http.HttpClient client, HealthChecks.ContainerRegistry.ContainerRegistryHealthCheckOptions? options = null) { }
+        public System.Threading.Tasks.Task<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult> CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext context, System.Threading.CancellationToken cancellationToken = default) { }
+    }
+    public sealed class ContainerRegistryHealthCheckOptions
+    {
+        public ContainerRegistryHealthCheckOptions() { }
+        public bool AllowUnauthorizedResponse { get; set; }
+        public System.Uri? BaseUri { get; set; }
+        public System.Action<System.Net.Http.HttpRequestMessage>? ConfigureRequest { get; set; }
+        public string RegistryEndpointPath { get; set; }
+        public bool RequireAuthenticationChallenge { get; set; }
+    }
+}
+namespace Microsoft.Extensions.DependencyInjection
+{
+    public static class ContainerRegistryHealthCheckBuilderExtensions
+    {
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddContainerRegistry(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, System.Func<System.IServiceProvider, System.Net.Http.HttpClient>? clientFactory = null, System.Func<System.IServiceProvider, HealthChecks.ContainerRegistry.ContainerRegistryHealthCheckOptions>? optionsFactory = null, string? name = "container_registry", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default, System.Action<System.IServiceProvider, System.Net.Http.HttpClient>? configureClient = null, System.Func<System.IServiceProvider, System.Net.Http.HttpMessageHandler>? configurePrimaryHttpMessageHandler = null) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddContainerRegistry(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, System.Uri baseUri, System.Action<HealthChecks.ContainerRegistry.ContainerRegistryHealthCheckOptions>? setup = null, string? name = "container_registry", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default, System.Action<System.IServiceProvider, System.Net.Http.HttpClient>? configureClient = null, System.Func<System.IServiceProvider, System.Net.Http.HttpMessageHandler>? configurePrimaryHttpMessageHandler = null) { }
+    }
+}

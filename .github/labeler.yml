@@ -44,6 +44,10 @@ consul:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.Consul/**/*]
 
+containerregistry:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.ContainerRegistry/**/*]
+
 cosmosdb:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.CosmosDb/**/*]
@@ -59,6 +63,10 @@ documentdb:
 dynamodb:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.DynamoDb/**/*]
+
+etcd:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Etcd/**/*]
 
 elasticsearch:
   - changed-files:
@@ -224,3 +232,7 @@ uris:
 vault:
   - changed-files:
     - any-glob-to-any-file: [src/HealthChecks.Vault/**/*]
+
+zookeeper:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.ZooKeeper/**/*]

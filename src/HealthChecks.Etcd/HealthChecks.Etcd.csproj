@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- dotnet-etcd does not target netstandard, so this package is restricted to .NET 8 and .NET 10. -->
+    <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);Etcd;etcd;KeyValue;Coordination</PackageTags>
+    <Description>HealthChecks.Etcd is the health check package for etcd.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="dotnet-etcd" />
+  </ItemGroup>
+
+</Project>

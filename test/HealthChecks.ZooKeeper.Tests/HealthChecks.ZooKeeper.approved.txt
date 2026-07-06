@@ -1,0 +1,24 @@
+namespace HealthChecks.ZooKeeper
+{
+    public sealed class ZooKeeperHealthCheck : Microsoft.Extensions.Diagnostics.HealthChecks.IHealthCheck
+    {
+        public ZooKeeperHealthCheck(string connectionString, HealthChecks.ZooKeeper.ZooKeeperHealthCheckOptions? options = null) { }
+        public System.Threading.Tasks.Task<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult> CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext context, System.Threading.CancellationToken cancellationToken = default) { }
+    }
+    public sealed class ZooKeeperHealthCheckOptions
+    {
+        public ZooKeeperHealthCheckOptions() { }
+        public bool CanBeReadOnly { get; set; }
+        public string Path { get; set; }
+        public System.TimeSpan SessionTimeout { get; set; }
+        public System.Func<org.apache.zookeeper.Watcher> WatcherFactory { get; set; }
+    }
+}
+namespace Microsoft.Extensions.DependencyInjection
+{
+    public static class ZooKeeperHealthCheckBuilderExtensions
+    {
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddZooKeeper(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, System.Func<System.IServiceProvider, string>? connectionStringFactory = null, System.Func<System.IServiceProvider, HealthChecks.ZooKeeper.ZooKeeperHealthCheckOptions>? optionsFactory = null, string? name = "zookeeper", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddZooKeeper(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, string connectionString, System.Action<HealthChecks.ZooKeeper.ZooKeeperHealthCheckOptions>? setup = null, string? name = "zookeeper", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default) { }
+    }
+}
