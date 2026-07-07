@@ -22,6 +22,7 @@ builder.Services
     .AddInMemoryStorage();
 //.AddPostgreSqlStorage("Host=localhost;Username=postgres;Password=Password12!;Database=healthchecksui")
 //.AddMySqlStorage("Host=localhost;User Id=root;Password=Password12!;Database=UI")
+//.AddSonnetDBStorage("Data Source=./healthchecks-ui-data")
 
 var app = builder.Build();
 

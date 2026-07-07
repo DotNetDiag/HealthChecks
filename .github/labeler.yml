@@ -246,7 +246,7 @@ solr:
 
 sonnetdb:
   - changed-files:
-    - any-glob-to-any-file: [src/HealthChecks.SonnetDB/**/*]
+    - any-glob-to-any-file: [src/HealthChecks.SonnetDB/**/*, src/HealthChecks.UI.SonnetDB.Storage/**/*]
 
 sqlite:
   - changed-files:

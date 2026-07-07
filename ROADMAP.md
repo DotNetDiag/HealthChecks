@@ -34,7 +34,7 @@ This roadmap tracks health check packages that core maintainers are actively con
    - Harbor API health endpoint checks, including overall status, component status validation, and optional required component enforcement.
 
 5. ✅ `HealthChecks.SonnetDB`
-   - SonnetDB `/healthz` status checks, readiness metadata capture, optional authenticated probes, and optional Copilot readiness enforcement.
+   - SonnetDB `/healthz` status checks, readiness metadata capture, optional authenticated probes, optional Copilot readiness enforcement, and HealthChecks UI storage support.
 
 6. ✅ `HealthChecks.Vault`
    - HashiCorp Vault `/sys/health` checks, including sealed, standby, initialized, active, performance standby, disaster recovery secondary, HA unhealthy, and removed-from-cluster states.

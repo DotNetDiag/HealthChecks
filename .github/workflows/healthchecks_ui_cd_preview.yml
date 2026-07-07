@@ -38,6 +38,8 @@ jobs:
         run: dotnet restore ./src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj
       - name: Restore UI.SQLite.Storage
         run: dotnet restore ./src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj
+      - name: Restore UI.SonnetDB.Storage
+        run: dotnet restore ./src/HealthChecks.UI.SonnetDB.Storage/HealthChecks.UI.SonnetDB.Storage.csproj
       - name: Restore UI.SqlServer.Storage
         run: dotnet restore ./src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj
       #- name: Restore UI.K8s.Operator
@@ -58,6 +60,8 @@ jobs:
         run: dotnet build --no-restore ./src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj -c $BUILD_CONFIG
       - name: Build UI.SQLite.Storage
         run: dotnet build --no-restore ./src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj -c $BUILD_CONFIG
+      - name: Build UI.SonnetDB.Storage
+        run: dotnet build --no-restore ./src/HealthChecks.UI.SonnetDB.Storage/HealthChecks.UI.SonnetDB.Storage.csproj -c $BUILD_CONFIG
       - name: Build UI.SqlServer.Storage
         run: dotnet build --no-restore ./src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj -c $BUILD_CONFIG
       #- name: Build UI.K8s.Operator
@@ -78,6 +82,8 @@ jobs:
         run: dotnet pack --no-build ./src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj --version-suffix $VERSION_SUFFIX -c $BUILD_CONFIG -o ./artifacts
       - name: Pack UI.SQLite.Storage
         run: dotnet pack --no-build ./src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj --version-suffix $VERSION_SUFFIX -c $BUILD_CONFIG -o ./artifacts
+      - name: Pack UI.SonnetDB.Storage
+        run: dotnet pack --no-build ./src/HealthChecks.UI.SonnetDB.Storage/HealthChecks.UI.SonnetDB.Storage.csproj --version-suffix $VERSION_SUFFIX -c $BUILD_CONFIG -o ./artifacts
       - name: Pack UI.SqlServer.Storage
         run: dotnet pack --no-build ./src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj --version-suffix $VERSION_SUFFIX -c $BUILD_CONFIG -o ./artifacts
       #- name: Pack UI.K8s.Operator

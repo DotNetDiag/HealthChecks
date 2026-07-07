@@ -46,6 +46,7 @@ jobs:
             './src/HealthChecks.UI.MySql.Storage/HealthChecks.UI.MySql.Storage.csproj'
             './src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj'
             './src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj'
+            './src/HealthChecks.UI.SonnetDB.Storage/HealthChecks.UI.SonnetDB.Storage.csproj'
             './src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj'
             './src/HealthChecks.UI.K8s.Operator/HealthChecks.UI.K8s.Operator.csproj'
           )
@@ -65,6 +66,7 @@ jobs:
             './src/HealthChecks.UI.MySql.Storage/HealthChecks.UI.MySql.Storage.csproj'
             './src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj'
             './src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj'
+            './src/HealthChecks.UI.SonnetDB.Storage/HealthChecks.UI.SonnetDB.Storage.csproj'
             './src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj'
             './src/HealthChecks.UI.K8s.Operator/HealthChecks.UI.K8s.Operator.csproj'
           )
@@ -84,6 +86,7 @@ jobs:
             './src/HealthChecks.UI.MySql.Storage/HealthChecks.UI.MySql.Storage.csproj'
             './src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj'
             './src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj'
+            './src/HealthChecks.UI.SonnetDB.Storage/HealthChecks.UI.SonnetDB.Storage.csproj'
             './src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj'
             './src/HealthChecks.UI.K8s.Operator/HealthChecks.UI.K8s.Operator.csproj'
           )
