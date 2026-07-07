@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Firestore" />
+    <PackageReference Include="Microsoft.Bcl.Memory" />
   </ItemGroup>
 
 </Project>

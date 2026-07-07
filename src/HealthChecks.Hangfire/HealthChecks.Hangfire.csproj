@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Hangfire.Core" />
+    <PackageReference Include="Newtonsoft.Json" VersionOverride="13.0.1" />
     <Compile Include="../HealthCheckResultTask.cs" />
   </ItemGroup>
 

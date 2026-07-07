@@ -64,6 +64,7 @@
     <PackageVersion Include="Microsoft.Azure.Management.DigitalTwins" Version="1.2.0" />
     <PackageVersion Include="Microsoft.Azure.Management.ResourceManager.Fluent" Version="1.38.1" />
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.*" />
+    <PackageVersion Include="Microsoft.Bcl.Memory" Version="10.0.4" />
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.2" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="8.0.*" Condition="'$(TargetFramework)' != 'net10.0'" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.*" Condition="'$(TargetFramework)' == 'net10.0'" />
