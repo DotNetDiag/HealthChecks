@@ -65,7 +65,7 @@
     <PackageVersion Include="Microsoft.Azure.Management.ResourceManager.Fluent" Version="1.38.1" />
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.*" />
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.2" />
-    <PackageVersion Include="Microsoft.Data.Sqlite" Version="8.0.*" Condition="'$(TargetFramework)' != 'net10.0'" />
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.*" Condition="'$(TargetFramework)' != 'net10.0'" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.*" Condition="'$(TargetFramework)' == 'net10.0'" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="8.5.0" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="8.0.*" Condition="'$(TargetFramework)' != 'net10.0'" />
