@@ -23,6 +23,8 @@ $defaultGlobalFiles = @(
     'src/CallerArgumentExpressionAttribute.cs'
 )
 
+$nuGetFlatContainerBaseUrl = 'https://api.nuget.org/v3-flatcontainer'
+
 function ConvertTo-RepoPath {
     param([Parameter(Mandatory = $true)][string]$Path)
 
@@ -105,6 +107,29 @@ function Write-OutputVariable {
     }
 
     Add-Content -LiteralPath $OutputPath -Value "$Name=$Value"
+}
+
+function Test-NuGetPackageExists {
+    param(
+        [Parameter(Mandatory = $true)][string]$PackageId,
+        [Parameter(Mandatory = $true)][string]$BaseUrl
+    )
+
+    $packageIdLower = $PackageId.ToLowerInvariant()
+    $packageUrl = "$($BaseUrl.TrimEnd('/'))/$packageIdLower/index.json"
+
+    try {
+        $null = Invoke-RestMethod -Uri $packageUrl -Method Get -TimeoutSec 30
+        return $true
+    }
+    catch {
+        if ($null -ne $_.Exception.Response -and [int]$_.Exception.Response.StatusCode -eq 404) {
+            return $false
+        }
+
+        Write-Warning "Could not check whether NuGet package '$PackageId' exists at '$packageUrl': $($_.Exception.Message)"
+        return $null
+    }
 }
 
 $results = [ordered]@{
@@ -225,6 +250,19 @@ else {
             if ($shouldRun) {
                 break
             }
+        }
+    }
+
+    if (-not $shouldRun) {
+        $packageId = dotnet msbuild $ProjectPath -nologo -getProperty:PackageId | Select-Object -Last 1
+        if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($packageId)) {
+            throw "Could not resolve PackageId for '$ProjectPath'."
+        }
+
+        $packageExists = Test-NuGetPackageExists -PackageId $packageId.Trim() -BaseUrl $nuGetFlatContainerBaseUrl
+        if ($packageExists -eq $false) {
+            $shouldRun = $true
+            $releaseReason = "Package '$($packageId.Trim())' has not been published to NuGet.org yet."
         }
     }
 

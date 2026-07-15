@@ -51,10 +51,11 @@ public sealed class CockroachDbContainerFixture : IAsyncLifetime
             .WithPortBinding(HttpPort, true)
             .WithCommand(
                 "start-single-node",
-                "--insecure")
+                "--insecure",
+                $"--http-addr=0.0.0.0:{HttpPort}")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request
                 .ForPort(HttpPort)
-                .ForPath("/health?ready=1")))
+                .ForPath("/health")))
             .Build();
 
         await container.StartAsync();
