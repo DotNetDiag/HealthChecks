@@ -36,6 +36,19 @@ services
 
 Each builder extension also supports operational metadata such as a custom name, tags, a failure status, and a timeout.
 
+When Redis connection setup is asynchronous, use the async multiplexer factory. The factory should return a shared
+`IConnectionMultiplexer`; any asynchronous connection-string or credential resolution can happen inside the factory.
+
+```csharp
+services
+    .AddHealthChecks()
+    .AddRedis(async (_, cancellationToken) =>
+    {
+        // Resolve credentials and reuse the multiplexer in application code.
+        return await GetSharedRedisConnectionMultiplexerAsync(cancellationToken);
+    });
+```
+
 ```csharp
 services
     .AddHealthChecks()

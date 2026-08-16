@@ -13,6 +13,7 @@ public class RedisHealthCheck : IHealthCheck
     private readonly string? _redisConnectionString;
     private readonly IConnectionMultiplexer? _connectionMultiplexer;
     private readonly Func<IConnectionMultiplexer>? _connectionMultiplexerFactory;
+    private readonly Func<CancellationToken, Task<IConnectionMultiplexer>>? _asyncConnectionMultiplexerFactory;
 
     public RedisHealthCheck(string redisConnectionString)
     {
@@ -36,7 +37,12 @@ public class RedisHealthCheck : IHealthCheck
     /// </remarks>
     internal RedisHealthCheck(Func<IConnectionMultiplexer> connectionMultiplexerFactory)
     {
-        _connectionMultiplexerFactory = connectionMultiplexerFactory;
+        _connectionMultiplexerFactory = Guard.ThrowIfNull(connectionMultiplexerFactory);
+    }
+
+    internal RedisHealthCheck(Func<CancellationToken, Task<IConnectionMultiplexer>> connectionMultiplexerFactory)
+    {
+        _asyncConnectionMultiplexerFactory = Guard.ThrowIfNull(connectionMultiplexerFactory);
     }
 
     /// <inheritdoc />
@@ -45,6 +51,19 @@ public class RedisHealthCheck : IHealthCheck
         try
         {
             IConnectionMultiplexer? connection = _connectionMultiplexer ?? _connectionMultiplexerFactory?.Invoke();
+
+            if (connection is null && _asyncConnectionMultiplexerFactory is not null)
+            {
+                try
+                {
+                    connection = Guard.ThrowIfNull(
+                        await _asyncConnectionMultiplexerFactory(cancellationToken).ConfigureAwait(false));
+                }
+                catch (OperationCanceledException)
+                {
+                    return new HealthCheckResult(context.Registration.FailureStatus, description: "Healthcheck timed out");
+                }
+            }
 
             if (_redisConnectionString is not null && !_connections.TryGetValue(_redisConnectionString, out connection))
             {
