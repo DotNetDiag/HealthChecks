@@ -118,7 +118,7 @@
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="SolrNet.Core" Version="1.2.1" />
     <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
-    <PackageVersion Include="SSH.NET" Version="2025.1.0" />
+    <PackageVersion Include="SSH.NET" Version="2026.0.0" />
     <PackageVersion Include="StackExchange.Redis" Version="3.0.11" />
     <PackageVersion Include="SurrealDb.Net" Version="0.10.2" />
     <PackageVersion Include="System.Buffers" Version="4.6.1" />
@@ -131,24 +131,24 @@
     <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1" />
     <PackageVersion Include="System.Threading.Channels" Version="8.0.*" Condition="'$(TargetFramework)' != 'net10.0'" />
     <PackageVersion Include="System.Threading.Channels" Version="10.0.*" Condition="'$(TargetFramework)' == 'net10.0'" />
-    <PackageVersion Include="Testcontainers" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.Cassandra" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.ClickHouse" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.Db2" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.FirebirdSql" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.Kafka" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.LocalStack" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.Minio" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.Milvus" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.Pulsar" Version="4.13.0" />
-    <PackageVersion Include="TestContainers.MongoDb" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.MsSql" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.MySql" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.Neo4j" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.RavenDb" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.Redis" Version="4.13.0" />
-    <PackageVersion Include="Testcontainers.RabbitMq" Version="4.13.0" />
+    <PackageVersion Include="Testcontainers" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.Cassandra" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.ClickHouse" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.Db2" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.FirebirdSql" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.Kafka" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.LocalStack" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.Minio" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.Milvus" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.Pulsar" Version="4.14.0" />
+    <PackageVersion Include="TestContainers.MongoDb" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.MsSql" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.MySql" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.Neo4j" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.RavenDb" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.Redis" Version="4.14.0" />
+    <PackageVersion Include="Testcontainers.RabbitMq" Version="4.14.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageVersion Include="ZooKeeperNetEx" Version="3.4.12.4" />
