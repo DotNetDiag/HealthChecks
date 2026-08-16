@@ -1,10 +1,7 @@
-name: HealthChecks Aws Sqs CD
+name: Legacy HealthChecks Aws Sqs CD
 
 on:
-  push:
-    tags:
-      - release-aws_sqs-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Aws.Sqs/HealthChecks.Aws.Sqs.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.Aws.Sqs

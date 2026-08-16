@@ -20,7 +20,7 @@ public class UI_Configuration_should
         var evaluationTimeInSeconds = 180;
         var minimumSeconds = 30;
 
-        var webhost = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .UseStartup<DefaultStartup>()
             .ConfigureServices(services =>
             {
@@ -34,9 +34,9 @@ public class UI_Configuration_should
                         .SetEvaluationTimeInSeconds(evaluationTimeInSeconds)
                         .SetMinimumSecondsBetweenFailureNotifications(minimumSeconds);
                 }).AddInMemoryStorage();
-            });
+            }));
 
-        var serviceProvider = webhost.Build().Services;
+        var serviceProvider = host.Services;
         var UISettings = serviceProvider.GetRequiredService<IOptions<Settings>>().Value;
 
         UISettings.EvaluationTimeInSeconds.ShouldBe(evaluationTimeInSeconds);
@@ -59,16 +59,16 @@ public class UI_Configuration_should
     [Fact]
     public void load_ui_settings_from_configuration_key()
     {
-        var webhost = new WebHostBuilder()
+        using var host = TestHostHelper.Build(startHost: false, webHostBuilder => webHostBuilder
             .UseStartup<DefaultStartup>()
             .ConfigureAppConfiguration(conf =>
             {
                 conf.Sources.Clear();
                 var path = Path.Combine("Functional", "Configuration", "appsettings.json");
                 conf.AddJsonFile(path, false);
-            }).ConfigureServices(services => services.AddHealthChecksUI());
+            }).ConfigureServices(services => services.AddHealthChecksUI()));
 
-        var serviceProvider = webhost.Build().Services;
+        var serviceProvider = host.Services;
         var UISettings = serviceProvider.GetRequiredService<IOptions<Settings>>().Value;
 
         UISettings.EvaluationTimeInSeconds.ShouldBe(20);
@@ -96,7 +96,7 @@ public class UI_Configuration_should
         var webhookUri = "http://webhook2";
         var webhookPayload = "payload1";
 
-        var webhost = new WebHostBuilder()
+        using var host = TestHostHelper.Build(startHost: false, webHostBuilder => webHostBuilder
             .UseStartup<DefaultStartup>()
             .ConfigureAppConfiguration(conf =>
             {
@@ -112,9 +112,9 @@ public class UI_Configuration_should
                         .AddWebhookNotification(name: webhookName, uri: webhookUri, payload: webhookPayload)
                         .SetMinimumSecondsBetweenFailureNotifications(200);
                 });
-            });
+            }));
 
-        var serviceProvider = webhost.Build().Services;
+        var serviceProvider = host.Services;
         var UISettings = serviceProvider.GetRequiredService<IOptions<Settings>>().Value;
 
         UISettings.MinimumSecondsBetweenFailureNotifications.ShouldBe(200);
@@ -146,7 +146,7 @@ public class UI_Configuration_should
         var webhookHandlerConfigured = false;
         var webhookClientConfigured = false;
 
-        var webhost = new WebHostBuilder()
+        using var host = TestHostHelper.Build(startHost: false, webHostBuilder => webHostBuilder
             .UseStartup<DefaultStartup>()
             .ConfigureAppConfiguration(conf =>
             {
@@ -180,9 +180,9 @@ public class UI_Configuration_should
                         };
                     });
                 });
-            }).Build();
+            }));
 
-        var clientFactory = webhost.Services.GetRequiredService<IHttpClientFactory>();
+        var clientFactory = host.Services.GetRequiredService<IHttpClientFactory>();
         var apiClient = clientFactory.CreateClient(Keys.HEALTH_CHECK_HTTP_CLIENT_NAME);
         var webhookClient = clientFactory.CreateClient(Keys.HEALTH_CHECK_WEBHOOK_HTTP_CLIENT_NAME);
 
@@ -195,7 +195,7 @@ public class UI_Configuration_should
     [Fact]
     public void register_server_addresses_service_to_resolve_relative_uris_using_endpoints()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(startHost: false, webHostBuilder => webHostBuilder
             .UseStartup<DefaultStartup>()
             .UseKestrel()
             .ConfigureServices(services =>
@@ -210,9 +210,9 @@ public class UI_Configuration_should
                 app.UseRouting();
                 app.UseEndpoints(config => config.MapHealthChecksUI());
 
-            });
+            }));
 
-        var serviceProvider = webHostBuilder.Build().Services;
+        var serviceProvider = host.Services;
         var serverAddressesService = serviceProvider.GetRequiredService<ServerAddressesService>();
 
         serverAddressesService.ShouldNotBeNull();
@@ -222,7 +222,7 @@ public class UI_Configuration_should
     [Fact]
     public void register_server_addresses_service_to_resolve_relative_uris_using_application_builder()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(startHost: false, webHostBuilder => webHostBuilder
             .UseStartup<DefaultStartup>()
             .UseKestrel()
             .ConfigureServices(services =>
@@ -230,9 +230,9 @@ public class UI_Configuration_should
                 services.
                 AddHealthChecksUI();
 
-            }).Configure(app => app.UseHealthChecksUI());
+            }).Configure(app => app.UseHealthChecksUI()));
 
-        var serviceProvider = webHostBuilder.Build().Services;
+        var serviceProvider = host.Services;
         var serverAddressesService = serviceProvider.GetRequiredService<ServerAddressesService>();
 
         serverAddressesService.ShouldNotBeNull();
@@ -242,15 +242,15 @@ public class UI_Configuration_should
     [Fact]
     public void have_enabled_database_migrations_by_default()
     {
-        var webhost = new WebHostBuilder()
+        using var host = TestHostHelper.Build(startHost: false, webHostBuilder => webHostBuilder
             .UseStartup<DefaultStartup>()
             .ConfigureServices(services =>
             {
                 services.AddHealthChecksUI()
                 .AddInMemoryStorage();
-            });
+            }));
 
-        var serviceProvider = webhost.Build().Services;
+        var serviceProvider = host.Services;
         var UISettings = serviceProvider.GetRequiredService<IOptions<Settings>>().Value;
 
         UISettings.DisableMigrations.ShouldBe(false);
@@ -259,16 +259,16 @@ public class UI_Configuration_should
     [Fact]
     public void allow_disable_running_database_migrations_in_ui_setup()
     {
-        var webhost = new WebHostBuilder()
+        using var host = TestHostHelper.Build(startHost: false, webHostBuilder => webHostBuilder
             .UseStartup<DefaultStartup>()
             .ConfigureServices(services =>
             {
                 services
                 .AddHealthChecksUI(setup => setup.DisableDatabaseMigrations())
                 .AddInMemoryStorage();
-            });
+            }));
 
-        var serviceProvider = webhost.Build().Services;
+        var serviceProvider = host.Services;
         var UISettings = serviceProvider.GetRequiredService<IOptions<Settings>>().Value;
 
         UISettings.DisableMigrations.ShouldBe(true);
@@ -277,7 +277,7 @@ public class UI_Configuration_should
     [Fact]
     public void allow_disable_running_database_migrations_using_configuration_providers()
     {
-        var webhost = new WebHostBuilder()
+        using var host = TestHostHelper.Build(startHost: false, webHostBuilder => webHostBuilder
             .UseStartup<DefaultStartup>()
             .ConfigureAppConfiguration(config =>
             {
@@ -293,9 +293,9 @@ public class UI_Configuration_should
                 services
                 .AddHealthChecksUI()
                 .AddInMemoryStorage();
-            });
+            }));
 
-        var serviceProvider = webhost.Build().Services;
+        var serviceProvider = host.Services;
         var UISettings = serviceProvider.GetRequiredService<IOptions<Settings>>().Value;
 
         UISettings.DisableMigrations.ShouldBe(true);
@@ -306,7 +306,7 @@ public class UI_Configuration_should
     {
         const string pageTitle = "My Health Checks UI";
 
-        var builder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -325,10 +325,10 @@ public class UI_Configuration_should
                             options.PageTitle = pageTitle;
                         });
                     });
-            });
+            }));
 
-        var server = new TestServer(builder);
-        var options = server.Services.GetRequiredService<IOptions<Configuration.Options>>().Value;
+        var server = host.GetTestServer();
+        var options = host.Services.GetRequiredService<IOptions<Configuration.Options>>().Value;
         var response = await server.CreateRequest(options.UIPath).GetAsync();
         var html = await response.Content.ReadAsStringAsync();
 

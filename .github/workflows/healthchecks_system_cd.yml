@@ -1,10 +1,7 @@
-name: HealthChecks System CD
+name: Legacy HealthChecks System CD
 
 on:
-  push:
-    tags:
-      - release-system-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.System/HealthChecks.System.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.System

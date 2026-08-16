@@ -1,6 +1,7 @@
 using System.Threading.Channels;
 using HealthChecks.UI.K8s.Operator.Controller;
 using HealthChecks.UI.K8s.Operator.Diagnostics;
+using HealthChecks.UI.K8s.Operator.Handlers;
 using HealthChecks.UI.K8s.Operator.Operator;
 using k8s;
 using Microsoft.Extensions.Hosting;
@@ -11,11 +12,13 @@ namespace HealthChecks.UI.K8s.Operator;
 
 internal class HealthChecksOperator : IHostedService
 {
-    private Watcher<HealthCheckResource>? _watcher;
+    private CancellationTokenSource? _watcherCts;
+    private Task? _watcherTask;
     private readonly IKubernetes _client;
     private readonly IHealthChecksController _controller;
     private readonly NamespacedServiceWatcher _serviceWatcher;
     private readonly ClusterServiceWatcher _clusterServiceWatcher;
+    private readonly StatusHandler _statusHandler;
     private readonly OperatorDiagnostics _diagnostics;
     private readonly ILogger<K8sOperator> _logger;
     private readonly CancellationTokenSource _operatorCts = new();
@@ -28,6 +31,7 @@ internal class HealthChecksOperator : IHostedService
         IHealthChecksController controller,
         NamespacedServiceWatcher serviceWatcher,
         ClusterServiceWatcher clusterServiceWatcher,
+        StatusHandler statusHandler,
         OperatorDiagnostics diagnostics,
         ILogger<K8sOperator> logger)
     {
@@ -35,6 +39,7 @@ internal class HealthChecksOperator : IHostedService
         _controller = Guard.ThrowIfNull(controller);
         _serviceWatcher = Guard.ThrowIfNull(serviceWatcher);
         _clusterServiceWatcher = Guard.ThrowIfNull(clusterServiceWatcher);
+        _statusHandler = Guard.ThrowIfNull(statusHandler);
         _diagnostics = Guard.ThrowIfNull(diagnostics);
         _logger = Guard.ThrowIfNull(logger);
 
@@ -57,11 +62,9 @@ internal class HealthChecksOperator : IHostedService
     {
         _diagnostics.OperatorShuttingDown();
         _operatorCts.Cancel();
-
-        if (_watcher != null && _watcher.Watching)
-        {
-            _watcher.Dispose();
-        }
+        _watcherCts?.Cancel();
+        _watcherCts?.Dispose();
+        _watcherCts = null;
 
         _serviceWatcher.Dispose();
         _clusterServiceWatcher.Dispose();
@@ -72,32 +75,9 @@ internal class HealthChecksOperator : IHostedService
 
     private async Task StartWatcherAsync(CancellationToken token)
     {
-        var response = await _client.CustomObjects.ListClusterCustomObjectWithHttpMessagesAsync(
-            group: Constants.GROUP,
-            version: Constants.VERSION,
-            plural: Constants.PLURAL,
-            watch: true,
-            timeoutSeconds: (int)TimeSpan.FromMinutes(60).TotalSeconds,
-            cancellationToken: token
-            );
-
-        _watcher = response.Watch<HealthCheckResource, object>(
-            onEvent: async (eventType, item) =>
-            {
-                await _channel.Writer.WriteAsync(new ResourceWatch
-                {
-                    EventType = eventType,
-                    Resource = item
-                }, token);
-            }
-            ,
-            onClosed: () =>
-            {
-                _watcher?.Dispose();
-                _ = StartWatcherAsync(token);
-            },
-            onError: e => _logger.LogError(e.Message)
-            );
+        _watcherCts = CancellationTokenSource.CreateLinkedTokenSource(token, _operatorCts.Token);
+        _watcherTask = WatchResourcesAsync(_watcherCts.Token);
+        await Task.CompletedTask;
     }
 
     private async Task OperatorListenerAsync()
@@ -126,6 +106,12 @@ internal class HealthChecksOperator : IHostedService
                 catch (Exception ex)
                 {
                     _diagnostics.OperatorThrow(ex);
+
+                    await _statusHandler.PatchAsync(item.Resource, new HealthCheckResourceStatus
+                    {
+                        Phase = "Failed",
+                        Message = ex.Message
+                    }, _operatorCts.Token);
                 }
             }
         }
@@ -177,6 +163,47 @@ internal class HealthChecksOperator : IHostedService
                 _logger.LogInformation("The UI replica {Name} in {Namespace} is not available yet, retrying...{Retries}/{MaxRetries}", deployment?.Metadata.Name, resource.Metadata.NamespaceProperty, retries, WAIT_FOR_REPLICA_RETRIES);
                 await Task.Delay(WAIT_FOR_REPLICA_DELAY);
                 retries++;
+            }
+        }
+
+        await _statusHandler.PatchAsync(resource, new HealthCheckResourceStatus
+        {
+            Phase = availableReplicas > 0 ? "Ready" : "Progressing",
+            Message = availableReplicas > 0 ? "UI deployment has available replicas" : "UI deployment was created but no replicas are available yet",
+            AvailableReplicas = availableReplicas
+        }, _operatorCts.Token);
+    }
+
+    private async Task WatchResourcesAsync(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            var response = _client.CustomObjects.ListClusterCustomObjectWithHttpMessagesAsync<HealthCheckResourceList>(
+                group: Constants.GROUP,
+                version: Constants.VERSION,
+                plural: Constants.PLURAL,
+                watch: true,
+                timeoutSeconds: (int)TimeSpan.FromMinutes(60).TotalSeconds,
+                cancellationToken: token);
+
+            try
+            {
+#pragma warning disable CS0618 // KubernetesClient 19 exposes WatchAsync via an obsolete extension with no non-obsolete alternative yet
+                await foreach (var (eventType, item) in response.WatchAsync<HealthCheckResource, HealthCheckResourceList>(
+                    onError: e => _logger.LogError(e, "Error watching health check resources"),
+                    cancellationToken: token))
+                {
+                    await _channel.Writer.WriteAsync(new ResourceWatch
+                    {
+                        EventType = eventType,
+                        Resource = item
+                    }, token);
+                }
+#pragma warning restore CS0618
+            }
+            catch (OperationCanceledException) when (token.IsCancellationRequested)
+            {
+                break;
             }
         }
     }

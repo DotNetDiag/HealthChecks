@@ -1,10 +1,7 @@
-name: HealthChecks Uris CD
+name: Legacy HealthChecks Uris CD
 
 on:
-  push:
-    tags:
-      - release-uris-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Uris/HealthChecks.Uris.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.Uris

@@ -5,13 +5,13 @@ namespace HealthChecks.Sqlite.Tests.Functional;
 public class sqlite_healthcheck_should
 {
     [Fact]
-    public async void be_healthy_when_sqlite_is_available()
+    public async Task be_healthy_when_sqlite_is_available()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                .AddSqlite($"Data Source=sqlite.db", healthQuery: "select name from sqlite_master where type='table'", tags: new string[] { "sqlite" });
+                .AddSqlite($"Data Source=sqlite.db", healthQuery: "select name from sqlite_master where type='table'", tags: ["sqlite"]);
             })
             .Configure(app =>
             {
@@ -19,9 +19,9 @@ public class sqlite_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("sqlite")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -31,11 +31,11 @@ public class sqlite_healthcheck_should
     [Fact]
     public async Task be_unhealthy_when_sqlite_is_unavailable()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                .AddSqlite($"Data Source=fake.db", healthQuery: "select * from Users", tags: new string[] { "sqlite" });
+                .AddSqlite($"Data Source=fake.db", healthQuery: "select * from Users", tags: ["sqlite"]);
             })
             .Configure(app =>
             {
@@ -43,9 +43,9 @@ public class sqlite_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("sqlite")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -53,13 +53,13 @@ public class sqlite_healthcheck_should
     }
 
     [Fact]
-    public async void be_unhealthy_when_sqlquery_is_not_valid()
+    public async Task be_unhealthy_when_sqlquery_is_not_valid()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                .AddSqlite($"Data Source=sqlite.db", healthQuery: "select name from invaliddb", tags: new string[] { "sqlite" });
+                .AddSqlite($"Data Source=sqlite.db", healthQuery: "select name from invaliddb", tags: ["sqlite"]);
             })
             .Configure(app =>
             {
@@ -67,9 +67,9 @@ public class sqlite_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("sqlite")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

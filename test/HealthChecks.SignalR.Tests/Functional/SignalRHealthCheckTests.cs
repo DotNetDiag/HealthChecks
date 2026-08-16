@@ -10,7 +10,7 @@ public class signalr_healthcheck_should
     public async Task be_healthy_if_signalr_hub_is_available()
     {
         TestServer server = null!;
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -21,7 +21,7 @@ public class signalr_healthcheck_should
                     () => new HubConnectionBuilder()
                             .WithUrl("http://localhost/test", o => o.HttpMessageHandlerFactory = _ => server.CreateHandler())
                             .Build(),
-                    tags: new string[] { "signalr" });
+                    tags: ["signalr"]);
             })
             .Configure(app =>
             {
@@ -33,22 +33,20 @@ public class signalr_healthcheck_should
                     })
                     .UseRouting()
                     .UseEndpoints(config => config.MapHub<TestHub>("/test"));
-            });
+            }));
 
-        server = new TestServer(webHostBuilder);
+        server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-
-        server.Dispose();
     }
 
     [Fact]
     public async Task be_unhealthy_if_signalr_hub_is_unavailable()
     {
         TestServer server = null!;
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -59,7 +57,7 @@ public class signalr_healthcheck_should
                     () => new HubConnectionBuilder()
                             .WithUrl("http://localhost/badhub", o => o.HttpMessageHandlerFactory = _ => server.CreateHandler())
                             .Build(),
-                    tags: new string[] { "signalr" });
+                    tags: ["signalr"]);
             })
             .Configure(app =>
             {
@@ -70,15 +68,13 @@ public class signalr_healthcheck_should
                     })
                     .UseRouting()
                     .UseEndpoints(config => config.MapHub<TestHub>("/test"));
-            });
+            }));
 
-        server = new TestServer(webHostBuilder);
+        server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);
-
-        server.Dispose();
     }
 
     private class TestHub : Hub

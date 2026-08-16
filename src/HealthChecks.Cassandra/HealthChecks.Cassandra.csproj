@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);Cassandra</PackageTags>
+    <Description>HealthChecks.Cassandra is a health check for Cassandra databases.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CassandraCSharpDriver" />
+  </ItemGroup>
+
+</Project>

@@ -15,7 +15,7 @@ namespace FunctionalTests.Base
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 DateTimeZoneHandling = DateTimeZoneHandling.Local
-            });
+            }) ?? throw new JsonSerializationException($"Failed to deserialize '{typeof(T).FullName}' from '{url}'.");
         }
     }
 }

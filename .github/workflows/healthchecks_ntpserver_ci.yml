@@ -1,0 +1,41 @@
+name: HealthChecks NTPServer CI
+
+permissions:
+  contents: read
+  packages: write
+
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - src/HealthChecks.NTPServer/**
+      - test/HealthChecks.NTPServer.Tests/**
+      - test/_SHARED/**
+      - .github/workflows/healthchecks_ntpserver_ci.yml
+      - Directory.Build.props
+      - Directory.Build.targets
+      - Directory.Packages.props
+    tags:
+      - v*
+
+  pull_request:
+    branches: [ master ]
+    paths:
+      - src/HealthChecks.NTPServer/**
+      - test/HealthChecks.NTPServer.Tests/**
+      - test/_SHARED/**
+      - .github/workflows/healthchecks_ntpserver_ci.yml
+      - Directory.Build.props
+      - Directory.Build.targets
+      - Directory.Packages.props
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable_ci_workflow.yml
+    secrets: inherit
+    with:
+      PROJECT_PATH: ./src/HealthChecks.NTPServer/HealthChecks.NTPServer.csproj
+      TEST_PROJECT_PATH: ./test/HealthChecks.NTPServer.Tests/HealthChecks.NTPServer.Tests.csproj
+      CODECOV_FLAGS: NTPServer

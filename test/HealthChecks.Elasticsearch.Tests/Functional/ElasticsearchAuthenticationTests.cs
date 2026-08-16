@@ -15,9 +15,9 @@ public class ElasticsearchAuthenticationTests : IClassFixture<ElasticContainerFi
     [Fact]
     public async Task be_healthy_if_elasticsearch_is_using_valid_api_key()
     {
-        var connectionString = @"https://localhost:9200";
+        var connectionString = _fixture.GetConnectionString();
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
@@ -30,15 +30,15 @@ public class ElasticsearchAuthenticationTests : IClassFixture<ElasticContainerFi
                             return true;
                         });
                         options.RequestTimeout = TimeSpan.FromSeconds(30);
-                    }, tags: new[] { "elasticsearch" });
+                    }, tags: ["elasticsearch"]);
             })
             .Configure(app =>
             {
                 app.UseHealthChecks("/health",
                     new HealthCheckOptions { Predicate = r => r.Tags.Contains("elasticsearch") });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         var response = await server.CreateRequest("/health")
             .GetAsync();
@@ -50,9 +50,9 @@ public class ElasticsearchAuthenticationTests : IClassFixture<ElasticContainerFi
     [Fact]
     public async Task be_healthy_if_elasticsearch_is_using_valid_user_and_password()
     {
-        var connectionString = @"https://localhost:9200";
+        var connectionString = _fixture.GetConnectionString();
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
@@ -65,15 +65,15 @@ public class ElasticsearchAuthenticationTests : IClassFixture<ElasticContainerFi
                             return true;
                         });
                         options.RequestTimeout = TimeSpan.FromSeconds(30);
-                    }, tags: new[] { "elasticsearch" });
+                    }, tags: ["elasticsearch"]);
             })
             .Configure(app =>
             {
                 app.UseHealthChecks("/health",
                     new HealthCheckOptions { Predicate = r => r.Tags.Contains("elasticsearch") });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         var response = await server.CreateRequest("/health")
             .GetAsync();

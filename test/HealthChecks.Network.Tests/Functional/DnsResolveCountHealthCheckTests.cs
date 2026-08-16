@@ -15,7 +15,7 @@ public class dns_resolve_host_count_should
         int addresses = (await Dns.GetHostAddressesAsync(hostName)).Length;
         int addresses2 = (await Dns.GetHostAddressesAsync(hostName2)).Length;
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -38,9 +38,9 @@ public class dns_resolve_host_count_should
                     });
                 });
 
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.EnsureSuccessStatusCode();
@@ -52,7 +52,7 @@ public class dns_resolve_host_count_should
         int addresses = (await Dns.GetHostAddressesAsync(hostName)).Length;
         int addresses2 = (await Dns.GetHostAddressesAsync(hostName2)).Length;
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -76,9 +76,9 @@ public class dns_resolve_host_count_should
                     });
                 });
 
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         var response = await server.CreateClient().GetAsJson<UIHealthReport>("/health");
         response.ShouldNotBeNull();
     }

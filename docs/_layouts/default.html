@@ -1,0 +1,38 @@
+---
+layout: shell
+---
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a class="site-brand" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+        <nav class="site-nav">
+            <a href="{{ '/guides/' | relative_url }}">Guides</a>
+            <a href="{{ '/reference/' | relative_url }}">Reference Manual</a>
+            <a href="{{ '/news/' | relative_url }}">News</a>
+            <a href="{{ '/about/' | relative_url }}">About</a>
+            <a href="{{ site.source_url }}">Source</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container site-main">
+    {% unless page.show_title == false %}
+    <section class="page-header">
+        <p class="page-kicker">DotNetDiag HealthChecks</p>
+        <h1>{{ page.title }}</h1>
+        {% if page.description %}
+        <p class="page-description">{{ page.description }}</p>
+        {% endif %}
+    </section>
+    {% endunless %}
+
+    <div class="page-content">
+        {{ content }}
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer-inner">
+        <p>{{ site.description }}</p>
+        <p>Maintained by {{ site.data.authors.primary.name }} / {{ site.data.authors.primary.role }}</p>
+    </div>
+</footer>

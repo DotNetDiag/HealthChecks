@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azure.Core;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
@@ -259,6 +260,35 @@ public class azureservicebussubscriptionhealthcheck_should
         _serviceBusClient
             .Received(1)
             .CreateReceiver(TopicName, SubscriptionName);
+
+        await _serviceBusReceiver
+            .Received(1)
+            .PeekMessageAsync(cancellationToken: tokenSource.Token);
+    }
+
+    [Fact]
+    public async Task respect_cancellation_token_when_using_peek()
+    {
+        _serviceBusReceiver
+            .PeekMessageAsync(cancellationToken: default)
+            .ReturnsForAnyArgs(async Task<ServiceBusReceivedMessage> (_) =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+                throw new InvalidOperationException();
+            });
+
+        using var tokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
+        var stopwatch = Stopwatch.StartNew();
+
+        var actual = await ExecuteHealthCheckAsync(
+            TopicName,
+            true,
+            connectionString: ConnectionString,
+            cancellationToken: tokenSource.Token);
+
+        stopwatch.Stop();
+        actual.Status.ShouldBe(HealthStatus.Unhealthy);
+        stopwatch.Elapsed.ShouldBeLessThan(TimeSpan.FromSeconds(1));
 
         await _serviceBusReceiver
             .Received(1)

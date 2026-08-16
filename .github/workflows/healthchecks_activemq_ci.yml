@@ -1,0 +1,41 @@
+name: HealthChecks ActiveMQ CI
+
+permissions:
+  contents: read
+  packages: write
+
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - src/HealthChecks.ActiveMQ/**
+      - test/HealthChecks.ActiveMQ.Tests/**
+      - test/_SHARED/**
+      - .github/workflows/healthchecks_activemq_ci.yml
+      - Directory.Build.props
+      - Directory.Build.targets
+      - Directory.Packages.props
+    tags:
+      - v*
+
+  pull_request:
+    branches: [master]
+    paths:
+      - src/HealthChecks.ActiveMQ/**
+      - test/HealthChecks.ActiveMQ.Tests/**
+      - test/_SHARED/**
+      - .github/workflows/healthchecks_activemq_ci.yml
+      - Directory.Build.props
+      - Directory.Build.targets
+      - Directory.Packages.props
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable_ci_workflow.yml
+    secrets: inherit
+    with:
+      PROJECT_PATH: ./src/HealthChecks.ActiveMQ/HealthChecks.ActiveMQ.csproj
+      TEST_PROJECT_PATH: ./test/HealthChecks.ActiveMQ.Tests/HealthChecks.ActiveMQ.Tests.csproj
+      CODECOV_FLAGS: ActiveMQ

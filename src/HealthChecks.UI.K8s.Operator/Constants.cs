@@ -7,17 +7,18 @@ internal class Constants
     public const string VERSION = "v1";
     public const string PLURAL = "healthchecks";
     public const string POD_NAME = "healthchecks-ui";
-    public const string IMAGE_NAME = "xabarilcoding/healthchecksui";
+    public const string IMAGE_NAME = "ghcr.io/dotnetdiag/healthchecksui";
     public const string PUSH_SERVICE_PATH = "/healthchecks/push";
+    public const string PUSH_SERVICE_AUTH_HEADER = "X-HealthChecks-Push-Token";
     public const string HEALTH_CHECK_PATH_ANNOTATION = "HealthChecksPath";
     public const string HEALTH_CHECK_SCHEME_ANNOTATION = "HealthChecksScheme";
     public const string DEFAULT_PULL_POLICY = "Always";
     public const string DEFAULT_SERVICE_TYPE = "ClusterIP";
     public const string DEFAULT_UI_PATH = "/healthchecks";
-    public const string DEFAULT_PORT = "80";
+    public const int DEFAULT_PORT = 8080;
     public const string DEFAULT_SCHEME = "http";
     public const string DEFAULT_HEALTH_PATH = "health";
-    public const string PUSH_SERVICE_AUTH_KEY = "key";
+    public const string DEFAULT_CONTAINER_HEALTH_PATH = "/healthz";
     public const string STYLES_PATH = "css";
     public const string STYLE_SHEET_NAME = "styles";
 

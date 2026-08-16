@@ -3,9 +3,15 @@ comment:
   behavior: new
 
 flags:
+  ActiveMQ:
+    carryforward: true
   ApplicationStatus:
     carryforward: true
+  Apache.Pulsar:
+    carryforward: true
   ArangoDb:
+    carryforward: true
+  Artemis:
     carryforward: true
   Aws.S3:
     carryforward: true
@@ -31,13 +37,23 @@ flags:
     carryforward: true
   AzureStorage:
     carryforward: true
+  ClickHouse:
+    carryforward: true
+  CockroachDb:
+    carryforward: true
   Consul:
+    carryforward: true
+  ContainerRegistry:
     carryforward: true
   CosmosDb:
     carryforward: true
   DocumentDb:
     carryforward: true
+  DuckDb:
+    carryforward: true
   DynamoDb:
+    carryforward: true
+  Etcd:
     carryforward: true
   Elasticsearch:
     carryforward: true
@@ -45,11 +61,21 @@ flags:
     carryforward: true
   EventStore.gRPC:
     carryforward: true
+  Firebird:
+    carryforward: true
   Gcp.CloudFirestore:
+    carryforward: true
+  Gcp.CloudStorage:
+    carryforward: true
+  Grafana:
     carryforward: true
   Gremlin:
     carryforward: true
   Hangfire:
+    carryforward: true
+  Harbor:
+    carryforward: true
+  IbmDb2:
     carryforward: true
   IbmMQ:
     carryforward: true
@@ -59,17 +85,27 @@ flags:
     carryforward: true
   Kubernetes:
     carryforward: true
+  Memcached:
+    carryforward: true
   MongoDb:
+    carryforward: true
+  Milvus:
+    carryforward: true
+  Minio:
     carryforward: true
   MySql:
     carryforward: true
   Nats:
+    carryforward: true
+  Neo4j:
     carryforward: true
   Network:
     carryforward: true
   Npgsql:
     carryforward: true
   OpenIdConnectServer:
+    carryforward: true
+  OpenSearch:
     carryforward: true
   Oracle:
     carryforward: true
@@ -85,11 +121,15 @@ flags:
     carryforward: true
   Publisher.Seq:
     carryforward: true
+  Qdrant:
+    carryforward: true
   RabbitMQ:
     carryforward: true
   RavenDb:
     carryforward: true
   Redis:
+    carryforward: true
+  Valkey:
     carryforward: true
   SendGrid:
     carryforward: true
@@ -97,13 +137,21 @@ flags:
     carryforward: true
   Solr:
     carryforward: true
+  SonnetDB:
+    carryforward: true
   Sqlite:
     carryforward: true
   SqlServer:
+    carryforward: true
+  SurrealDb:
     carryforward: true
   System:
     carryforward: true
   UI:
     carryforward: true
   Uris:
+    carryforward: true
+  Vault:
+    carryforward: true
+  ZooKeeper:
     carryforward: true

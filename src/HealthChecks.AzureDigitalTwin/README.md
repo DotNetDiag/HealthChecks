@@ -29,13 +29,13 @@ You can download the latest version from nuget packages:
 Through Visual Studio:
 
 ```
-Install-Package AspNetCore.HealthChecks.AzureDigitalTwin
+Install-Package DotNetDiag.HealthChecks.AzureDigitalTwin
 ```
 
 Or through CLI:
 
 ```
-dotnet add package AspNetCore.HealthChecks.AzureDigitalTwin
+dotnet add package DotNetDiag.HealthChecks.AzureDigitalTwin
 ```
 
 ---
@@ -98,7 +98,7 @@ public void ConfigureServices(IServiceCollection services)
             "MyDigitalTwinClientSecret",
             "TenantId",
             "https://my-awesome-dt-host",
-            new string[] { "my:dt:definition_a;1", "my:dt:definition_b;1", "my:dt:definition_c;1" })
+            ["my:dt:definition_a;1", "my:dt:definition_b;1", "my:dt:definition_c;1"])
 }
 ```
 
@@ -112,7 +112,7 @@ public void ConfigureServices(IServiceCollection services)
         .AddHealthChecks()
         .AddAzureDigitalTwinModels(
             myCredentials,
-            new string[] { "my:dt:definition_a;1", "my:dt:definition_b;1", "my:dt:definition_c;1" },
+            ["my:dt:definition_a;1", "my:dt:definition_b;1", "my:dt:definition_c;1"],
             failureStatus: HealthStatus.Degraded)
 }
 ```

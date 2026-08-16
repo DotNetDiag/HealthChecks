@@ -1,10 +1,7 @@
-name: HealthChecks CosmosDb CD
+name: Legacy HealthChecks CosmosDb CD
 
 on:
-  push:
-    tags:
-      - release-cosmosdb-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.CosmosDb/HealthChecks.CosmosDb.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.CosmosDb

@@ -1,0 +1,41 @@
+---
+---
+$page-bg: #f5f7fb;
+$ink: #102033;
+$link: #0f5fd7;
+$muted: #56687d;
+$surface: #ffffff;
+$line: #d9e2f0;
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: $page-bg;
+  color: $ink;
+}
+
+a {
+  color: $link;
+}
+
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.hero-block,
+.path-card,
+table,
+.site-footer,
+.site-header {
+  background: $surface;
+  border-color: $line;
+}
+
+.page-description,
+.hero-subtitle,
+.path-card span,
+.site-footer-inner {
+  color: $muted;
+}

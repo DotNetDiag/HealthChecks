@@ -7,11 +7,11 @@ public class file_healthcheck_should
     [Fact]
     public async Task be_healthy_if_file_is_available()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
            .ConfigureServices(services =>
            {
                services.AddHealthChecks()
-                   .AddFile(setup => setup.AddFile(Path.Combine(Directory.GetCurrentDirectory(), "HealthChecks.System.Tests.dll")), tags: new string[] { "file" });
+                   .AddFile(setup => setup.AddFile(Path.Combine(Directory.GetCurrentDirectory(), "HealthChecks.System.Tests.dll")), tags: ["file"]);
            })
            .Configure(app =>
            {
@@ -19,9 +19,9 @@ public class file_healthcheck_should
                {
                    Predicate = r => r.Tags.Contains("file")
                });
-           });
+           }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -31,13 +31,13 @@ public class file_healthcheck_should
     [Fact]
     public async Task be_healthy_if_no_file_provided()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
            .ConfigureServices(services =>
            {
                services.AddHealthChecks()
                    .AddFile(setup =>
                    {
-                   }, tags: new string[] { "file" });
+                   }, tags: ["file"]);
            })
            .Configure(app =>
            {
@@ -45,9 +45,9 @@ public class file_healthcheck_should
                {
                    Predicate = r => r.Tags.Contains("file")
                });
-           });
+           }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -57,11 +57,11 @@ public class file_healthcheck_should
     [Fact]
     public async Task be_unhealthy_if_file_is_not_available()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                    .AddFile(setup => setup.AddFile($"{Directory.GetCurrentDirectory()}/non-existing-file"), tags: new string[] { "file" });
+                    .AddFile(setup => setup.AddFile($"{Directory.GetCurrentDirectory()}/non-existing-file"), tags: ["file"]);
             })
             .Configure(app =>
             {
@@ -69,9 +69,9 @@ public class file_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("file")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

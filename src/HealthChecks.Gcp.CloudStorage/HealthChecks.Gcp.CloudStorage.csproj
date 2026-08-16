@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);GCP;GoogleCloud;CloudStorage;Storage</PackageTags>
+    <Description>HealthChecks.Gcp.CloudStorage is the health check package for Google Cloud Storage buckets and service reachability.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Cloud.Storage.V1" />
+  </ItemGroup>
+
+</Project>

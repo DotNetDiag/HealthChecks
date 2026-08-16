@@ -1,10 +1,7 @@
-name: HealthChecks Network CD
+name: Legacy HealthChecks Network CD
 
 on:
-  push:
-    tags:
-      - release-network-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Network/HealthChecks.Network.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.Network

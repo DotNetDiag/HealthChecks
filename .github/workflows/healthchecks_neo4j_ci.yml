@@ -1,0 +1,41 @@
+name: HealthChecks Neo4j CI
+
+permissions:
+  contents: read
+  packages: write
+
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - src/HealthChecks.Neo4j/**
+      - test/HealthChecks.Neo4j.Tests/**
+      - test/_SHARED/**
+      - .github/workflows/healthchecks_neo4j_ci.yml
+      - Directory.Build.props
+      - Directory.Build.targets
+      - Directory.Packages.props
+    tags:
+      - v*
+
+  pull_request:
+    branches: [master]
+    paths:
+      - src/HealthChecks.Neo4j/**
+      - test/HealthChecks.Neo4j.Tests/**
+      - test/_SHARED/**
+      - .github/workflows/healthchecks_neo4j_ci.yml
+      - Directory.Build.props
+      - Directory.Build.targets
+      - Directory.Packages.props
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable_ci_workflow.yml
+    secrets: inherit
+    with:
+      PROJECT_PATH: ./src/HealthChecks.Neo4j/HealthChecks.Neo4j.csproj
+      TEST_PROJECT_PATH: ./test/HealthChecks.Neo4j.Tests/HealthChecks.Neo4j.Tests.csproj
+      CODECOV_FLAGS: Neo4j

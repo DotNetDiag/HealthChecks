@@ -6,11 +6,11 @@ namespace HealthChecks.Aws.Sns;
 
 public class SnsTopicAndSubscriptionHealthCheck : IHealthCheck
 {
-    private readonly SnsOptions _snsOptions;
+    private readonly SnsOptions _options;
 
     public SnsTopicAndSubscriptionHealthCheck(SnsOptions snsOptions)
     {
-        _snsOptions = Guard.ThrowIfNull(snsOptions);
+        _options = Guard.ThrowIfNull(snsOptions);
     }
 
     /// <inheritdoc />
@@ -20,9 +20,9 @@ public class SnsTopicAndSubscriptionHealthCheck : IHealthCheck
         {
             using var client = CreateSnsClient();
 
-            foreach (var (topicName, subscriptions) in _snsOptions.TopicsAndSubscriptions.Select(x => (x.Key, x.Value)))
+            foreach (var (topicName, subscriptions) in _options.TopicsAndSubscriptions.Select(x => (x.Key, x.Value)))
             {
-                var topic = await client.FindTopicAsync(topicName).ConfigureAwait(false)
+                var topic = await FindTopicByNameAsync(client, topicName, cancellationToken).ConfigureAwait(false)
                     ?? throw new NotFoundException($"Topic {topicName} does not exist.");
 
                 if (subscriptions.Count == 0)
@@ -30,11 +30,9 @@ public class SnsTopicAndSubscriptionHealthCheck : IHealthCheck
                     continue;
                 }
 
-                var subscriptionsFromAws = await client.ListSubscriptionsByTopicAsync(topic.TopicArn, cancellationToken).ConfigureAwait(false);
+                var subscriptionsArn = await GetSubscriptionArnsAsync(client, topic.TopicArn, cancellationToken).ConfigureAwait(false);
 
-                var subscriptionsArn = subscriptionsFromAws.Subscriptions.Select(s => s.SubscriptionArn);
-
-                foreach (string? subscription in subscriptions)
+                foreach (string subscription in subscriptions)
                 {
                     if (!subscriptionsArn.Contains(subscription))
                     {
@@ -51,16 +49,100 @@ public class SnsTopicAndSubscriptionHealthCheck : IHealthCheck
         }
     }
 
+    private static async Task<Topic?> FindTopicByNameAsync(
+        IAmazonSimpleNotificationService client,
+        string topicName,
+        CancellationToken cancellationToken)
+    {
+        string? nextToken = null;
+
+        do
+        {
+            var response = await client.ListTopicsAsync(new ListTopicsRequest
+            {
+                NextToken = nextToken
+            }, cancellationToken).ConfigureAwait(false);
+
+            var topic = response.Topics.FirstOrDefault(item => TopicMatches(item.TopicArn, topicName));
+            if (topic is not null)
+            {
+                return topic;
+            }
+
+            nextToken = response.NextToken;
+        }
+        while (!string.IsNullOrEmpty(nextToken));
+
+        return null;
+    }
+
+    private static async Task<HashSet<string>> GetSubscriptionArnsAsync(
+        IAmazonSimpleNotificationService client,
+        string topicArn,
+        CancellationToken cancellationToken)
+    {
+        string? nextToken = null;
+        var subscriptionArns = new HashSet<string>(StringComparer.Ordinal);
+
+        do
+        {
+            var response = await client.ListSubscriptionsByTopicAsync(new ListSubscriptionsByTopicRequest
+            {
+                TopicArn = topicArn,
+                NextToken = nextToken
+            }, cancellationToken).ConfigureAwait(false);
+
+            foreach (var subscription in response.Subscriptions)
+            {
+                if (!string.IsNullOrEmpty(subscription.SubscriptionArn))
+                {
+                    subscriptionArns.Add(subscription.SubscriptionArn);
+                }
+            }
+
+            nextToken = response.NextToken;
+        }
+        while (!string.IsNullOrEmpty(nextToken));
+
+        return subscriptionArns;
+    }
+
+    private static bool TopicMatches(string topicArn, string topicName)
+    {
+        if (string.Equals(topicArn, topicName, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        var topicNameSeparatorIndex = topicArn.LastIndexOf(':');
+        if (topicNameSeparatorIndex < 0 || topicNameSeparatorIndex == topicArn.Length - 1)
+        {
+            return false;
+        }
+
+        return string.Equals(topicArn.Substring(topicNameSeparatorIndex + 1), topicName, StringComparison.Ordinal);
+    }
+
     private AmazonSimpleNotificationServiceClient CreateSnsClient()
     {
-        bool credentialsProvided = _snsOptions.Credentials is not null;
-        bool regionProvided = _snsOptions.RegionEndpoint is not null;
-        return (credentialsProvided, regionProvided) switch
+        var config = new AmazonSimpleNotificationServiceConfig();
+
+        // Support custom AWS-compatible endpoints such as LocalStack.
+        // PR: https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/pull/2438
+        // In AWS SDK v4, setting RegionEndpoint after ServiceURL nullifies ServiceURL.
+        // Set RegionEndpoint first so that ServiceURL takes precedence when both are specified.
+        if (_options.RegionEndpoint is not null)
         {
-            (false, false) => new AmazonSimpleNotificationServiceClient(),
-            (false, true) => new AmazonSimpleNotificationServiceClient(_snsOptions.RegionEndpoint),
-            (true, false) => new AmazonSimpleNotificationServiceClient(_snsOptions.Credentials),
-            (true, true) => new AmazonSimpleNotificationServiceClient(_snsOptions.Credentials, _snsOptions.RegionEndpoint)
-        };
+            config.RegionEndpoint = _options.RegionEndpoint;
+        }
+
+        if (_options.ServiceURL is not null)
+        {
+            config.ServiceURL = _options.ServiceURL;
+        }
+
+        return _options.Credentials is not null
+            ? new AmazonSimpleNotificationServiceClient(_options.Credentials, config)
+            : new AmazonSimpleNotificationServiceClient(config);
     }
 }

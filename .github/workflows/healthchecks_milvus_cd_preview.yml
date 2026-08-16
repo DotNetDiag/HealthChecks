@@ -1,0 +1,28 @@
+name: Legacy HealthChecks Milvus Preview CD
+
+permissions:
+  contents: read
+  packages: write
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - src/HealthChecks.Milvus/**
+      - .github/workflows/healthchecks_milvus_cd_preview.yml
+      - Directory.Build.props
+      - Directory.Build.targets
+      - Directory.Packages.props
+      - src/Directory.Build.props
+      - src/ApiMarker.cs
+      - src/CallerArgumentExpressionAttribute.cs
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable_cd_preview_workflow.yml
+    secrets: inherit
+    with:
+      BUILD_CONFIG: Release
+      VERSION_SUFFIX_PREFIX: preview
+      PROJECT_PATH: ./src/HealthChecks.Milvus/HealthChecks.Milvus.csproj

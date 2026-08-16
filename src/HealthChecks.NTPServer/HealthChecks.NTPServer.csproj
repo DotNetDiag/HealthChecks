@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);NTP;NTPServer;Time</PackageTags>
+    <Description>HealthChecks.NTPServer is a health check for NTP servers.</Description>
+  </PropertyGroup>
+
+</Project>

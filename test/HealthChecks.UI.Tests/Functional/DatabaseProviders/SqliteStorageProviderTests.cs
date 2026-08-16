@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthChecks.UI.Tests;
 
+[Collection("execution")]
 public class sqlite_storage_should
 {
     private const string ProviderName = "Microsoft.EntityFrameworkCore.Sqlite";
@@ -12,15 +13,15 @@ public class sqlite_storage_should
     {
         var customOptionsInvoked = false;
 
-        var hostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(startHost: false, webHostBuilder => webHostBuilder
             .UseStartup<DefaultStartup>()
             .ConfigureServices(services =>
             {
                 services.AddHealthChecksUI()
                 .AddSqliteStorage("connectionString", options => customOptionsInvoked = true);
-            });
+            }));
 
-        var services = hostBuilder.Build().Services;
+        var services = host.Services;
         var context = services.GetRequiredService<HealthChecksDb>();
 
         context.ShouldNotBeNull();
@@ -35,16 +36,16 @@ public class sqlite_storage_should
         var hostReset = new ManualResetEventSlim(false);
         var collectorReset = new ManualResetEventSlim(false);
 
-        var webHostBuilder = HostBuilderHelper.Create(
-               hostReset,
-               collectorReset,
-               configureUI: setup => setup.AddSqliteStorage(ProviderTestHelper.SqliteConnectionString()));
+        using var appHost = HostBuilderHelper.Create(
+            hostReset,
+            collectorReset,
+            configureUI: setup => setup.AddSqliteStorage(ProviderTestHelper.SqliteConnectionString()));
 
-        using var host = new TestServer(webHostBuilder);
+        var server = appHost.GetTestServer();
 
-        hostReset.Wait(ProviderTestHelper.DefaultHostTimeout);
+        ProviderTestHelper.WaitForHost(hostReset);
 
-        var context = host.Services.GetRequiredService<HealthChecksDb>();
+        var context = appHost.Services.GetRequiredService<HealthChecksDb>();
         var configurations = await context.Configurations.ToListAsync();
 
         var host1 = ProviderTestHelper.Endpoints[0];
@@ -52,11 +53,11 @@ public class sqlite_storage_should
         configurations[0].Name.ShouldBe(host1.Name);
         configurations[0].Uri.ShouldBe(host1.Uri);
 
-        using var client = host.CreateClient();
+        using var client = server.CreateClient();
 
-        collectorReset.Wait(ProviderTestHelper.DefaultCollectorTimeout);
+        ProviderTestHelper.WaitForCollector(collectorReset);
 
-        var report = await client.GetAsJson<List<HealthCheckExecution>>("/healthchecks-api");
-        report.First().Name.ShouldBe(host1.Name);
+        var execution = await ProviderTestHelper.WaitForExecutionAsync(client, host1.Name);
+        execution.Name.ShouldBe(host1.Name);
     }
 }

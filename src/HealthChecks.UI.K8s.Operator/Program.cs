@@ -1,3 +1,4 @@
+using HealthChecks.UI.K8s.Operator.Configuration;
 using HealthChecks.UI.K8s.Operator.Controller;
 using HealthChecks.UI.K8s.Operator.Diagnostics;
 using HealthChecks.UI.K8s.Operator.Handlers;
@@ -33,6 +34,8 @@ internal class Program
         Host.CreateDefaultBuilder(args)
         .ConfigureServices((hostContext, services) =>
         {
+            services.Configure<OperatorOptions>(hostContext.Configuration.GetSection("HealthChecksOperator"));
+
             services.AddHostedService<HealthChecksOperator>()
             .AddSingleton<IKubernetes>(sp =>
            {
@@ -51,6 +54,7 @@ internal class Program
             .AddSingleton<ServiceHandler>()
             .AddSingleton<SecretHandler>()
             .AddSingleton<ConfigMaphandler>()
+            .AddSingleton<StatusHandler>()
             .AddSingleton<NotificationHandler>()
             .AddSingleton<NamespacedServiceWatcher>()
             .AddSingleton<ClusterServiceWatcher>();

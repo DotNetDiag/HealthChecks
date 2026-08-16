@@ -12,7 +12,7 @@ public class ui_api_request_limiting
     {
         int maxActiveRequests = 2;
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -40,9 +40,9 @@ public class ui_api_request_limiting
 
                     setup.MapHealthChecksUI();
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         var tasks = Enumerable.Range(0, maxActiveRequests + 5)
             .Select(_ => server.CreateRequest(new Configuration.Options().ApiPath).GetAsync())
@@ -57,7 +57,7 @@ public class ui_api_request_limiting
     [Fact]
     public async Task should_return_too_many_requests_status_using_default_server_max_active_requests()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -85,9 +85,9 @@ public class ui_api_request_limiting
                     setup.MapHealthChecksUI();
                 });
 
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         var serverSettings = server.Services.GetRequiredService<IOptions<Settings>>().Value;
 

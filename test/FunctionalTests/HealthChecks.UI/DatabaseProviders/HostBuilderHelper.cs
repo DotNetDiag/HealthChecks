@@ -14,7 +14,7 @@ namespace FunctionalTests.HealthChecks.UI.DatabaseProviders
 {
     public class HostBuilderHelper
     {
-        public static IWebHostBuilder Create(ManualResetEventSlim hostReset, ManualResetEventSlim collectorReset = null, Action<HealthChecksUIBuilder> configureUI = null)
+        public static IWebHostBuilder Create(ManualResetEventSlim hostReset, ManualResetEventSlim? collectorReset = null, Action<HealthChecksUIBuilder>? configureUI = null)
         {
             return new WebHostBuilder()
                .ConfigureServices(services =>

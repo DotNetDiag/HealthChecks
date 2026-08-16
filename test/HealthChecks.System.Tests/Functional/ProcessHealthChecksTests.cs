@@ -7,7 +7,7 @@ public class process_healthcheck_should
     [Fact]
     public async Task be_healthy_when_the_process_exists_and_is_running()
     {
-        var webhostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
@@ -23,9 +23,9 @@ public class process_healthcheck_should
                 {
                     Predicate = r => true
                 });
-            });
+            }));
 
-        using var server = new TestServer(webhostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
@@ -33,7 +33,7 @@ public class process_healthcheck_should
     [Fact]
     public async Task be_unhealthy_when_the_process_is_not_running()
     {
-        var webhostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
@@ -45,9 +45,9 @@ public class process_healthcheck_should
                 {
                     Predicate = r => true
                 });
-            });
+            }));
 
-        using var server = new TestServer(webhostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);
     }
@@ -55,7 +55,7 @@ public class process_healthcheck_should
     [Fact]
     public async Task be_unhealthy_when_the_predicate_throws_exception()
     {
-        var webhostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
@@ -67,9 +67,9 @@ public class process_healthcheck_should
                 {
                     Predicate = r => true
                 });
-            });
+            }));
 
-        using var server = new TestServer(webhostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);
     }

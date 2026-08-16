@@ -1,10 +1,7 @@
-name: HealthChecks Gremlin CD
+name: Legacy HealthChecks Gremlin CD
 
 on:
-  push:
-    tags:
-      - release-gremlin-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Gremlin/HealthChecks.Gremlin.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.Gremlin

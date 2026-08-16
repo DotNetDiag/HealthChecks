@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);Apache;Pulsar;Messaging;Streaming;PubSub</PackageTags>
+    <Description>HealthChecks.Apache.Pulsar is the health check package for Apache Pulsar.</Description>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotPulsar" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+  </ItemGroup>
+
+</Project>

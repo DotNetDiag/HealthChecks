@@ -16,6 +16,8 @@ spec:
     - name: v1
       served: true
       storage: true
+      subresources:
+        status: {}
       schema:
         openAPIV3Schema:
           type: object
@@ -25,45 +27,118 @@ spec:
               properties:
                 name:
                   type: string
+                  minLength: 1
                 scope:
                   type: string
+                  default: Cluster
                   enum:
                     - Cluster
                     - Namespaced
                 serviceType:
                   type: string
+                  default: ClusterIP
                   enum:
                     - ClusterIP
                     - LoadBalancer
                     - NodePort
                 portNumber:
-                  type: number
+                  type: integer
+                  default: 8080
+                  minimum: 1
+                  maximum: 65535
                 uiPath:
                   type: string
-                  pattern: "^/"
+                  default: /healthchecks
+                  pattern: "^/.*"
                 uiApiPath:
                   type: string
-                  pattern: "^/"
+                  pattern: "^/.*"
                 uiResourcesPath:
                   type: string
-                  pattern: "^/"
+                  pattern: "^/.*"
                 uiWebhooksPath:
                   type: string
-                  pattern: "^/"
+                  pattern: "^/.*"
                 uiNoRelativePaths:
                   type: boolean
                 servicesLabel:
                   type: string
+                  default: HealthChecks
+                  minLength: 1
                 healthChecksPath:
                   type: string
+                  default: health
+                  minLength: 1
                 healthChecksScheme:
                   type: string
+                  default: http
+                  enum:
+                    - http
+                    - https
                 image:
                   type: string
+                  minLength: 1
                 imagePullPolicy:
                   type: string
+                  default: Always
+                  enum:
+                    - Always
+                    - IfNotPresent
+                    - Never
                 stylesheetContent:
                   type: string
+                  default: ""
+                livenessProbe:
+                  type: object
+                  properties:
+                    path:
+                      type: string
+                      default: /healthz
+                      pattern: "^/.*"
+                    initialDelaySeconds:
+                      type: integer
+                      minimum: 0
+                    periodSeconds:
+                      type: integer
+                      minimum: 1
+                    timeoutSeconds:
+                      type: integer
+                      minimum: 1
+                    failureThreshold:
+                      type: integer
+                      minimum: 1
+                readinessProbe:
+                  type: object
+                  properties:
+                    path:
+                      type: string
+                      default: /healthz
+                      pattern: "^/.*"
+                    initialDelaySeconds:
+                      type: integer
+                      minimum: 0
+                    periodSeconds:
+                      type: integer
+                      minimum: 1
+                    timeoutSeconds:
+                      type: integer
+                      minimum: 1
+                    failureThreshold:
+                      type: integer
+                      minimum: 1
+                resources:
+                  type: object
+                  properties:
+                    limits:
+                      type: object
+                      additionalProperties:
+                        type: string
+                        minLength: 1
+                    requests:
+                      type: object
+                      additionalProperties:
+                        type: string
+                        minLength: 1
                 serviceAnnotations:
                   type: array
                   items:
@@ -71,8 +146,25 @@ spec:
                     properties:
                       name:
                         type: string
+                        minLength: 1
                       value:
                         type: string
+                    required:
+                      - name
+                      - value
+                deploymentAnnotations:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        minLength: 1
+                      value:
+                        type: string
+                    required:
+                      - name
+                      - value
                 deployAnnotations:
                   type: array
                   items:
@@ -80,6 +172,7 @@ spec:
                     properties:
                       name:
                         type: string
+                        minLength: 1
                       value:
                         type: string
                     required:
@@ -92,8 +185,10 @@ spec:
                     properties:
                       name:
                         type: string
+                        minLength: 1
                       uri:
                         type: string
+                        minLength: 1
                       payload:
                         type: string
                       restoredPayload:
@@ -101,10 +196,46 @@ spec:
                     required:
                       - name
                       - uri
-                      - payload
-                      - restoredPayload
-
+                tolerations:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      key:
+                        type: string
+                      operator:
+                        type: string
+                        enum:
+                          - Exists
+                          - Equal
+                      value:
+                        type: string
+                      effect:
+                        type: string
+                        enum:
+                          - NoSchedule
+                          - PreferNoSchedule
+                          - NoExecute
+                      seconds:
+                        type: integer
+                        minimum: 0
               required:
                 - name
-                - scope
-                - servicesLabel
+            status:
+              type: object
+              properties:
+                phase:
+                  type: string
+                message:
+                  type: string
+                observedGeneration:
+                  type: integer
+                deploymentName:
+                  type: string
+                serviceName:
+                  type: string
+                availableReplicas:
+                  type: integer
+                lastTransitionTime:
+                  type: string
+                  format: date-time

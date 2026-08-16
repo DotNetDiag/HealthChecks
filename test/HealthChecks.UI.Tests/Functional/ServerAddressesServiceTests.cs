@@ -12,7 +12,7 @@ public class server_addresses_service_should
     {
         var serverAddress = "http://localhost:5000";
 
-        var host = new WebHostBuilder()
+        using var host = TestHostHelper.Build(startHost: false, webHostBuilder => webHostBuilder
             .UseUrls(serverAddress)
             .ConfigureServices(services => services.AddSingleton<ServerAddressesService>())
             .Configure(app =>
@@ -32,11 +32,11 @@ public class server_addresses_service_should
 
                 serverAddressService.AbsoluteUriFromRelative("segment1/segment2/segment3")
                  .ShouldBe($"{serverAddress}/segment1/segment2/segment3");
-            });
+            }));
 
         var featureCollection = new FeatureCollection();
         featureCollection.Set<IServerAddressesFeature>(new ServerAddressesFeature());
 
-        var testServer = new TestServer(host, featureCollection);
+        using var testServer = new TestServer(host.Services, featureCollection);
     }
 }

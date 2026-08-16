@@ -1,10 +1,7 @@
-name: HealthChecks Publisher.Datadog CD
+name: Legacy HealthChecks Publisher.Datadog CD
 
 on:
-  push:
-    tags:
-      - release-publisher_datadog-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Publisher.Datadog/HealthChecks.Publisher.Datadog.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.Publisher.Datadog

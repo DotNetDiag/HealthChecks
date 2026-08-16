@@ -1,15 +1,12 @@
-using Microsoft.AspNetCore;
+var builder = WebApplication.CreateBuilder(args);
 
-namespace HealthChecks.UI.Sample;
+builder.Services
+    .AddHealthChecksUI()
+    .AddInMemoryStorage();
 
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        CreateWebHostBuilder(args).Build().Run();
-    }
+var app = builder.Build();
 
-    public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-        WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>();
-}
+app.UseRouting();
+app.MapHealthChecksUI();
+
+app.Run();

@@ -25,18 +25,34 @@ public class ApiApprovalTests
         string publicApi = asmForTest.GeneratePublicApi(new()
         {
             IncludeAssemblyAttributes = false,
-            AllowNamespacePrefixes = new[] { "Microsoft" }
+            AllowNamespacePrefixes = ["Microsoft"]
         });
 
         var location = Assembly.GetExecutingAssembly().Location;
-        var pathItems = location.Split(Path.DirectorySeparatorChar);
-        var index = Array.IndexOf(pathItems, "test");
-        Debug.Assert(index > 0 && index < pathItems.Length - 1);
+        var assemblyDirectory = new DirectoryInfo(Path.GetDirectoryName(location)!);
+        var projectDirectory = assemblyDirectory;
 
-        // See: https://docs.shouldly.org/documentation/equality/matchapproved
-        // Note: If the AssemblyName.approved.txt file doesn't match the latest publicApi value,
-        // this call will try to launch a diff tool to help you out but that can fail on
-        // your machine if a diff tool isn't configured/setup.
-        publicApi.ShouldMatchApproved(options => options.SubFolder(Path.Combine(".." /*_SHARED*/, pathItems[index + 1])).WithFilenameGenerator((_, _, fileType, fileExtension) => $"{asmForTest.GetName().Name}.{fileType}.{fileExtension}"));
+        while (projectDirectory.Parent is not null && !string.Equals(projectDirectory.Parent.Name, "test", StringComparison.OrdinalIgnoreCase))
+        {
+            projectDirectory = projectDirectory.Parent;
+        }
+
+        Debug.Assert(projectDirectory.Parent is not null && string.Equals(projectDirectory.Parent.Name, "test", StringComparison.OrdinalIgnoreCase));
+
+        var subFolder = projectDirectory.FullName;
+        var assemblyName = asmForTest.GetName().Name!;
+        var approvedFilePath = Path.Combine(subFolder, $"{assemblyName}.approved.txt");
+        var receivedFilePath = Path.Combine(subFolder, $"{assemblyName}.received.txt");
+        var normalizedPublicApi = publicApi.ReplaceLineEndings("\n").TrimEnd('\n');
+        var normalizedApprovedApi = File.ReadAllText(approvedFilePath).ReplaceLineEndings("\n").TrimEnd('\n');
+
+        if (!string.Equals(normalizedPublicApi, normalizedApprovedApi, StringComparison.Ordinal))
+        {
+            File.WriteAllText(receivedFilePath, publicApi);
+
+            normalizedPublicApi.ShouldBe(
+                normalizedApprovedApi,
+                $"To approve the changes run this command:{Environment.NewLine}copy /Y \"{receivedFilePath}\" \"{approvedFilePath}\"");
+        }
     }
 }

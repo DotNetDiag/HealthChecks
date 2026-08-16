@@ -1,10 +1,7 @@
-name: HealthChecks Elastic Search CD
+name: Legacy HealthChecks Elastic Search CD
 
 on:
-  push:
-    tags:
-      - release-elasticsearch-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Elasticsearch/HealthChecks.Elasticsearch.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.Elasticsearch

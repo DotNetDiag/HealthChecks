@@ -1,0 +1,12 @@
+name: Legacy HealthChecks Cassandra CD
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable_cd_workflow.yml
+    secrets: inherit
+    with:
+      BUILD_CONFIG: Release
+      PROJECT_PATH: ./src/HealthChecks.Cassandra/HealthChecks.Cassandra.csproj

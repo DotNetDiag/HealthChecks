@@ -1,0 +1,19 @@
+namespace HealthChecks.Valkey
+{
+    public sealed class ValkeyHealthCheck : Microsoft.Extensions.Diagnostics.HealthChecks.IHealthCheck
+    {
+        public ValkeyHealthCheck(StackExchange.Redis.IConnectionMultiplexer connectionMultiplexer) { }
+        public ValkeyHealthCheck(string valkeyConnectionString) { }
+        public System.Threading.Tasks.Task<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult> CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext context, System.Threading.CancellationToken cancellationToken = default) { }
+    }
+}
+namespace Microsoft.Extensions.DependencyInjection
+{
+    public static class ValkeyHealthCheckBuilderExtensions
+    {
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddValkey(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, StackExchange.Redis.IConnectionMultiplexer connectionMultiplexer, string? name = null, Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddValkey(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, System.Func<System.IServiceProvider, StackExchange.Redis.IConnectionMultiplexer> connectionMultiplexerFactory, string? name = null, Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddValkey(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, System.Func<System.IServiceProvider, string> connectionStringFactory, string? name = null, Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddValkey(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, string valkeyConnectionString, string? name = null, Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default) { }
+    }
+}

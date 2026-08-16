@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HealthChecks.Cassandra\HealthChecks.Cassandra.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Testcontainers.Cassandra" />
+  </ItemGroup>
+
+</Project>

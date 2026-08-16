@@ -13,26 +13,26 @@ public class UpdateConfigurationTests
         var endpointUri = "http://server/sample";
         var updatedEndpointUri = $"{endpointUri}2";
 
-        Func<string, ManualResetEventSlim, IWebHostBuilder> getHost = (uri, hostReset) =>
-            new WebHostBuilder()
-            .ConfigureServices(services =>
-            {
-                services
-                .AddRouting()
-                .AddHealthChecksUI(setup => setup.AddHealthCheckEndpoint(endpointName, uri))
-                .AddSqliteStorage("Data Source = sqlite-updates.db");
-            })
-            .Configure(app =>
-            {
-                app.UseRouting();
-                app.UseEndpoints(setup => setup.MapHealthChecksUI());
+        Func<string, ManualResetEventSlim, IHost> getHost = (uri, hostReset) =>
+            TestHostHelper.Build(webHostBuilder => webHostBuilder
+                .ConfigureServices(services =>
+                {
+                    services
+                    .AddRouting()
+                    .AddHealthChecksUI(setup => setup.AddHealthCheckEndpoint(endpointName, uri))
+                    .AddSqliteStorage("Data Source = sqlite-updates.db");
+                })
+                .Configure(app =>
+                {
+                    app.UseRouting();
+                    app.UseEndpoints(setup => setup.MapHealthChecksUI());
 
-                var lifetime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
-                lifetime.ApplicationStarted.Register(() => hostReset.Set());
-            });
+                    var lifetime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
+                    lifetime.ApplicationStarted.Register(() => hostReset.Set());
+                }));
 
         var hostReset = new ManualResetEventSlim(false);
-        using var host1 = new TestServer(getHost(endpointUri, hostReset));
+        using var host1 = getHost(endpointUri, hostReset);
         hostReset.Wait();
 
         var context = host1.Services.GetRequiredService<HealthChecksDb>();
@@ -42,7 +42,7 @@ public class UpdateConfigurationTests
         configurations[0].Uri.ShouldBe(endpointUri);
 
         hostReset = new ManualResetEventSlim(false);
-        using var host2 = new TestServer(getHost(updatedEndpointUri, hostReset));
+        using var host2 = getHost(updatedEndpointUri, hostReset);
         hostReset.Wait();
 
         context = host2.Services.GetRequiredService<HealthChecksDb>();

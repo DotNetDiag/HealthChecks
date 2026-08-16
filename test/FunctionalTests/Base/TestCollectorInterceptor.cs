@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using HealthChecks.UI.Core;
+using HealthChecks.UI.Data;
 
 namespace FunctionalTests.Base
 {

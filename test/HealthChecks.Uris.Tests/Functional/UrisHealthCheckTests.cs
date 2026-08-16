@@ -41,14 +41,14 @@ public class uris_healthcheck_should
     {
         var uri = new Uri("https://httpbin.org/get"); // does not matter
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
                     .AddUrlGroup(
                         uri,
                         configurePrimaryHttpMessageHandler: _ => new DelayStubMessageHandler(TimeSpan.Zero),
-                        tags: new string[] { "uris" });
+                        tags: ["uris"]);
             })
             .Configure(app =>
             {
@@ -57,9 +57,9 @@ public class uris_healthcheck_should
                     Predicate = r => r.Tags.Contains("uris"),
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
@@ -69,7 +69,7 @@ public class uris_healthcheck_should
     {
         var uri = new Uri("https://httpbin.org/post"); // does not matter
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
@@ -77,7 +77,7 @@ public class uris_healthcheck_should
                         uri,
                         HttpMethod.Post,
                         configurePrimaryHttpMessageHandler: _ => new DelayStubMessageHandler(TimeSpan.Zero),
-                        tags: new string[] { "uris" });
+                        tags: ["uris"]);
             })
             .Configure(app =>
             {
@@ -86,9 +86,9 @@ public class uris_healthcheck_should
                     Predicate = r => r.Tags.Contains("uris"),
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
     }
@@ -98,11 +98,11 @@ public class uris_healthcheck_should
     {
         var uri = new Uri("http://200.0.0.100");
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                .AddUrlGroup(uri, tags: new string[] { "uris" });
+                .AddUrlGroup(uri, tags: ["uris"]);
             })
             .Configure(app =>
             {
@@ -110,9 +110,9 @@ public class uris_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("uris")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);
     }
@@ -124,11 +124,11 @@ public class uris_healthcheck_should
     {
         var uri = new Uri($"https://httpbin.org/status/{statusCode}");
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                .AddUrlGroup(uri, tags: new string[] { "uris" });
+                .AddUrlGroup(uri, tags: ["uris"]);
             })
             .Configure(app =>
             {
@@ -136,9 +136,9 @@ public class uris_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("uris")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);
     }
@@ -148,13 +148,13 @@ public class uris_healthcheck_should
     {
         var uri = new Uri($"https://httpbin.org/delay/2");
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
                 .AddUrlGroup(
                     opt => opt.AddUri(uri, options => options.UseTimeout(TimeSpan.FromSeconds(1))),
-                    tags: new string[] { "uris" });
+                    tags: ["uris"]);
             })
             .Configure(app =>
             {
@@ -162,9 +162,9 @@ public class uris_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("uris")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);
     }
@@ -174,7 +174,7 @@ public class uris_healthcheck_should
     {
         var uri = new Uri($"https://httpbin.org/delay/11"); // does not matter
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
@@ -185,7 +185,7 @@ public class uris_healthcheck_should
                         opt.AddUri(uri);
                     },
                     configurePrimaryHttpMessageHandler: _ => new DelayStubMessageHandler(TimeSpan.FromSeconds(11)),
-                    tags: new string[] { "uris" });
+                    tags: ["uris"]);
             })
             .Configure(app =>
             {
@@ -193,9 +193,9 @@ public class uris_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("uris")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);
     }
@@ -205,7 +205,7 @@ public class uris_healthcheck_should
     {
         var uri = new Uri($"https://httpbin.org/delay/2"); // does not matter
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -213,7 +213,7 @@ public class uris_healthcheck_should
                     .AddUrlGroup(
                         opt => opt.AddUri(uri, options => options.UseTimeout(TimeSpan.FromSeconds(3))),
                         configurePrimaryHttpMessageHandler: _ => new DelayStubMessageHandler(TimeSpan.FromSeconds(2)),
-                        tags: new string[] { "uris" });
+                        tags: ["uris"]);
             })
             .Configure(app =>
             {
@@ -222,9 +222,9 @@ public class uris_healthcheck_should
                     Predicate = r => r.Tags.Contains("uris"),
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
     }
@@ -234,7 +234,7 @@ public class uris_healthcheck_should
     {
         var uri = new Uri($"https://httpbin.org/delay/2"); // does not matter
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -246,7 +246,7 @@ public class uris_healthcheck_should
                             opt.AddUri(uri);
                         },
                         configurePrimaryHttpMessageHandler: _ => new DelayStubMessageHandler(TimeSpan.FromSeconds(2)),
-                        tags: new string[] { "uris" });
+                        tags: ["uris"]);
             })
             .Configure(app =>
             {
@@ -255,9 +255,9 @@ public class uris_healthcheck_should
                     Predicate = r => r.Tags.Contains("uris"),
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
     }
@@ -267,14 +267,14 @@ public class uris_healthcheck_should
     {
         var uri = new Uri("https://httpbin.org/robots.txt"); // does not matter
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
                     .AddUrlGroup(
                         opt => opt.AddUri(uri, options => options.ExpectContent("abc")),
                         configurePrimaryHttpMessageHandler: _ => new ContentStubMessageHandler("abc"),
-                        tags: new string[] { "uris" });
+                        tags: ["uris"]);
             })
             .Configure(app =>
             {
@@ -282,9 +282,9 @@ public class uris_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("uris")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
     }
@@ -294,14 +294,14 @@ public class uris_healthcheck_should
     {
         var uri = new Uri("https://httpbin.org/robots.txt"); // does not matter
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
                     .AddUrlGroup(
                         opt => opt.AddUri(uri, options => options.ExpectContent("xyz")),
                         configurePrimaryHttpMessageHandler: _ => new ContentStubMessageHandler("abc"),
-                        tags: new string[] { "uris" });
+                        tags: ["uris"]);
             })
             .Configure(app =>
             {
@@ -309,9 +309,9 @@ public class uris_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("uris")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);
     }

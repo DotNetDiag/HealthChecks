@@ -6,7 +6,7 @@ internal class KubernetesAddressFactory
 {
     public static string CreateAddress(V1Service service, HealthCheckResource resource)
     {
-        var defaultPort = int.Parse(resource.Spec.PortNumber ?? Constants.DEFAULT_PORT);
+        var defaultPort = resource.Spec.PortNumber ?? Constants.DEFAULT_PORT;
         var port = GetServicePort(service)?.Port ?? defaultPort;
         var address = service.Spec.ClusterIP;
 

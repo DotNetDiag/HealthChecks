@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);IoTDB;Apache</PackageTags>
+    <Description>HealthChecks.IoTDB is a health check for Apache IoTDB.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Apache.IoTDB.Data" />
+  </ItemGroup>
+
+</Project>

@@ -1,10 +1,7 @@
-name: HealthChecks Solr CD
+name: Legacy HealthChecks Solr CD
 
 on:
-  push:
-    tags:
-      - release-solr-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Solr/HealthChecks.Solr.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.Solr

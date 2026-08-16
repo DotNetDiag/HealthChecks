@@ -1,4 +1,5 @@
 **/**/healthchecksdb
+docs/reference/readmes/
 src/HealthChecks.UI/assets/healthchecks-bundle.js
 src/HealthChecks.UI/assets/vendors-dll.js
 src/HealthChecks.UI/assets/vendors-manifest.json
@@ -344,3 +345,4 @@ AzureDevOpsTasks/**/*.vsix
 src/HealthChecks.UI/assets/healthchecks-bundle.js.LICENSE.txt
 src/HealthChecks.UI/assets/healthchecks-bundle.js.map
 src/HealthChecks.UI/assets/vendors-dll.js.LICENSE.txt
+/docs/_site

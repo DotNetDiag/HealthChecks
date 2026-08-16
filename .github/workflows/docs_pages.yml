@@ -1,0 +1,113 @@
+name: Documentation Pages
+
+'on':
+  push:
+    branches:
+      - master
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs_pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  DOCS_EXTERNAL_REPOSITORY: dotnetdiag/dotnetdiag.github.io
+  DOCS_PUBLISH_BRANCH: gh-pages
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Generate README virtual pages
+        run: dotnet run --project build/DocsReadmeGenerator/DocsReadmeGenerator.csproj -- --repository-root . --docs-root ./docs --branch ${{ github.ref_name }}
+
+      - name: Build docs with JekyllNet
+        id: jekyllnet-build
+        uses: JekyllNet/action@v2.5
+        with:
+          source: ./docs
+          destination: ./_site
+          verbose: "true"
+
+      - name: Validate external deployment credentials
+        shell: bash
+        run: |
+          if [ -n "${{ secrets.PAGES_DEPLOY_TOKEN }}" ]; then
+            echo "Using personal access token for external Pages deployment."
+            exit 0
+          fi
+
+          echo "::error::External Pages deployment requires PAGES_DEPLOY_TOKEN."
+          echo "::error::The token must have write access to ${DOCS_EXTERNAL_REPOSITORY}."
+          exit 1
+
+      - name: Validate token access to target repository
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          user_api="https://api.github.com/user"
+          repo_api="https://api.github.com/repos/${DOCS_EXTERNAL_REPOSITORY}"
+          auth_header="Authorization: Bearer ${GH_TOKEN}"
+          accept_header="Accept: application/vnd.github+json"
+
+          user_status="$(curl -sS -o "$RUNNER_TEMP/docs-pages-token-user.json" -w '%{http_code}' -H "$auth_header" -H "$accept_header" "$user_api")"
+
+          if [ "$user_status" != "200" ]; then
+            user_error="$(jq -r '.message // empty' "$RUNNER_TEMP/docs-pages-token-user.json" 2>/dev/null || true)"
+            if [ -n "$user_error" ]; then
+              echo "::error::PAGES_DEPLOY_TOKEN could not authenticate with the GitHub API. GET /user returned HTTP $user_status: $user_error."
+            else
+              echo "::error::PAGES_DEPLOY_TOKEN could not authenticate with the GitHub API. GET /user returned HTTP $user_status."
+            fi
+            echo "::error::Update the secret with the raw value of an unexpired PAT, without a Bearer prefix or surrounding quotes."
+            exit 1
+          fi
+
+          user_response="$(cat "$RUNNER_TEMP/docs-pages-token-user.json")"
+          actor_login="$(printf '%s' "$user_response" | jq -r '.login // empty')"
+
+          repo_status="$(curl -sS -o "$RUNNER_TEMP/docs-pages-target-repo.json" -w '%{http_code}' -H "$auth_header" -H "$accept_header" "$repo_api")"
+
+          if [ "$repo_status" != "200" ]; then
+            echo "::error::PAGES_DEPLOY_TOKEN for '$actor_login' cannot access ${DOCS_EXTERNAL_REPOSITORY}. GitHub API returned HTTP $repo_status."
+            echo "::error::Grant that account access to the target repository and ensure the PAT is authorized for it."
+            exit 1
+          fi
+
+          can_push="$(jq -r '.permissions.push // false' "$RUNNER_TEMP/docs-pages-target-repo.json")"
+
+          if [ "$can_push" != "true" ]; then
+            echo "::error::PAGES_DEPLOY_TOKEN belongs to '$actor_login' but does not have push access to ${DOCS_EXTERNAL_REPOSITORY}."
+            echo "::error::Add that account as a collaborator/team member, or create a PAT with Contents: Read and write for the target repository."
+            exit 1
+          fi
+
+          echo "Verified push access to ${DOCS_EXTERNAL_REPOSITORY} for '$actor_login'."
+
+      - name: Deploy to dotnetdiag.github.io with personal access token
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+          external_repository: ${{ env.DOCS_EXTERNAL_REPOSITORY }}
+          publish_branch: ${{ env.DOCS_PUBLISH_BRANCH }}
+          publish_dir: ${{ steps.jekyllnet-build.outputs.destination }}
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com

@@ -1,14 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);SQLite</PackageTags>
     <Description>HealthChecks.UI.SQLite.Storage package contains the required classes to use SQLite provider in the UI</Description>
-    <VersionPrefix>$(HealthCheckUISQLiteStorage)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" VersionOverride="8.0.*" Condition="'$(TargetFramework)' == 'net8.0'" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" VersionOverride="10.0.*" Condition="'$(TargetFramework)' == 'net10.0'" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,6 +8,10 @@ namespace HealthChecks.Aws.Sns;
 /// </summary>
 public class SnsOptions
 {
+    // Supports custom AWS-compatible endpoints such as LocalStack.
+    // PR: https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/pull/2438
+    public string? ServiceURL { get; set; }
+
     public AWSCredentials? Credentials { get; set; }
 
     public RegionEndpoint? RegionEndpoint { get; set; }
@@ -24,7 +28,7 @@ public class SnsOptions
     {
         if (!TopicsAndSubscriptions.TryGetValue(topicName, out var subs))
         {
-            TopicsAndSubscriptions.Add(topicName, subs = new List<string>(subscriptions ?? Array.Empty<string>()));
+            TopicsAndSubscriptions.Add(topicName, subs = new List<string>(subscriptions ?? []));
         }
         else if (subscriptions != null)
         {

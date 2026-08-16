@@ -23,15 +23,17 @@ public class Startup
             .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 #pragma warning restore ASP5001, CS0618 // Type or member is obsolete
 
-        if (bool.TryParse(Configuration[PushServiceKeys.Enabled], out bool enabled) && enabled)
+        if (bool.TryParse(Configuration[PushServiceKeys.ENABLED], out bool enabled) && enabled)
         {
-            if (string.IsNullOrEmpty(Configuration[PushServiceKeys.PushEndpointSecret]))
+            if (string.IsNullOrEmpty(Configuration[PushServiceKeys.PUSH_ENDPOINT_SECRET]))
             {
-                throw new Exception($"{PushServiceKeys.PushEndpointSecret} environment variable has not been configured");
+                throw new Exception($"{PushServiceKeys.PUSH_ENDPOINT_SECRET} environment variable has not been configured");
             }
+
             services.AddTransient<HealthChecksPushService>();
         }
     }
+
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting()

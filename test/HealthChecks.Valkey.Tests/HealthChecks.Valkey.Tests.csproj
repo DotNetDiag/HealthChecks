@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Testcontainers.Redis" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HealthChecks.Valkey\HealthChecks.Valkey.csproj" />
+  </ItemGroup>
+
+</Project>
+

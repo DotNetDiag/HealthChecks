@@ -8,11 +8,11 @@ public class solr_healthcheck_should
     [Fact]
     public async Task be_healthy_if_solr_is_available()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
            .ConfigureServices(services =>
            {
                services.AddHealthChecks()
-                .AddSolr("http://localhost:8983/solr", "solrcore", tags: new string[] { "solr" });
+                .AddSolr("http://localhost:8983/solr", "solrcore", tags: ["solr"]);
            })
            .Configure(app =>
            {
@@ -21,9 +21,9 @@ public class solr_healthcheck_should
                    Predicate = r => r.Tags.Contains("solr"),
                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                });
-           });
+           }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
     }
@@ -31,11 +31,11 @@ public class solr_healthcheck_should
     [Fact]
     public async Task be_unhealthy_if_solr_ping_is_disabled()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                .AddSolr("http://localhost:8893/solr", "solrcoredown", tags: new string[] { "solr" });
+                .AddSolr("http://localhost:8893/solr", "solrcoredown", tags: ["solr"]);
             })
             .Configure(app =>
             {
@@ -44,9 +44,9 @@ public class solr_healthcheck_should
                     Predicate = r => r.Tags.Contains("solr"),
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable, await response.Content.ReadAsStringAsync());
     }
@@ -54,11 +54,11 @@ public class solr_healthcheck_should
     [Fact]
     public async Task be_unhealthy_if_solr_is_not_available()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                .AddSolr("http://200.0.0.100:8893", "core", tags: new string[] { "solr" });
+                .AddSolr("http://200.0.0.100:8893", "core", tags: ["solr"]);
             })
             .Configure(app =>
             {
@@ -67,9 +67,9 @@ public class solr_healthcheck_should
                     Predicate = r => r.Tags.Contains("solr"),
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable, await response.Content.ReadAsStringAsync());
     }

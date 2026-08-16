@@ -8,29 +8,35 @@ namespace Microsoft.AspNetCore.Builder;
 
 public static class IEndpointRouteBuilderExtensions
 {
-    public static IEndpointConventionBuilder MapHealthChecksUI(this IEndpointRouteBuilder builder,
+    public static IEndpointConventionBuilder MapHealthChecksUI(
+        this IEndpointRouteBuilder builder,
         IConfiguration configuration)
     {
-        if (bool.TryParse(configuration[PushServiceKeys.Enabled], out bool enabled) && enabled)
+        if (bool.TryParse(configuration[PushServiceKeys.ENABLED], out bool enabled) && enabled)
         {
-            builder.MapHealthCheckPushEndpoint(/*configuration*/);
+            builder.MapHealthCheckPushEndpoint(configuration);
         }
 
-        return builder.MapHealthChecksUI(setup =>
+        var uiEndpoint = builder.MapHealthChecksUI(setup =>
         {
             setup.ConfigureStylesheet(configuration);
             setup.ConfigurePaths(configuration);
-
         });
+
+        builder.MapGet("/healthz", static () => Results.Ok());
+
+        return uiEndpoint;
     }
-    private static void MapHealthCheckPushEndpoint(this IEndpointRouteBuilder builder/*, IConfiguration configuration*/)
+
+    private static void MapHealthCheckPushEndpoint(this IEndpointRouteBuilder builder, IConfiguration configuration)
     {
         var logger = builder.ServiceProvider.GetRequiredService<ILogger<Program>>();
         logger.LogInformation("HealthChecks Push Endpoint Enabled");
+        var pushEndpointSecret = configuration[PushServiceKeys.PUSH_ENDPOINT_SECRET];
 
         builder.MapPost("/healthchecks/push", async context =>
         {
-            if (context.Request.IsAuthenticated())
+            if (context.Request.IsAuthenticated(pushEndpointSecret!))
             {
                 using var streamReader = new StreamReader(context.Request.Body);
                 var content = await streamReader.ReadToEndAsync().ConfigureAwait(false);
@@ -45,15 +51,15 @@ public static class IEndpointRouteBuilderExtensions
                 {
                     var pushService = context.RequestServices.GetRequiredService<HealthChecksPushService>();
 
-                    if (type == PushServiceKeys.ServiceAdded)
+                    if (type == PushServiceKeys.SERVICE_ADDED)
                     {
                         await pushService.AddAsync(name, uri).ConfigureAwait(false);
                     }
-                    else if (type == PushServiceKeys.ServiceRemoved)
+                    else if (type == PushServiceKeys.SERVICE_REMOVED)
                     {
                         await pushService.RemoveAsync(name).ConfigureAwait(false);
                     }
-                    else if (type == PushServiceKeys.ServiceUpdated)
+                    else if (type == PushServiceKeys.SERVICE_UPDATED)
                     {
                         await pushService.UpdateAsync(name, uri).ConfigureAwait(false);
                     }

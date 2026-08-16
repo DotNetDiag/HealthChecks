@@ -11,11 +11,11 @@ public class oracle_healthcheck_should
     {
         var connectionString = "Data Source=localhost:1521/XEPDB1;User Id=system;Password=oracle";
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                .AddOracle(connectionString, tags: new string[] { "oracle" });
+                .AddOracle(connectionString, tags: ["oracle"]);
             })
             .Configure(app =>
             {
@@ -24,9 +24,9 @@ public class oracle_healthcheck_should
                     Predicate = r => r.Tags.Contains("oracle"),
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
     }
@@ -36,11 +36,11 @@ public class oracle_healthcheck_should
     {
         var connectionString = "Data Source=255.255.255.255:1521/XEPDB1;User Id=system;Password=oracle";
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                .AddOracle(connectionString, tags: new string[] { "oracle" });
+                .AddOracle(connectionString, tags: ["oracle"]);
             })
             .Configure(app =>
             {
@@ -48,9 +48,9 @@ public class oracle_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("oracle")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);
     }
@@ -59,11 +59,11 @@ public class oracle_healthcheck_should
     public async Task be_unhealthy_when_sql_query_is_not_valid()
     {
         var connectionString = "Data Source=localhost:1521/XEPDB1;User Id=system;Password=oracle";
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                .AddOracle(connectionString, "SELECT 1 FROM InvalidDb", tags: new string[] { "oracle" });
+                .AddOracle(connectionString, "SELECT 1 FROM InvalidDb", tags: ["oracle"]);
             })
             .Configure(app =>
             {
@@ -71,9 +71,9 @@ public class oracle_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("oracle")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);
     }
@@ -84,7 +84,7 @@ public class oracle_healthcheck_should
         bool factoryCalled = false;
         string connectionString = "Data Source=localhost:1521/XEPDB1;User Id=system;Password=oracle";
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -94,7 +94,7 @@ public class oracle_healthcheck_should
                     factoryCalled = true;
                     return connectionString;
 
-                }, tags: new string[] { "oracle" });
+                }, tags: ["oracle"]);
             })
             .Configure(app =>
             {
@@ -102,9 +102,9 @@ public class oracle_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("oracle")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
         factoryCalled.ShouldBeTrue();
@@ -119,12 +119,12 @@ public class oracle_healthcheck_should
         password.MakeReadOnly();
         var credential = new OracleCredential("system", password);
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
                     .AddHealthChecks()
-                    .AddOracle(connectionString, tags: new string[] { "oracle" },
+                    .AddOracle(connectionString, tags: ["oracle"],
                         configure: options =>
                         {
                             factoryCalled = true;
@@ -138,9 +138,9 @@ public class oracle_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("oracle")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
         response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
         factoryCalled.ShouldBeTrue();

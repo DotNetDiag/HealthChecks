@@ -1,10 +1,7 @@
-name: HealthChecks AzureApplicationInsights CD
+name: Legacy HealthChecks AzureApplicationInsights CD
 
 on:
-  push:
-    tags:
-      - release-azureapplicationinsights-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.AzureApplicationInsights/HealthChecks.AzureApplicationInsights.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.AzureApplicationInsights

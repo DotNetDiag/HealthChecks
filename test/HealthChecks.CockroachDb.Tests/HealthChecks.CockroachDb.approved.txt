@@ -1,0 +1,33 @@
+namespace HealthChecks.CockroachDb
+{
+    public sealed class CockroachDbHealthCheck : Microsoft.Extensions.Diagnostics.HealthChecks.IHealthCheck
+    {
+        public CockroachDbHealthCheck(HealthChecks.CockroachDb.CockroachDbHealthCheckOptions options, System.Net.Http.HttpClient? httpClient = null) { }
+        public System.Threading.Tasks.Task<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult> CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext context, System.Threading.CancellationToken cancellationToken = default) { }
+    }
+    public sealed class CockroachDbHealthCheckOptions
+    {
+        public CockroachDbHealthCheckOptions(Npgsql.NpgsqlDataSource dataSource) { }
+        public CockroachDbHealthCheckOptions(System.Uri nodeHealthEndpoint) { }
+        public CockroachDbHealthCheckOptions(string connectionString) { }
+        public string CommandText { get; set; }
+        public System.Action<Npgsql.NpgsqlConnection>? Configure { get; set; }
+        public string? ConnectionString { get; }
+        public Npgsql.NpgsqlDataSource? DataSource { get; }
+        public System.Func<object?, Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult>? HealthCheckResultBuilder { get; set; }
+        public System.Uri? NodeHealthEndpoint { get; set; }
+    }
+}
+namespace Microsoft.Extensions.DependencyInjection
+{
+    public static class CockroachDbHealthCheckBuilderExtensions
+    {
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddCockroachDb(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, HealthChecks.CockroachDb.CockroachDbHealthCheckOptions options, string? name = "cockroachdb", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default, System.Action<System.IServiceProvider, System.Net.Http.HttpClient>? configureClient = null, System.Func<System.IServiceProvider, System.Net.Http.HttpMessageHandler>? configurePrimaryHttpMessageHandler = null) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddCockroachDb(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, System.Func<System.IServiceProvider, HealthChecks.CockroachDb.CockroachDbHealthCheckOptions> optionsFactory, string? name = "cockroachdb", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default, System.Action<System.IServiceProvider, System.Net.Http.HttpClient>? configureClient = null, System.Func<System.IServiceProvider, System.Net.Http.HttpMessageHandler>? configurePrimaryHttpMessageHandler = null) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddCockroachDb(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, Npgsql.NpgsqlDataSource dataSource, System.Action<HealthChecks.CockroachDb.CockroachDbHealthCheckOptions>? setup = null, string? name = "cockroachdb", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default, System.Action<System.IServiceProvider, System.Net.Http.HttpClient>? configureClient = null, System.Func<System.IServiceProvider, System.Net.Http.HttpMessageHandler>? configurePrimaryHttpMessageHandler = null) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddCockroachDb(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, System.Func<System.IServiceProvider, string> connectionStringFactory, System.Action<HealthChecks.CockroachDb.CockroachDbHealthCheckOptions>? setup = null, string? name = "cockroachdb", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default, System.Action<System.IServiceProvider, System.Net.Http.HttpClient>? configureClient = null, System.Func<System.IServiceProvider, System.Net.Http.HttpMessageHandler>? configurePrimaryHttpMessageHandler = null) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddCockroachDb(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, System.Func<System.IServiceProvider, Npgsql.NpgsqlDataSource>? dataSourceFactory = null, System.Action<HealthChecks.CockroachDb.CockroachDbHealthCheckOptions>? setup = null, string? name = "cockroachdb", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default, System.Action<System.IServiceProvider, System.Net.Http.HttpClient>? configureClient = null, System.Func<System.IServiceProvider, System.Net.Http.HttpMessageHandler>? configurePrimaryHttpMessageHandler = null) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddCockroachDb(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, System.Uri nodeHealthEndpoint, System.Action<HealthChecks.CockroachDb.CockroachDbHealthCheckOptions>? setup = null, string? name = "cockroachdb", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default, System.Action<System.IServiceProvider, System.Net.Http.HttpClient>? configureClient = null, System.Func<System.IServiceProvider, System.Net.Http.HttpMessageHandler>? configurePrimaryHttpMessageHandler = null) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddCockroachDb(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, string connectionString, System.Action<HealthChecks.CockroachDb.CockroachDbHealthCheckOptions>? setup = null, string? name = "cockroachdb", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default, System.Action<System.IServiceProvider, System.Net.Http.HttpClient>? configureClient = null, System.Func<System.IServiceProvider, System.Net.Http.HttpMessageHandler>? configurePrimaryHttpMessageHandler = null) { }
+    }
+}

@@ -1,0 +1,43 @@
+name: HealthChecks Minio CI
+
+permissions:
+  contents: read
+  packages: write
+
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - src/HealthChecks.Minio/**
+      - test/HealthChecks.Minio.Tests/**
+      - test/_SHARED/**
+      - .github/workflows/healthchecks_minio_ci.yml
+      - .github/workflows/reusable_ci_workflow.yml
+      - Directory.Build.props
+      - Directory.Build.targets
+      - Directory.Packages.props
+    tags:
+      - v*
+
+  pull_request:
+    branches: [ master ]
+    paths:
+      - src/HealthChecks.Minio/**
+      - test/HealthChecks.Minio.Tests/**
+      - test/_SHARED/**
+      - .github/workflows/healthchecks_minio_ci.yml
+      - .github/workflows/reusable_ci_workflow.yml
+      - Directory.Build.props
+      - Directory.Build.targets
+      - Directory.Packages.props
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable_ci_workflow.yml
+    secrets: inherit
+    with:
+      PROJECT_PATH: ./src/HealthChecks.Minio/HealthChecks.Minio.csproj
+      TEST_PROJECT_PATH: ./test/HealthChecks.Minio.Tests/HealthChecks.Minio.Tests.csproj
+      CODECOV_FLAGS: Minio

@@ -13,7 +13,7 @@ internal sealed class NamespacedServiceWatcher : IDisposable
     private readonly OperatorDiagnostics _diagnostics;
     private readonly NotificationHandler _notificationHandler;
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly Dictionary<HealthCheckResource, Watcher<V1Service>> _watchers = new();
+    private readonly Dictionary<HealthCheckResource, CancellationTokenSource> _watchers = new();
 
     public NamespacedServiceWatcher(
         IKubernetes client,
@@ -35,24 +35,12 @@ internal sealed class NamespacedServiceWatcher : IDisposable
 
         if (!_watchers.Keys.Any(filter))
         {
-            var response = _client.CoreV1.ListNamespacedServiceWithHttpMessagesAsync(
-                namespaceParameter: resource.Metadata.NamespaceProperty,
-                labelSelector: $"{resource.Spec.ServicesLabel}",
-                watch: true,
-                cancellationToken: token);
-
-            var watcher = response.Watch<V1Service, V1ServiceList>(
-                onEvent: async (type, item) => await _notificationHandler.NotifyDiscoveredServiceAsync(type, item, resource),
-                onError: e =>
-                {
-                    _diagnostics.ServiceWatcherThrow(e);
-                    Watch(resource, token);
-                }
-            );
+            var watcherCts = CancellationTokenSource.CreateLinkedTokenSource(token);
+            _ = WatchServicesAsync(resource, watcherCts.Token);
 
             _diagnostics.ServiceWatcherStarting(resource.Metadata.NamespaceProperty);
 
-            _watchers.Add(resource, watcher);
+            _watchers.Add(resource, watcherCts);
         }
 
         return Task.CompletedTask;
@@ -67,7 +55,8 @@ internal sealed class NamespacedServiceWatcher : IDisposable
             if (svcResource != null)
             {
                 _diagnostics.ServiceWatcherStopped(resource.Metadata.NamespaceProperty);
-                _watchers[svcResource]?.Dispose();
+                _watchers[svcResource].Cancel();
+                _watchers[svcResource].Dispose();
                 _watchers.Remove(svcResource);
             }
         }
@@ -97,8 +86,38 @@ internal sealed class NamespacedServiceWatcher : IDisposable
     {
         _watchers.Values.ToList().ForEach(w =>
         {
-            if (w != null && w.Watching)
-                w.Dispose();
+            w.Cancel();
+            w.Dispose();
         });
+
+        _watchers.Clear();
+    }
+
+    private async Task WatchServicesAsync(HealthCheckResource resource, CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            var response = _client.CoreV1.ListNamespacedServiceWithHttpMessagesAsync(
+                namespaceParameter: resource.Metadata.NamespaceProperty,
+                labelSelector: $"{resource.Spec.ServicesLabel}",
+                watch: true,
+                cancellationToken: token);
+
+            try
+            {
+#pragma warning disable CS0618 // KubernetesClient 19 exposes WatchAsync via an obsolete extension with no non-obsolete alternative yet
+                await foreach (var (type, item) in response.WatchAsync<V1Service, V1ServiceList>(
+                    onError: _diagnostics.ServiceWatcherThrow,
+                    cancellationToken: token))
+                {
+                    await _notificationHandler.NotifyDiscoveredServiceAsync(type, item, resource);
+                }
+#pragma warning restore CS0618
+            }
+            catch (OperationCanceledException) when (token.IsCancellationRequested)
+            {
+                break;
+            }
+        }
     }
 }

@@ -9,7 +9,7 @@ public class ftp_healthcheck_should
     [Fact]
     public async Task be_healthy_when_connection_is_successful()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
@@ -18,7 +18,7 @@ public class ftp_healthcheck_should
                         setup.AddHost("ftp://localhost:21",
                             createFile: false,
                             credentials: new NetworkCredential("bob", "12345"));
-                    }, tags: new string[] { "ftp" });
+                    }, tags: ["ftp"]);
             })
             .Configure(app =>
             {
@@ -26,9 +26,9 @@ public class ftp_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("ftp")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.StatusCode.ShouldBe((HttpStatusCode)StatusCodes.Status200OK);
@@ -37,7 +37,7 @@ public class ftp_healthcheck_should
     [Fact]
     public async Task be_healthy_when_connection_is_successful_and_file_is_created()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
@@ -46,7 +46,7 @@ public class ftp_healthcheck_should
                         setup.AddHost("ftp://localhost:21",
                             createFile: true,
                             credentials: new NetworkCredential("bob", "12345"));
-                    }, tags: new string[] { "ftp" });
+                    }, tags: ["ftp"]);
             })
             .Configure(app =>
             {
@@ -54,9 +54,9 @@ public class ftp_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("ftp")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
         using var response = await server.CreateRequest("/health").GetAsync();
 
         response.EnsureSuccessStatusCode();

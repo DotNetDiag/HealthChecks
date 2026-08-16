@@ -1,10 +1,7 @@
-name: HealthChecks Azure Table Storage CD
+name: Legacy HealthChecks Azure Table Storage CD
 
 on:
-  push:
-    tags:
-      - release-azuretablestorage-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Azure.Data.Tables/HealthChecks.Azure.Data.Tables.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.Azure.Data.Tables

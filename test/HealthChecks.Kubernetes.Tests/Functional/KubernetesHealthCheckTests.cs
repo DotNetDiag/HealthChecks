@@ -8,7 +8,7 @@ public class kubernetes_healthcheck_should
     [Fact]
     public async Task be_unhealthy_if_kubernetes_is_unavailable()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -17,7 +17,7 @@ public class kubernetes_healthcheck_should
                     {
                         Host = "https://localhost:443",
                         SkipTlsVerify = true
-                    }).CheckService("DummyService", s => s.Spec.Type == "LoadBalancer"), tags: new string[] { "k8s" });
+                    }).CheckService("DummyService", s => s.Spec.Type == "LoadBalancer"), tags: ["k8s"]);
             })
             .Configure(app =>
             {
@@ -25,9 +25,9 @@ public class kubernetes_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("k8s")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -37,7 +37,7 @@ public class kubernetes_healthcheck_should
     [Fact]
     public async Task be_healthy_if_empty_registrations()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -46,7 +46,7 @@ public class kubernetes_healthcheck_should
                     {
                         Host = "https://localhost:443",
                         SkipTlsVerify = true
-                    }), tags: new string[] { "k8s" });
+                    }), tags: ["k8s"]);
             })
             .Configure(app =>
             {
@@ -54,9 +54,9 @@ public class kubernetes_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("k8s")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -66,7 +66,7 @@ public class kubernetes_healthcheck_should
     [Fact(Skip = "TODO: Implement")]
     public async Task be_healthy_if_kubernetes_is_available()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -75,7 +75,7 @@ public class kubernetes_healthcheck_should
                     {
                         Host = "https://localhost:443",
                         SkipTlsVerify = true
-                    }).CheckService("DummyService", s => s.Spec.Type == "LoadBalancer"), tags: new string[] { "k8s" });
+                    }).CheckService("DummyService", s => s.Spec.Type == "LoadBalancer"), tags: ["k8s"]);
             })
             .Configure(app =>
             {
@@ -83,9 +83,9 @@ public class kubernetes_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("k8s")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

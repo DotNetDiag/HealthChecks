@@ -1,0 +1,186 @@
+name: Legacy NuGet Release on Version Tag
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  detect-packages:
+    runs-on: ubuntu-latest
+    outputs:
+      has_packages: ${{ steps.detect.outputs.has_packages }}
+      matrix: ${{ steps.detect.outputs.matrix }}
+      previous_tag: ${{ steps.previous.outputs.tag }}
+      release_mode: ${{ steps.detect.outputs.release_mode }}
+      release_reason: ${{ steps.detect.outputs.release_reason }}
+      package_count: ${{ steps.detect.outputs.package_count }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - name: Validate version tag
+        shell: bash
+        run: |
+          tag_name="${GITHUB_REF_NAME}"
+          if [[ ! "$tag_name" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            echo "Tag '$tag_name' must match the format vA.B.C." >&2
+            exit 1
+          fi
+      - name: Resolve previous version tag
+        id: previous
+        shell: bash
+        run: |
+          previous_tag=$(git tag --merged HEAD --list 'v*' --sort=-v:refname | grep -Fvx "${GITHUB_REF_NAME}" | head -n 1 || true)
+          echo "tag=$previous_tag" >> "$GITHUB_OUTPUT"
+      - name: Detect changed packages
+        id: detect
+        shell: bash
+        env:
+          PREVIOUS_TAG: ${{ steps.previous.outputs.tag }}
+        run: |
+          set -euo pipefail
+
+          current_tag="${GITHUB_REF_NAME}"
+          current_version="${current_tag#v}"
+          current_major_minor="${current_version%.*}"
+          release_mode="incremental"
+          release_reason="Patch version changed; building only packages changed since the previous version tag."
+
+          global_files=(
+            "Directory.Build.props"
+            "Directory.Build.targets"
+            "Directory.Packages.props"
+            "src/Directory.Build.props"
+            "src/ApiMarker.cs"
+            "src/CallerArgumentExpressionAttribute.cs"
+          )
+
+          if [ -n "$PREVIOUS_TAG" ]; then
+            mapfile -t changed_files < <(git diff --name-only "$PREVIOUS_TAG" HEAD)
+          else
+            mapfile -t changed_files < <(git ls-files)
+          fi
+
+          build_all=false
+          if [ -z "$PREVIOUS_TAG" ]; then
+            build_all=true
+            release_mode="full"
+            release_reason="No previous version tag was found, so all packages will be published."
+          else
+            previous_version="${PREVIOUS_TAG#v}"
+            previous_major_minor="${previous_version%.*}"
+
+            if [ "$current_major_minor" != "$previous_major_minor" ]; then
+              build_all=true
+              release_mode="full"
+              release_reason="Major or minor version changed from $PREVIOUS_TAG to $current_tag, so all packages will be published."
+            fi
+          fi
+
+          global_changed=false
+          if [ "$build_all" = false ]; then
+            for global_file in "${global_files[@]}"; do
+              if printf '%s\n' "${changed_files[@]}" | grep -Fxq "$global_file"; then
+                global_changed=true
+                release_mode="full"
+                release_reason="Shared build or dependency file '$global_file' changed, so all packages will be published."
+                break
+              fi
+            done
+          fi
+
+          entries=()
+          package_descriptors=()
+          while IFS= read -r project_path; do
+            [ -z "$project_path" ] && continue
+
+            project_dir=$(dirname "$project_path")
+            project_changed=false
+
+            if [ "$build_all" = true ] || [ "$global_changed" = true ]; then
+              project_changed=true
+            else
+              for changed_file in "${changed_files[@]}"; do
+                if [[ "$changed_file" == "$project_dir/"* ]]; then
+                  project_changed=true
+                  break
+                fi
+              done
+            fi
+
+            if [ "$project_changed" = true ]; then
+              package_id=$(dotnet msbuild "$project_path" -nologo -getProperty:PackageId | tail -n 1)
+              package_version="$current_version"
+              if [ "$package_id" = 'DotNetDiag.HealthChecks.Milvus' ]; then
+                package_version="${current_version}-preview.1"
+              fi
+
+              entries+=("{\"project_path\":\"./$project_path\",\"package_id\":\"$package_id\",\"package_version\":\"$package_version\"}")
+              package_descriptors+=("$package_id|$package_version")
+            fi
+          done < <(find src -name '*.csproj' | sort)
+
+          package_count=${#entries[@]}
+
+          echo "release_mode=$release_mode" >> "$GITHUB_OUTPUT"
+          echo "release_reason=$release_reason" >> "$GITHUB_OUTPUT"
+          echo "package_count=$package_count" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "## NuGet Release Summary"
+            echo
+            echo "- Current tag: \`$current_tag\`"
+            echo "- Previous tag: \`${PREVIOUS_TAG:-<none>}\`"
+            echo "- Default package version: \`$current_version\`"
+            echo "- Release mode: \`$release_mode\`"
+            echo "- Reason: $release_reason"
+            echo "- Packages selected: $package_count"
+            echo
+            if [ "$package_count" -gt 0 ]; then
+              echo "### Packages"
+              for package_descriptor in "${package_descriptors[@]}"; do
+                package_id="${package_descriptor%%|*}"
+                package_version="${package_descriptor#*|}"
+                echo "- \`$package_id\` → \`$package_version\`"
+              done
+            else
+              echo "No packages selected for publication."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$package_count" -eq 0 ]; then
+            echo 'has_packages=false' >> "$GITHUB_OUTPUT"
+            echo 'matrix=[]' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          matrix_json="[$(IFS=,; echo "${entries[*]}")]"
+          echo 'has_packages=true' >> "$GITHUB_OUTPUT"
+          echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
+
+  publish-packages:
+    name: Publish ${{ matrix.package.package_id }}
+    needs: detect-packages
+    if: ${{ needs.detect-packages.outputs.has_packages == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.detect-packages.outputs.matrix) }}
+    uses: ./.github/workflows/reusable_cd_workflow.yml
+    permissions:
+      contents: read
+      packages: write
+    with:
+      BUILD_CONFIG: Release
+      PROJECT_PATH: ${{ matrix.package.project_path }}
+      PACKAGE_VERSION: ${{ matrix.package.package_version }}
+    secrets: inherit

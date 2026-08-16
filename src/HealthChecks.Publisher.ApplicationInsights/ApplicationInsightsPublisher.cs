@@ -57,49 +57,49 @@ internal class ApplicationInsightsPublisher : IHealthCheckPublisher
     {
         foreach (var reportEntry in report.Entries.Where(entry => !_excludeHealthyReports || entry.Value.Status != HealthStatus.Healthy))
         {
-            client.TrackEvent($"{EVENT_NAME}:{reportEntry.Key}",
-                properties: new Dictionary<string, string?>()
-                {
-                    { nameof(Environment.MachineName), Environment.MachineName },
-                    { nameof(Assembly), Assembly.GetEntryAssembly()?.GetName().Name },
-                    { HEALTHCHECK_NAME, reportEntry.Key }
-                },
-                metrics: new Dictionary<string, double>()
-                {
-                    { METRIC_STATUS_NAME, reportEntry.Value.Status == HealthStatus.Healthy ? 1 : 0 },
-                    { METRIC_DURATION_NAME, reportEntry.Value.Duration.TotalMilliseconds }
-                });
+            var properties = CreateProperties(reportEntry.Key);
+
+            client.TrackEvent($"{EVENT_NAME}:{reportEntry.Key}", properties);
+            TrackMetrics(client, properties, reportEntry.Value.Status, reportEntry.Value.Duration);
         }
 
         foreach (var reportEntry in report.Entries.Where(entry => entry.Value.Exception != null))
         {
-            client.TrackException(reportEntry.Value.Exception,
-                properties: new Dictionary<string, string?>()
-                {
-                    { nameof(Environment.MachineName), Environment.MachineName },
-                    { nameof(Assembly), Assembly.GetEntryAssembly()?.GetName().Name },
-                    { HEALTHCHECK_NAME, reportEntry.Key }
-                },
-                metrics: new Dictionary<string, double>()
-                {
-                    { METRIC_STATUS_NAME, reportEntry.Value.Status == HealthStatus.Healthy ? 1 : 0 },
-                    { METRIC_DURATION_NAME, reportEntry.Value.Duration.TotalMilliseconds }
-                });
+            var properties = CreateProperties(reportEntry.Key);
+
+            client.TrackException(reportEntry.Value.Exception!, properties);
+            TrackMetrics(client, properties, reportEntry.Value.Status, reportEntry.Value.Duration);
         }
     }
+
     private static void SaveGeneralizedReport(HealthReport report, TelemetryClient client)
     {
-        client.TrackEvent(EVENT_NAME,
-            properties: new Dictionary<string, string?>
-            {
-                { nameof(Environment.MachineName), Environment.MachineName },
-                { nameof(Assembly), Assembly.GetEntryAssembly()?.GetName().Name }
-            },
-            metrics: new Dictionary<string, double>
-            {
-                { METRIC_STATUS_NAME, report.Status == HealthStatus.Healthy ? 1 : 0 },
-                { METRIC_DURATION_NAME, report.TotalDuration.TotalMilliseconds }
-            });
+        var properties = CreateProperties();
+
+        client.TrackEvent(EVENT_NAME, properties);
+        TrackMetrics(client, properties, report.Status, report.TotalDuration);
+    }
+
+    private static Dictionary<string, string> CreateProperties(string? healthCheckName = null)
+    {
+        var properties = new Dictionary<string, string>
+        {
+            [nameof(Environment.MachineName)] = Environment.MachineName,
+            [nameof(Assembly)] = Assembly.GetEntryAssembly()?.GetName().Name ?? string.Empty,
+        };
+
+        if (!string.IsNullOrWhiteSpace(healthCheckName))
+        {
+            properties[HEALTHCHECK_NAME] = healthCheckName!;
+        }
+
+        return properties;
+    }
+
+    private static void TrackMetrics(TelemetryClient client, IDictionary<string, string> properties, HealthStatus status, TimeSpan duration)
+    {
+        client.TrackMetric(METRIC_STATUS_NAME, status == HealthStatus.Healthy ? 1 : 0, properties);
+        client.TrackMetric(METRIC_DURATION_NAME, duration.TotalMilliseconds, properties);
     }
 
     private TelemetryClient GetOrCreateTelemetryClient()

@@ -79,8 +79,8 @@ internal class ServiceHandler
             Ports = new List<V1ServicePort> {
                 new V1ServicePort {
                     Name = "httport",
-                    Port = int.Parse(resource.Spec.PortNumber ?? Constants.DEFAULT_PORT),
-                    TargetPort = 80
+                    Port = resource.Spec.PortNumber ?? Constants.DEFAULT_PORT,
+                    TargetPort = 8080
                 }
             }
         };
@@ -91,6 +91,10 @@ internal class ServiceHandler
             meta.Annotations.Add(annotation.Name, annotation.Value);
         }
 
-        return new V1Service(metadata: meta, spec: spec);
+        return new V1Service
+        {
+            Metadata = meta,
+            Spec = spec
+        };
     }
 }

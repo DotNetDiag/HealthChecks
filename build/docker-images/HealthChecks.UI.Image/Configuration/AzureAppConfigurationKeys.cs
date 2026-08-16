@@ -1,10 +1,10 @@
 namespace HealthChecks.UI.Image.Configuration;
 
-public class AzureAppConfigurationKeys
+public static class AzureAppConfigurationKeys
 {
-    public const string Enabled = "AAC_Enabled";
-    public const string ConnectionString = "AAC_ConnectionString";
-    public const string ManagedIdentityEndpoint = "AAC_ManagedIdentityEndpoint";
-    public const string Label = "AAC_Label";
-    public const string CacheExpiration = "AAC_CacheExpiration";
+    public const string ENABLED = "AAC_Enabled";
+    public const string CONNECTION_STRING = "AAC_ConnectionString";
+    public const string MANAGED_IDENTITY_ENDPOINT = "AAC_ManagedIdentityEndpoint";
+    public const string LABEL = "AAC_Label";
+    public const string CACHE_EXPIRATION = "AAC_CacheExpiration";
 }

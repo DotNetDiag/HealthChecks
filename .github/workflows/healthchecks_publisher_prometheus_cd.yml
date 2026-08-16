@@ -1,10 +1,7 @@
-name: HealthChecks Publisher.Prometheus CD
+name: Legacy HealthChecks Publisher.Prometheus CD
 
 on:
-  push:
-    tags:
-      - release-publisher_prometheus-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Publisher.Prometheus/HealthChecks.Publisher.Prometheus.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.Publisher.Prometheus

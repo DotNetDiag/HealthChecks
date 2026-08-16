@@ -1,0 +1,12 @@
+name: Legacy HealthChecks IbmDb2 CD
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable_cd_workflow.yml
+    secrets: inherit
+    with:
+      BUILD_CONFIG: Release
+      PROJECT_PATH: ./src/HealthChecks.IbmDb2/HealthChecks.IbmDb2.csproj

@@ -35,12 +35,12 @@ public class ibmmq_healthcheck_should
             { MQC.PASSWORD_PROPERTY, password }
         };
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
                 .AddHealthChecks()
-                .AddIbmMQ(qManager, properties, tags: new string[] { "ibmmq" });
+                .AddIbmMQ(qManager, properties, tags: ["ibmmq"]);
             })
             .Configure(app =>
             {
@@ -48,9 +48,9 @@ public class ibmmq_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("ibmmq")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -69,12 +69,12 @@ public class ibmmq_healthcheck_should
             { MQC.PASSWORD_PROPERTY, password }
         };
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
                     .AddHealthChecks()
-                    .AddIbmMQ(qManager, properties, tags: new string[] { "ibmmq" });
+                    .AddIbmMQ(qManager, properties, tags: ["ibmmq"]);
             })
             .Configure(app =>
             {
@@ -82,9 +82,9 @@ public class ibmmq_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("ibmmq")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -94,12 +94,12 @@ public class ibmmq_healthcheck_should
     [Fact]
     public async Task be_unhealthy_if_ibmmq_managed_is_unavailable()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
                     .AddHealthChecks()
-                    .AddIbmMQManagedConnection(qManager, channel, wrongHostName, user, password, tags: new string[] { "ibmmq" });
+                    .AddIbmMQManagedConnection(qManager, channel, wrongHostName, user, password, tags: ["ibmmq"]);
             })
             .Configure(app =>
             {
@@ -107,9 +107,9 @@ public class ibmmq_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("ibmmq")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -119,12 +119,12 @@ public class ibmmq_healthcheck_should
     [Fact]
     public async Task be_healthy_if_ibmmq_managed_is_available()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
                     .AddHealthChecks()
-                    .AddIbmMQManagedConnection(qManager, channel, hostName, user, password, tags: new string[] { "ibmmq" });
+                    .AddIbmMQManagedConnection(qManager, channel, hostName, user, password, tags: ["ibmmq"]);
             })
             .Configure(app =>
             {
@@ -132,9 +132,9 @@ public class ibmmq_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("ibmmq")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

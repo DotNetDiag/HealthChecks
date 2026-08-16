@@ -12,6 +12,7 @@ internal class HealthChecksController : IHealthChecksController
     private readonly ServiceHandler _serviceHandler;
     private readonly SecretHandler _secretHandler;
     private readonly ConfigMaphandler _configMapHandler;
+    private readonly StatusHandler _statusHandler;
     private readonly ILogger<K8sOperator> _logger;
 
     public HealthChecksController(
@@ -20,6 +21,7 @@ internal class HealthChecksController : IHealthChecksController
         ServiceHandler serviceHandler,
         SecretHandler secretHandler,
         ConfigMaphandler configMapHandler,
+        StatusHandler statusHandler,
         ILogger<K8sOperator> logger)
     {
         _client = Guard.ThrowIfNull(client);
@@ -27,11 +29,18 @@ internal class HealthChecksController : IHealthChecksController
         _serviceHandler = Guard.ThrowIfNull(serviceHandler);
         _secretHandler = Guard.ThrowIfNull(secretHandler);
         _configMapHandler = Guard.ThrowIfNull(configMapHandler);
+        _statusHandler = Guard.ThrowIfNull(statusHandler);
         _logger = Guard.ThrowIfNull(logger);
     }
 
     public async Task<DeploymentResult> DeployAsync(HealthCheckResource resource)
     {
+        await _statusHandler.PatchAsync(resource, new HealthCheckResourceStatus
+        {
+            Phase = "Creating",
+            Message = "Creating UI runtime resources"
+        }).ConfigureAwait(false);
+
         _logger.LogInformation("Creating secret for hc resource - namespace {namespace}", resource.Metadata.NamespaceProperty);
 
         var secret = await _secretHandler.GetOrCreateAsync(resource);
@@ -49,6 +58,15 @@ internal class HealthChecksController : IHealthChecksController
         _logger.LogInformation("Creating service for hc resource - namespace {namespace}", resource.Metadata.NamespaceProperty);
 
         var service = await _serviceHandler.GetOrCreateAsync(resource);
+
+        await _statusHandler.PatchAsync(resource, new HealthCheckResourceStatus
+        {
+            Phase = "Created",
+            Message = "UI runtime resources were created",
+            DeploymentName = deployment.Metadata.Name,
+            ServiceName = service.Metadata.Name,
+            AvailableReplicas = deployment.Status?.AvailableReplicas
+        }).ConfigureAwait(false);
 
         return DeploymentResult.Create(deployment, service, secret);
     }

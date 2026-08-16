@@ -1,0 +1,27 @@
+namespace HealthChecks.Memcached
+{
+    public sealed class MemcachedHealthCheck : Microsoft.Extensions.Diagnostics.HealthChecks.IHealthCheck
+    {
+        public MemcachedHealthCheck(Enyim.Caching.IMemcachedClient memcachedClient, HealthChecks.Memcached.MemcachedHealthCheckOptions? options = null) { }
+        public System.Threading.Tasks.Task<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult> CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext context, System.Threading.CancellationToken cancellationToken = default) { }
+    }
+    public sealed class MemcachedHealthCheckOptions
+    {
+        public const int DEFAULT_PORT = 11211;
+        public MemcachedHealthCheckOptions() { }
+        public System.TimeSpan CacheItemExpiration { get; set; }
+        public Enyim.Caching.Configuration.MemcachedClientOptions ClientOptions { get; }
+        public string KeyPrefix { get; set; }
+        public HealthChecks.Memcached.MemcachedHealthCheckOptions AddServer(string address, int port = 11211) { }
+    }
+}
+namespace Microsoft.Extensions.DependencyInjection
+{
+    public static class MemcachedHealthCheckBuilderExtensions
+    {
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddMemcached(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, System.Action<HealthChecks.Memcached.MemcachedHealthCheckOptions> setup, string? name = "memcached", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddMemcached(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, Enyim.Caching.IMemcachedClient memcachedClient, HealthChecks.Memcached.MemcachedHealthCheckOptions? options = null, string? name = "memcached", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddMemcached(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, System.Func<System.IServiceProvider, Enyim.Caching.IMemcachedClient>? clientFactory = null, System.Func<System.IServiceProvider, HealthChecks.Memcached.MemcachedHealthCheckOptions>? optionsFactory = null, string? name = "memcached", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default) { }
+        public static Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder AddMemcached(this Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder builder, string server, int port = 11211, System.Action<HealthChecks.Memcached.MemcachedHealthCheckOptions>? setup = null, string? name = "memcached", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus? failureStatus = default, System.Collections.Generic.IEnumerable<string>? tags = null, System.TimeSpan? timeout = default) { }
+    }
+}

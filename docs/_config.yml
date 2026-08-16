@@ -1,0 +1,22 @@
+title: DotNetDiag HealthChecks
+description: Documentation, reference material, and changelog for the actively maintained DotNetDiag HealthChecks fork.
+lang: en
+timezone: UTC
+url: https://dotnetdiag.github.io
+baseurl: ""
+markdown: kramdown
+show_excerpts: false
+
+collections:
+  docs:
+    output: true
+
+source_url: https://github.com/DotNetDiag/HealthChecks
+source_readme_url: https://github.com/DotNetDiag/HealthChecks/blob/master/README.md
+source_sample_url: https://github.com/DotNetDiag/HealthChecks/tree/master/samples
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default

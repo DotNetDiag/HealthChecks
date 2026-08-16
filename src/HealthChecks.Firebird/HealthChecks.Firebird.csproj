@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);Firebird;Database;SQL</PackageTags>
+    <Description>HealthChecks.Firebird is the health check package for Firebird databases.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" />
+  </ItemGroup>
+
+</Project>

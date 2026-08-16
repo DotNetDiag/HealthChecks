@@ -1,4 +1,6 @@
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using HealthChecks.UI.Configuration;
@@ -134,7 +136,8 @@ internal sealed class HealthCheckReportCollector : IHealthCheckReportCollector, 
                     // means you can't use _httpClient.GetAsync and have to use _httpClient.SendAsync
 
                     using var requestMessage = new HttpRequestMessage(HttpMethod.Get, absoluteUri);
-                    requestMessage.Headers.Authorization = new BasicAuthenticationHeaderValue(userInfoArr[0], userInfoArr[1]);
+                    var encodedCredentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{userInfoArr[0]}:{userInfoArr[1]}"));
+                    requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic", encodedCredentials);
                     response = await _httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
                 }
             }

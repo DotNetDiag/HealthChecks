@@ -9,7 +9,7 @@ public class AzureKeyVaultHealthCheckTests
     [Fact]
     public async Task be_unhealthy_if_keyvalue_is_not_available()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
@@ -29,9 +29,9 @@ public class AzureKeyVaultHealthCheckTests
                 {
                     Predicate = _ => true,
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

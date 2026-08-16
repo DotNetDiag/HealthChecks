@@ -1,10 +1,7 @@
-name: HealthChecks SendGrid CD
+name: Legacy HealthChecks SendGrid CD
 
 on:
-  push:
-    tags:
-      - release-sendgrid-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.SendGrid/HealthChecks.SendGrid.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.SendGrid

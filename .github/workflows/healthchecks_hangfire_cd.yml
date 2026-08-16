@@ -1,10 +1,7 @@
-name: HealthChecks Hangfire CD
+name: Legacy HealthChecks Hangfire CD
 
 on:
-  push:
-    tags:
-      - release-hangfire-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Hangfire/HealthChecks.Hangfire.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.Hangfire

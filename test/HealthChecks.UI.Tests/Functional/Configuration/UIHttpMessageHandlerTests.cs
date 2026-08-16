@@ -16,7 +16,7 @@ public class UI_configuration_should
         var handler = new ClientHandler(tracer, new Dictionary<string, string> { [keyName] = valueName });
         var hostReset = new ManualResetEventSlim(false);
 
-        var builder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -32,9 +32,9 @@ public class UI_configuration_should
             {
                 app.UseRouting();
                 app.UseEndpoints(setup => setup.MapHealthChecksUI());
-            });
+            }));
 
-        var server = new TestServer(builder);
+        var server = host.GetTestServer();
         hostReset.Wait(3000);
 
         tracer.Received().Log(keyName, valueName);
@@ -48,7 +48,7 @@ public class UI_configuration_should
         var hostReset = new ManualResetEventSlim(false);
         var tracer = Substitute.For<MessageHandlerTracer>();
 
-        var builder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -68,9 +68,9 @@ public class UI_configuration_should
             {
                 app.UseRouting();
                 app.UseEndpoints(setup => setup.MapHealthChecksUI());
-            });
+            }));
 
-        var server = new TestServer(builder);
+        var server = host.GetTestServer();
 
         hostReset.Wait(3000);
 
@@ -86,7 +86,7 @@ public class UI_configuration_should
         var hostReset = new ManualResetEventSlim(false);
         var tracer = Substitute.For<MessageHandlerTracer>();
 
-        var builder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
@@ -107,9 +107,9 @@ public class UI_configuration_should
             {
                 app.UseRouting();
                 app.UseEndpoints(setup => setup.MapHealthChecksUI());
-            });
+            }));
 
-        var server = new TestServer(builder);
+        var server = host.GetTestServer();
 
         hostReset.Wait(3000);
 

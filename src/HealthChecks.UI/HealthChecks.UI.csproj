@@ -1,12 +1,13 @@
-<Project Sdk=" Microsoft.NET.Sdk">
+﻿<Project Sdk=" Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);UI</PackageTags>
     <Description>HealthChecks.UI is a ASP.NET Core UI viewer of ASP.NET Core HealthChecks. For more information see https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks</Description>
-    <VersionPrefix>$(HealthCheckUI)</VersionPrefix>
     <TypeScriptCompileBlocked>True</TypeScriptCompileBlocked>
     <WarningsNotAsErrors>$(WarningsNotAsErrors);RCS1090</WarningsNotAsErrors>
+    <NpmInstallCommand Condition="'$(NpmInstallCommand)' == ''">npm ci</NpmInstallCommand>
+    <SkipNpmInstall Condition="'$(SkipNpmInstall)' == ''">false</SkipNpmInstall>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,9 +19,9 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0" />
-    <PackageReference Include="KubernetesClient" Version="14.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" VersionOverride="8.0.*" Condition="'$(TargetFramework)' == 'net8.0'" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" VersionOverride="10.0.*" Condition="'$(TargetFramework)' == 'net10.0'" />
+    <PackageReference Include="KubernetesClient" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,17 +32,17 @@
     <InternalsVisibleTo Include="HealthChecks.UI.Image" />
   </ItemGroup>
 
-  <Target Name="InstallPackages" BeforeTargets="BeforeBuild">
+  <Target Name="InstallPackages" BeforeTargets="DispatchToInnerBuilds;BeforeBuild" Condition="('$(IsCrossTargetingBuild)' == 'true' Or '$(TargetFrameworks)' == '') And '$(SkipNpmInstall)' != 'true'">
     <Message Importance="high" Text="*** Installing npm packages ***" />
-    <Exec Command="npm install" ContinueOnError="false" />
+    <Exec Command="$(NpmInstallCommand)" ContinueOnError="false" />
   </Target>
 
-  <Target Name="BuildClient" BeforeTargets="BeforeBuild" DependsOnTargets="InstallPackages">
+  <Target Name="BuildClient" BeforeTargets="DispatchToInnerBuilds;BeforeBuild" DependsOnTargets="InstallPackages" Condition="'$(IsCrossTargetingBuild)' == 'true' Or '$(TargetFrameworks)' == ''">
     <Message Importance="high" Text="*** Bundling client files ***" />
     <Exec Command="npm run build" ContinueOnError="false" />
   </Target>
 
-  <Target Name="UglifyCss" BeforeTargets="BeforeBuild" DependsOnTargets="BuildClient">
+  <Target Name="UglifyCss" BeforeTargets="DispatchToInnerBuilds;BeforeBuild" DependsOnTargets="BuildClient" Condition="'$(IsCrossTargetingBuild)' == 'true' Or '$(TargetFrameworks)' == ''">
     <Message Importance="high" Text="*** Uglifying css files *** " />
     <Exec Command="npm run buildcss:prod" ContinueOnError="false" />
   </Target>

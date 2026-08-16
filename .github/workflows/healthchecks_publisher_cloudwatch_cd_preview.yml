@@ -1,10 +1,7 @@
-name: HealthChecks Publisher.CloudWatch Preview CD
+name: Legacy HealthChecks Publisher.CloudWatch Preview CD
 
 on:
-  push:
-    tags:
-      - preview-publisher_CloudWatch-*
-      - preview-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -14,4 +11,3 @@ jobs:
       BUILD_CONFIG: Release
       VERSION_SUFFIX_PREFIX: rc1
       PROJECT_PATH: ./src/HealthChecks.Publisher.CloudWatch/HealthChecks.Publisher.CloudWatch.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.Publisher.CloudWatch

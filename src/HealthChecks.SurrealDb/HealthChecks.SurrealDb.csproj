@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(ExtendedNetStandard21LibraryTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);SurrealDb</PackageTags>
+    <Description>HealthChecks.SurrealDb is the health check package for SurrealDB.</Description>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SurrealDb.Net" />
+  </ItemGroup>
+
+</Project>
+

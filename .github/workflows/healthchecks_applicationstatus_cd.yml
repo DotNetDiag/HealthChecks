@@ -1,10 +1,7 @@
-name: HealthChecks Application Status CD
+name: Legacy HealthChecks Application Status CD
 
 on:
-  push:
-    tags:
-      - release-applicationstatus-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.ApplicationStatus/HealthChecks.ApplicationStatus.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.ApplicationStatus

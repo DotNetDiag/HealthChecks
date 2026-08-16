@@ -10,7 +10,7 @@ Npgsql's **data source supports additional configuration beyond the connection s
 
 ## Recommended approach
 
-To take advantage of the performance `NpgsqlDataSource` has to offer, it should be used as a **singleton**. Otherwise, the app might end up with having multiple data source instances, all of which would have their own connection pools. This can lead to resources exhaustion and major performance issues (Example: [#1993](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/issues/1993)).
+To take advantage of the performance `NpgsqlDataSource` has to offer, it should be used as a **singleton**. Otherwise, the app might end up with having multiple data source instances, all of which would have their own connection pools. This can lead to resources exhaustion and major performance issues (Example: [#1993](https://github.com/DotNetDiag/HealthChecks/issues/1993)).
 
 We encourage you to use [Npgsql.DependencyInjection](https://www.nuget.org/packages/Npgsql.DependencyInjection) package for registering a singleton factory for `NpgsqlDataSource`.  It allows easy configuration of your Npgsql connections and registers the appropriate services in your DI container.
 

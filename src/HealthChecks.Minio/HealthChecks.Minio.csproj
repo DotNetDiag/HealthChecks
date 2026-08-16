@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);MinIO;Minio;S3;ObjectStorage;Storage</PackageTags>
+    <Description>HealthChecks.Minio is the health check package for MinIO readiness, liveness, cluster, bucket, and service reachability checks.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Minio" />
+  </ItemGroup>
+
+</Project>

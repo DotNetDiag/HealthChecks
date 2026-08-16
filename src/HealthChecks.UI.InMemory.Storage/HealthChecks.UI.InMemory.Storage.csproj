@@ -1,14 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);InMemory</PackageTags>
     <Description>HealthChecks.UI.InMemory.Storage package contains the required classes to use InMemory provider in the UI</Description>
-    <VersionPrefix>$(HealthCheckUIInMemoryStorage)</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" VersionOverride="8.0.*" Condition="'$(TargetFramework)' == 'net8.0'" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" VersionOverride="10.0.*" Condition="'$(TargetFramework)' == 'net10.0'" />
   </ItemGroup>
 
   <ItemGroup>

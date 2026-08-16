@@ -7,7 +7,7 @@ public class gremlin_healthcheck_should
     [Fact]
     public async Task be_healthy_if_gremlin_is_available()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
@@ -16,7 +16,7 @@ public class gremlin_healthcheck_should
                      Hostname = "localhost",
                      Port = 8182,
                      EnableSsl = false
-                 }, tags: new string[] { "gremlin" });
+                 }, tags: ["gremlin"]);
             })
             .Configure(app =>
             {
@@ -24,9 +24,9 @@ public class gremlin_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("gremlin")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -36,7 +36,7 @@ public class gremlin_healthcheck_should
     [Fact]
     public async Task be_healthy_if_multiple_gremlin_are_available()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
@@ -45,13 +45,13 @@ public class gremlin_healthcheck_should
                      Hostname = "localhost",
                      Port = 8182,
                      EnableSsl = false
-                 }, tags: new string[] { "gremlin" }, name: "1")
+                 }, tags: ["gremlin"], name: "1")
                  .AddGremlin(_ => new GremlinOptions
                  {
                      Hostname = "localhost",
                      Port = 8182,
                      EnableSsl = false
-                 }, tags: new string[] { "gremlin" }, name: "2");
+                 }, tags: ["gremlin"], name: "2");
             })
             .Configure(app =>
             {
@@ -59,9 +59,9 @@ public class gremlin_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("gremlin")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -71,7 +71,7 @@ public class gremlin_healthcheck_should
     [Fact]
     public async Task be_unhealthy_if_gremlin_is_not_available()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
@@ -80,7 +80,7 @@ public class gremlin_healthcheck_should
                      Hostname = "wronghost",
                      Port = 8182,
                      EnableSsl = false
-                 }, tags: new string[] { "gremlin" });
+                 }, tags: ["gremlin"]);
             })
             .Configure(app =>
             {
@@ -88,9 +88,9 @@ public class gremlin_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("gremlin")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

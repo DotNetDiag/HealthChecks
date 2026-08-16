@@ -7,11 +7,11 @@ public class eventstore_healthcheck_should
     [Fact]
     public async Task be_healthy_if_eventstore_is_available()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                    .AddEventStore("esdb://localhost:2113?tls=false", tags: new[] { "eventstore" });
+                    .AddEventStore("esdb://localhost:2113?tls=false", tags: ["eventstore"]);
             })
             .Configure(app =>
             {
@@ -19,9 +19,9 @@ public class eventstore_healthcheck_should
                 {
                     Predicate = healthCheckRegistration => healthCheckRegistration.Tags.Contains("eventstore")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -31,11 +31,11 @@ public class eventstore_healthcheck_should
     [Fact]
     public async Task be_unhealthy_if_eventstore_tls_settings_do_not_match()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                    .AddEventStore("esdb://localhost:2113", tags: new[] { "eventstore" });
+                    .AddEventStore("esdb://localhost:2113", tags: ["eventstore"]);
             })
             .Configure(app =>
             {
@@ -43,9 +43,9 @@ public class eventstore_healthcheck_should
                 {
                     Predicate = healthCheckRegistration => healthCheckRegistration.Tags.Contains("eventstore")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -55,11 +55,11 @@ public class eventstore_healthcheck_should
     [Fact]
     public async Task be_unhealthy_if_eventstore_is_not_available()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                    .AddEventStore("esdb://nonexistingdomain:2113?tls=false", tags: new[] { "eventstore" });
+                    .AddEventStore("esdb://nonexistingdomain:2113?tls=false", tags: ["eventstore"]);
             })
             .Configure(app =>
             {
@@ -67,9 +67,9 @@ public class eventstore_healthcheck_should
                 {
                     Predicate = healthCheckRegistration => healthCheckRegistration.Tags.Contains("eventstore")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

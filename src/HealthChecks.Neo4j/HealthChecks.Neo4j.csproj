@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(DefaultNetCoreTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);Neo4j;GraphDB;Cypher;Bolt</PackageTags>
+    <Description>HealthChecks.Neo4j is the health check package for Neo4j.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Neo4j.Driver" />
+  </ItemGroup>
+
+</Project>

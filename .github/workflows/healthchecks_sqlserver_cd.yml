@@ -1,10 +1,7 @@
-name: HealthChecks SQL Server DB CD
+name: Legacy HealthChecks SQL Server DB CD
 
 on:
-  push:
-    tags:
-      - release-sqlserver-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.SqlServer/HealthChecks.SqlServer.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.SqlServer

@@ -11,20 +11,20 @@ internal class HealthCheckCollectorHostedService : IHostedService
     private readonly ILogger<HealthCheckCollectorHostedService> _logger;
     private readonly IHostApplicationLifetime _lifetime;
     private readonly ServerAddressesService _serverAddressesService;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly Settings _settings;
 
     private Task? _executingTask;
     private readonly CancellationTokenSource _cancellationTokenSource;
 
     public HealthCheckCollectorHostedService
-        (IServiceProvider provider,
+        (IServiceScopeFactory scopeFactory,
         IOptions<Settings> settings,
         ServerAddressesService serverAddressesService,
         ILogger<HealthCheckCollectorHostedService> logger,
         IHostApplicationLifetime lifetime)
     {
-        _serviceProvider = Guard.ThrowIfNull(provider);
+        _scopeFactory = Guard.ThrowIfNull(scopeFactory);
         _serverAddressesService = Guard.ThrowIfNull(serverAddressesService);
         _logger = Guard.ThrowIfNull(logger);
         _lifetime = Guard.ThrowIfNull(lifetime);
@@ -49,34 +49,34 @@ internal class HealthCheckCollectorHostedService : IHostedService
             await Task.WhenAny(_executingTask, Task.Delay(Timeout.Infinite, cancellationToken)).ConfigureAwait(false);
     }
 
-    private Task ExecuteAsync(CancellationToken cancellationToken)
+    private async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        _lifetime.ApplicationStarted.Register(async () =>
-        {
-            try
-            {
-                await CollectAsync(cancellationToken).ConfigureAwait(false);
-            }
-            catch (TaskCanceledException) when (cancellationToken.IsCancellationRequested)
-            {
-                // We are halting, task cancellation is expected.
-            }
-        });
+        var applicationStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        return Task.CompletedTask;
+        using var startedRegistration = _lifetime.ApplicationStarted.Register(() => applicationStarted.TrySetResult());
+        using var stoppingRegistration = _lifetime.ApplicationStopping.Register(() => applicationStarted.TrySetCanceled(cancellationToken));
+
+        await applicationStarted.Task.ConfigureAwait(false);
+
+        try
+        {
+            await CollectAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (TaskCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // We are halting, task cancellation is expected.
+        }
     }
 
     private async Task CollectAsync(CancellationToken cancellationToken)
     {
-        var scopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
-
         while (!cancellationToken.IsCancellationRequested)
         {
             // Collect should not be triggered until IServerAddressFeature reports the listening endpoints
 
             _logger.LogDebug("Executing HealthCheck collector HostedService.");
 
-            using (var scope = scopeFactory.CreateScope())
+            using (var scope = _scopeFactory.CreateScope())
             {
                 try
                 {

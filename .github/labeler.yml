@@ -5,139 +5,278 @@ test:
     all: ['!test/**/*.approved.txt']
 
 github_actions:
-  - .github/**/*
+- changed-files:
+  - any-glob-to-any-file: [.github/**/*]
 
 code style:
-  - .editorconfig
+  - changed-files:
+    - any-glob-to-any-file: [.editorconfig]
 
 docs:
-  - README.md
-  - doc/**/*
+  - changed-files:
+    - any-glob-to-any-file: [README.md, docs/**/*]
 
 samples:
-  - samples/**/*
+  - changed-files:
+    - any-glob-to-any-file: [samples/**/*]
+
+activemq:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.ActiveMQ/**/*]
 
 applicationstatus:
-  - src/HealthChecks.ApplicationStatus/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.ApplicationStatus/**/*]
 
 arrangodb:
-  - src/HealthChecks.ArangoDb/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.ArangoDb/**/*]
+
+artemis:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Artemis/**/*]
 
 aws:
-  - src/HealthChecks.Aws.*/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Aws.*/**/*]
 
 azure:
-  - src/HealthChecks.Azure*/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Azure*/**/*]
+
+clickhouse:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.ClickHouse/**/*]
+
+cockroachdb:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.CockroachDb/**/*]
 
 consul:
-  - src/HealthChecks.Consul/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Consul/**/*]
+
+containerregistry:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.ContainerRegistry/**/*]
 
 cosmosdb:
-  - src/HealthChecks.CosmosDb/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.CosmosDb/**/*]
 
 dapr:
-  - src/HealthChecks.Dapr/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Dapr/**/*]
 
 documentdb:
-  - src/HealthChecks.DocumentDb/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.DocumentDb/**/*]
+
+duckdb:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.DuckDb/**/*]
 
 dynamodb:
-  - src/HealthChecks.DynamoDb/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.DynamoDb/**/*]
+
+etcd:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Etcd/**/*]
 
 elasticsearch:
-  - src/HealthChecks.Elasticsearch/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Elasticsearch/**/*]
 
 eventstore:
-  - src/HealthChecks.EventStore*/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.EventStore*/**/*]
+
+firebird:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Firebird/**/*]
 
 cloudfirestore:
-  - src/HealthChecks.Gcp.CloudFirestore/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Gcp.CloudFirestore/**/*]
+
+cloudstorage:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Gcp.CloudStorage/**/*]
+
+grafana:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Grafana/**/*]
 
 gremlin:
-  - src/HealthChecks.Gremlin/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Gremlin/**/*]
 
 hangfire:
-  - src/HealthChecks.Hangfire/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Hangfire/**/*]
+
+harbor:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Harbor/**/*]
+
+ibmdb2:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.IbmDb2/**/*]
 
 ibmmq:
-  src/HealthChecks.IbmMQ/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.IbmMQ/**/*]
 
 influxdb:
-  src/HealthChecks.InfluxDB/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.InfluxDB/**/*]
 
 kafka:
-  - src/HealthChecks.Kafka/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Kafka/**/*]
 
 kubernetes:
-  - src/HealthChecks.Kubernetes/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Kubernetes/**/*]
+
+memcached:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Memcached/**/*]
+
+milvus:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Milvus/**/*]
+
+minio:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Minio/**/*]
 
 mongodb:
-  - src/HealthChecks.MongoDb/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.MongoDb/**/*]
 
 mysql:
-  - src/HealthChecks.MySql/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.MySql/**/*]
 
 nats:
-  - src/HealthChecks.Nats/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Nats/**/*]
+
+neo4j:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Neo4j/**/*]
 
 network:
-  - src/HealthChecks.Network/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Network/**/*]
 
 npgsql:
-  - src/HealthChecks.NpgSql/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.NpgSql/**/*]
 
 openidconnect:
-  - src/HealthChecks.OpenIdConnectServer/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.OpenIdConnectServer/**/*]
+
+opensearch:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.OpenSearch/**/*]
+
+pulsar:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Apache.Pulsar/**/*]
 
 oracle:
-  - src/HealthChecks.Oracle/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Oracle/**/*]
 
 prometheus:
-  - src/HealthChecks.Prometheus.Metrics/**/*
-  - src/HealthChecks.Publisher.Prometheus/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Prometheus.Metrics/**/*, src/HealthChecks.Publisher.Prometheus/**/*]
 
 applicationinsights:
-  - src/HealthChecks.Publisher.ApplicationInsights/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Publisher.ApplicationInsights/**/*]
 
 cloudwatch:
-  - src/HealthChecks.Publisher.CloudWatch/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Publisher.CloudWatch/**/*]
 
 datadog:
-  - src/HealthChecks.Publisher.Datadog/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Publisher.Datadog/**/*]
 
 seq:
-  -src/HealthChecks.Publisher.Seq/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Publisher.Seq/**/*]
+
+qdrant:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Qdrant/**/*]
 
 rabbitmq:
-  - src/HealthChecks.Rabbitmq/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Rabbitmq/**/*]
 
 ravendb:
-  - src/HealthChecks.RavenDB/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.RavenDB/**/*]
 
 redis:
-  - src/HealthChecks.Redis/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Redis/**/*]
+
+valkey:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Valkey/**/*]
 
 sendgrid:
-  - src/HealthChecks.SendGrid/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.SendGrid/**/*]
 
 signalr:
-  - src/HealthChecks.SignalR/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.SignalR/**/*]
 
 solr:
-  - src/HealthChecks.Solr/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Solr/**/*]
+
+sonnetdb:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.SonnetDB/**/*, src/HealthChecks.UI.SonnetDB.Storage/**/*]
 
 sqlite:
-  - src/HealthChecks.Sqlite/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Sqlite/**/*]
 
 sqlserver:
-  - src/HealthChecks.SqlServer/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.SqlServer/**/*]
+
+surrealdb:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.SurrealDb/**/*]
 
 system:
-  - src/HealthChecks.System/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.System/**/*]
 
 UI:
-  - src/HealthChecks.UI/**/*
-  - src/HealthChecks.UI.*/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.UI/**/*,  src/HealthChecks.UI.*/**/*]
+  
 
 uris:
-  - src/HealthChecks.Uris/**/*
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Uris/**/*]
+
+vault:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.Vault/**/*]
+
+zookeeper:
+  - changed-files:
+    - any-glob-to-any-file: [src/HealthChecks.ZooKeeper/**/*]

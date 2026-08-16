@@ -9,11 +9,11 @@ public class elasticsearch_healthcheck_should
     {
         var connectionString = @"http://localhost:9201";
 
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
         .ConfigureServices(services =>
         {
             services.AddHealthChecks()
-             .AddElasticsearch(connectionString, tags: new string[] { "elasticsearch" });
+             .AddElasticsearch(connectionString, tags: ["elasticsearch"]);
         })
         .Configure(app =>
         {
@@ -21,9 +21,9 @@ public class elasticsearch_healthcheck_should
             {
                 Predicate = r => r.Tags.Contains("elasticsearch")
             });
-        });
+        }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -33,11 +33,11 @@ public class elasticsearch_healthcheck_should
     [Fact]
     public async Task be_unhealthy_if_elasticsearch_is_not_available()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services.AddHealthChecks()
-                .AddElasticsearch("nonexistingdomain:9200", tags: new string[] { "elasticsearch" });
+                .AddElasticsearch("nonexistingdomain:9200", tags: ["elasticsearch"]);
             })
             .Configure(app =>
             {
@@ -45,9 +45,9 @@ public class elasticsearch_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("elasticsearch")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

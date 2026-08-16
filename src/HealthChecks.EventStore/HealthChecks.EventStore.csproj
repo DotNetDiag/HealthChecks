@@ -1,16 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(DefaultLibraryTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
     <PackageTags>$(PackageTags);EventStore</PackageTags>
     <Description>HealthChecks.EventStore is the health check package for EventStore, using the TCP Client.</Description>
-    <VersionPrefix>$(HealthCheckEventStore)</VersionPrefix>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EventStore.Client" Version="22.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="8.0.0" />
+    <PackageReference Include="EventStore.Client" />
   </ItemGroup>
 
 </Project>
+

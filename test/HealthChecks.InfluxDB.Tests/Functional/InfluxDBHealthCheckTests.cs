@@ -7,12 +7,12 @@ public class influxdb_healthcheck_should
     [Fact]
     public async Task be_healthy_if_influxdb_is_available()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
                 .AddHealthChecks()
-                .AddInfluxDB("http://localhost:8086/?org=influxdata&bucket=dummy&latest=-72h", "ci_user", "password", "influxdb", tags: new string[] { "influxdb" });
+                .AddInfluxDB("http://localhost:8086/?org=influxdata&bucket=dummy&latest=-72h", "ci_user", "password", "influxdb", tags: ["influxdb"]);
             })
             .Configure(app =>
             {
@@ -20,9 +20,9 @@ public class influxdb_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("influxdb")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 
@@ -32,12 +32,12 @@ public class influxdb_healthcheck_should
     [Fact]
     public async Task be_unhealthy_if_influxdb_is_unavailable()
     {
-        var webHostBuilder = new WebHostBuilder()
+        using var host = TestHostHelper.Build(webHostBuilder => webHostBuilder
             .ConfigureServices(services =>
             {
                 services
                     .AddHealthChecks()
-                    .AddInfluxDB("http://localhost:8086/?org=influxdata&bucket=dummy&latest=-72h", "ci_user_unavailable", "password", "influxdb", tags: new string[] { "influxdb" });
+                    .AddInfluxDB("http://localhost:8086/?org=influxdata&bucket=dummy&latest=-72h", "ci_user_unavailable", "password", "influxdb", tags: ["influxdb"]);
             })
             .Configure(app =>
             {
@@ -45,9 +45,9 @@ public class influxdb_healthcheck_should
                 {
                     Predicate = r => r.Tags.Contains("influxdb")
                 });
-            });
+            }));
 
-        using var server = new TestServer(webHostBuilder);
+        var server = host.GetTestServer();
 
         using var response = await server.CreateRequest("/health").GetAsync();
 

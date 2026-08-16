@@ -18,6 +18,7 @@ namespace HealthChecks.UI.Configuration
         public string ResourcesPath { get; set; }
         public string UIPath { get; set; }
         public string WebhookPath { get; set; }
+        public HealthChecks.UI.Configuration.Options AddCustomJavaScript(string path) { }
         public HealthChecks.UI.Configuration.Options AddCustomStylesheet(string path) { }
     }
     public class Settings
@@ -70,6 +71,13 @@ namespace HealthChecks.UI.Core
     {
         System.Threading.Tasks.ValueTask OnCollectExecuted(HealthChecks.UI.Core.UIHealthReport report);
         System.Threading.Tasks.ValueTask OnCollectExecuting(HealthChecks.UI.Data.HealthCheckConfiguration healthCheck);
+    }
+    public class UIJavaScript
+    {
+        public byte[] Content { get; }
+        public string FileName { get; }
+        public string ResourcePath { get; }
+        public static HealthChecks.UI.Core.UIJavaScript Create(HealthChecks.UI.Configuration.Options options, string filePath) { }
     }
     public class UIStylesheet
     {

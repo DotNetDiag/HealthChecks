@@ -1,0 +1,41 @@
+name: HealthChecks Cassandra CI
+
+permissions:
+  contents: read
+  packages: write
+
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - src/HealthChecks.Cassandra/**
+      - test/HealthChecks.Cassandra.Tests/**
+      - test/_SHARED/**
+      - .github/workflows/healthchecks_cassandra_ci.yml
+      - Directory.Build.props
+      - Directory.Build.targets
+      - Directory.Packages.props
+    tags:
+      - v*
+
+  pull_request:
+    branches: [ master ]
+    paths:
+      - src/HealthChecks.Cassandra/**
+      - test/HealthChecks.Cassandra.Tests/**
+      - test/_SHARED/**
+      - .github/workflows/healthchecks_cassandra_ci.yml
+      - Directory.Build.props
+      - Directory.Build.targets
+      - Directory.Packages.props
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable_ci_workflow.yml
+    secrets: inherit
+    with:
+      PROJECT_PATH: ./src/HealthChecks.Cassandra/HealthChecks.Cassandra.csproj
+      TEST_PROJECT_PATH: ./test/HealthChecks.Cassandra.Tests/HealthChecks.Cassandra.Tests.csproj
+      CODECOV_FLAGS: Cassandra

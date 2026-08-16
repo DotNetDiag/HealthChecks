@@ -1,0 +1,13 @@
+name: Legacy HealthChecks IoTDB Preview CD
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable_cd_preview_workflow.yml
+    secrets: inherit
+    with:
+      BUILD_CONFIG: Release
+      VERSION_SUFFIX_PREFIX: rc1
+      PROJECT_PATH: ./src/HealthChecks.IoTDB/HealthChecks.IoTDB.csproj

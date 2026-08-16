@@ -1,5 +1,10 @@
 name: HealthChecks CosmosDb CI
 
+permissions:
+  contents: read
+  packages: write
+
+
 on:
   workflow_dispatch:
   push:
@@ -11,9 +16,9 @@ on:
       - .github/workflows/healthchecks_cosmosdb_ci.yml
       - Directory.Build.props
       - Directory.Build.targets
-    tags-ignore:
-      - release-*
-      - preview-*
+      - Directory.Packages.props
+    tags:
+      - v*
 
   pull_request:
     branches: [ master ]
@@ -24,10 +29,12 @@ on:
       - .github/workflows/healthchecks_cosmosdb_ci.yml
       - Directory.Build.props
       - Directory.Build.targets
+      - Directory.Packages.props
 
 jobs:
   build:
     uses: ./.github/workflows/reusable_ci_workflow.yml
+    secrets: inherit
     with:
       PROJECT_PATH: ./src/HealthChecks.CosmosDb/HealthChecks.CosmosDb.csproj
       TEST_PROJECT_PATH: ./test/HealthChecks.CosmosDb.Tests/HealthChecks.CosmosDb.Tests.csproj

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(ExtendedLibraryTargetFrameworks)</TargetFrameworks>
+    <PackageTags>$(PackageTags);Artemis;ActiveMQ;Messaging;AMQP;Apache.NMS</PackageTags>
+    <Description>HealthChecks.Artemis is the health check package for Apache ActiveMQ Artemis broker connectivity.</Description>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Apache.NMS" />
+    <PackageReference Include="Apache.NMS.AMQP" />
+  </ItemGroup>
+
+</Project>

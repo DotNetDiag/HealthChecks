@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <PackageTags>$(PackageTags);SonnetDB</PackageTags>
+    <Description>HealthChecks.UI.SonnetDB.Storage package contains the required classes to use SonnetDB provider in the UI</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SonnetDB.EntityFrameworkCore" VersionOverride="2.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HealthChecks.UI.Data\HealthChecks.UI.Data.csproj" />
+  </ItemGroup>
+
+</Project>

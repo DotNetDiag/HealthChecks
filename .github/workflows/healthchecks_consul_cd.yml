@@ -1,10 +1,7 @@
-name: HealthChecks Consul CD
+name: Legacy HealthChecks Consul CD
 
 on:
-  push:
-    tags:
-      - release-consul-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Consul/HealthChecks.Consul.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.Consul

@@ -1,25 +1,26 @@
-name: HealthChecks UI CD
+name: Legacy HealthChecks UI CD
+
+permissions:
+  contents: read
+  packages: write
 
 on:
-  push:
-    tags:
-      - release-ui-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
     env:
       BUILD_CONFIG: Release
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
-            6.0.x
-            7.0.x
             8.0.x
+            10.0.x
       - name: Restore UI
         run: dotnet restore ./src/HealthChecks.UI/HealthChecks.UI.csproj
       - name: Restore UI.Client
@@ -36,6 +37,8 @@ jobs:
         run: dotnet restore ./src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj
       - name: Restore UI.SQLite.Storage
         run: dotnet restore ./src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj
+      - name: Restore UI.SonnetDB.Storage
+        run: dotnet restore ./src/HealthChecks.UI.SonnetDB.Storage/HealthChecks.UI.SonnetDB.Storage.csproj
       - name: Restore UI.SqlServer.Storage
         run: dotnet restore ./src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj
       - name: Restore UI.K8s.Operator
@@ -56,6 +59,8 @@ jobs:
         run: dotnet build --no-restore ./src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj -c $BUILD_CONFIG
       - name: Build UI.SQLite.Storage
         run: dotnet build --no-restore ./src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj -c $BUILD_CONFIG
+      - name: Build UI.SonnetDB.Storage
+        run: dotnet build --no-restore ./src/HealthChecks.UI.SonnetDB.Storage/HealthChecks.UI.SonnetDB.Storage.csproj -c $BUILD_CONFIG
       - name: Build UI.SqlServer.Storage
         run: dotnet build --no-restore ./src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj -c $BUILD_CONFIG
       - name: Build UI.K8s.Operator
@@ -76,27 +81,30 @@ jobs:
         run: dotnet pack --no-build ./src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj -c $BUILD_CONFIG -o ./artifacts
       - name: Pack UI.SQLite.Storage
         run: dotnet pack --no-build ./src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj -c $BUILD_CONFIG -o ./artifacts
+      - name: Pack UI.SonnetDB.Storage
+        run: dotnet pack --no-build ./src/HealthChecks.UI.SonnetDB.Storage/HealthChecks.UI.SonnetDB.Storage.csproj -c $BUILD_CONFIG -o ./artifacts
       - name: Pack UI.SqlServer.Storage
         run: dotnet pack --no-build ./src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj -c $BUILD_CONFIG -o ./artifacts
       - name: Pack UI.K8s.Operator
         run: dotnet pack --no-build ./src/HealthChecks.UI.K8s.Operator/HealthChecks.UI.K8s.Operator.csproj -c $BUILD_CONFIG -o ./artifacts
-      - name: Publish UI Health Check
-        run: dotnet nuget push ./artifacts/AspNetCore.HealthChecks.UI.*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Publish UI.Client Health Check
-        run: dotnet nuget push ./artifacts/AspNetCore.HealthChecks.UI.Client.*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Publish UI.Core Health Check
-        run: dotnet nuget push ./artifacts/AspNetCore.HealthChecks.UI.Core.*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Publish UI.Data Health Check
-        run: dotnet nuget push ./artifacts/AspNetCore.HealthChecks.UI.Data.*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Publish UI.InMemory.Storage Health Check
-        run: dotnet nuget push ./artifacts/AspNetCore.HealthChecks.UI.InMemory.Storage.*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Publish UI.MySql.Storage Health Check
-        run: dotnet nuget push ./artifacts/AspNetCore.HealthChecks.UI.MySql.Storage.*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Publish UI.PostgreSQL.Storage Health Check
-        run: dotnet nuget push ./artifacts/AspNetCore.HealthChecks.UI.PostgreSQL.Storage.*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Publish UI.SQLite.Storage Health Check
-        run: dotnet nuget push ./artifacts/AspNetCore.HealthChecks.UI.SQLite.Storage.*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Publish UI.SqlServer.Storage Health Check
-        run: dotnet nuget push ./artifacts/AspNetCore.HealthChecks.UI.SqlServer.Storage.*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Publish UI.K8s.Operator Health Check
-        run: dotnet nuget push ./artifacts/AspNetCore.HealthChecks.UI.K8s.Operator.*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Publish UI packages to GitHub Packages
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for package in ./artifacts/DotNetDiag.HealthChecks.UI*.nupkg; do
+            dotnet nuget push "$package" \
+              --api-key "${{ github.token }}" \
+              --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+              --skip-duplicate
+          done
+      - name: Publish UI packages to NuGet.org
+        if: ${{ env.NUGET_API_KEY != '' }}
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for package in ./artifacts/DotNetDiag.HealthChecks.UI*.nupkg; do
+            dotnet nuget push "$package" \
+              --api-key "$NUGET_API_KEY" \
+              --source "https://api.nuget.org/v3/index.json" \
+              --skip-duplicate
+          done

@@ -1,0 +1,69 @@
+---
+layout: default
+---
+
+<section class="hero-block landing-hero">
+    <p class="hero-eyebrow">{{ page.hero_eyebrow | default: site.title }}</p>
+    <h1>{{ page.hero_title | default: page.title }}</h1>
+    <p class="hero-subtitle">{{ page.hero_subtitle | default: page.description }}</p>
+    <div class="hero-actions">
+        {% if page.hero_primary_url %}
+        <a class="button primary" href="{{ page.hero_primary_url | relative_url }}">{{ page.hero_primary_label }}</a>
+        {% endif %}
+        {% if page.hero_secondary_url %}
+        <a class="button" href="{{ page.hero_secondary_url | relative_url }}">{{ page.hero_secondary_label }}</a>
+        {% endif %}
+    </div>
+</section>
+
+{{ content }}
+
+{% if page.landing_paths %}
+<section class="landing-section">
+    <div class="section-heading">
+        <p class="section-kicker">{{ page.paths_kicker | default: 'Start here' }}</p>
+        <h2>{{ page.paths_title | default: 'Choose a path' }}</h2>
+        {% if page.paths_description %}
+        <p>{{ page.paths_description }}</p>
+        {% endif %}
+    </div>
+    <div class="landing-grid">
+        {% for item in page.landing_paths %}
+        <a class="landing-card" href="{{ item.url | relative_url }}">
+            {% if item.kicker %}
+            <p class="landing-card-kicker">{{ item.kicker }}</p>
+            {% endif %}
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.description }}</p>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% if page.landing_sections %}
+{% for section in page.landing_sections %}
+<section class="landing-section">
+    <div class="section-heading">
+        {% if section.kicker %}
+        <p class="section-kicker">{{ section.kicker }}</p>
+        {% endif %}
+        <h2>{{ section.title }}</h2>
+        {% if section.description %}
+        <p>{{ section.description }}</p>
+        {% endif %}
+    </div>
+    <div class="landing-grid">
+        {% for item in section.items %}
+        <a class="landing-card" href="{{ item.url | relative_url }}">
+            {% if item.kicker %}
+            <p class="landing-card-kicker">{{ item.kicker }}</p>
+            {% endif %}
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.description }}</p>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endfor %}
+{% endif %}

@@ -1,10 +1,7 @@
-name: HealthChecks Publisher.Seq CD
+name: Legacy HealthChecks Publisher.Seq CD
 
 on:
-  push:
-    tags:
-      - release-publisher_seq-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Publisher.Seq/HealthChecks.Publisher.Seq.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.Publisher.Seq

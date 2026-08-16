@@ -1,10 +1,7 @@
-name: HealthChecks Aws Systems Manager CD
+name: Legacy HealthChecks Aws Systems Manager CD
 
 on:
-  push:
-    tags:
-      - release-aws_systemsmanager-*
-      - release-all-*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,4 +10,3 @@ jobs:
     with:
       BUILD_CONFIG: Release
       PROJECT_PATH: ./src/HealthChecks.Aws.SystemsManager/HealthChecks.Aws.SystemsManager.csproj
-      PACKAGE_NAME: AspNetCore.HealthChecks.Aws.SystemsManager

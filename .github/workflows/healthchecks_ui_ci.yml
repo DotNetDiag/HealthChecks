@@ -1,38 +1,110 @@
 name: HealthChecks UI CI
 
+permissions:
+  contents: read
+  packages: write
+
+
 on:
   workflow_dispatch:
   push:
     branches: [ master ]
     paths:
-      - src/HealthChecks.UI/**
-      - src/HealthChecks.UI.*/**
-      - test/HealthChecks.UI.*/**
+      - src/HealthChecks.UI*/**
+      - test/HealthChecks.UI*/**
       - test/_SHARED/**
       - samples/HealthChecks.UI*/**
       - .github/workflows/healthchecks_ui_ci.yml
+      - .github/workflows/reusable_ui_cd_workflow.yml
+      - .github/scripts/get-release-scope.ps1
       - Directory.Build.props
       - Directory.Build.targets
+      - Directory.Packages.props
+      - src/Directory.Build.props
+      - src/ApiMarker.cs
+      - src/CallerArgumentExpressionAttribute.cs
       - build/docker-images/HealthChecks.UI.Image/**
-    tags-ignore:
-      - release-*
-      - preview-*
+    tags:
+      - v*
 
   pull_request:
     branches: [ master ]
     paths:
-      - src/HealthChecks.UI/**
-      - src/HealthChecks.UI.*/**
-      - test/HealthChecks.UI.*/**
+      - src/HealthChecks.UI*/**
+      - test/HealthChecks.UI*/**
       - test/_SHARED/**
       - samples/HealthChecks.UI*/**
       - .github/workflows/healthchecks_ui_ci.yml
+      - .github/workflows/reusable_ui_cd_workflow.yml
+      - .github/scripts/get-release-scope.ps1
       - Directory.Build.props
       - Directory.Build.targets
+      - Directory.Packages.props
+      - src/Directory.Build.props
+      - src/ApiMarker.cs
+      - src/CallerArgumentExpressionAttribute.cs
       - build/docker-images/HealthChecks.UI.Image/**
 
 jobs:
+  release-scope:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.scope.outputs.should_run }}
+      is_tag: ${{ steps.scope.outputs.is_tag }}
+      package_version: ${{ steps.scope.outputs.package_version }}
+      previous_tag: ${{ steps.scope.outputs.previous_tag }}
+      release_mode: ${{ steps.scope.outputs.release_mode }}
+      release_reason: ${{ steps.scope.outputs.release_reason }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Determine release scope
+        id: scope
+        shell: pwsh
+        run: |
+          $uiProjectPaths = Get-ChildItem -Path './src' -Directory |
+            Where-Object { $_.Name -like 'HealthChecks.UI*' } |
+            ForEach-Object { Get-ChildItem -Path $_.FullName -Filter '*.csproj' -File } |
+            ForEach-Object { ('./src/{0}/{1}' -f $_.Directory.Name, $_.Name).Replace('\', '/') } |
+            Sort-Object -Unique
+
+          $projectPath = $uiProjectPaths |
+            Where-Object { $_ -eq './src/HealthChecks.UI/HealthChecks.UI.csproj' } |
+            Select-Object -First 1
+
+          if (-not $projectPath) {
+            throw 'Unable to locate ./src/HealthChecks.UI/HealthChecks.UI.csproj.'
+          }
+
+          $additionalProjectPaths = @($uiProjectPaths | Where-Object { $_ -ne $projectPath })
+
+          ./.github/scripts/get-release-scope.ps1 `
+            -ProjectPath $projectPath `
+            -AdditionalProjectPaths $additionalProjectPaths
+      - name: Summarize tag release scope
+        if: ${{ steps.scope.outputs.is_tag == 'true' }}
+        shell: bash
+        run: |
+          previous_tag='${{ steps.scope.outputs.previous_tag }}'
+          if [ -z "$previous_tag" ]; then
+            previous_tag='<none>'
+          fi
+
+          {
+            echo "## UI CI Tag Scope"
+            echo
+            echo "- Project group: UI"
+            echo "- Previous tag: \`$previous_tag\`"
+            echo "- Package version: \`${{ steps.scope.outputs.package_version }}\`"
+            echo "- Release mode: \`${{ steps.scope.outputs.release_mode }}\`"
+            echo "- Should run: \`${{ steps.scope.outputs.should_run }}\`"
+            echo "- Reason: ${{ steps.scope.outputs.release_reason }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
   build:
+    needs: release-scope
+    if: ${{ needs.release-scope.outputs.is_tag != 'true' || needs.release-scope.outputs.should_run == 'true' }}
     runs-on: ubuntu-latest
     services:
       sqlserver:
@@ -56,14 +128,13 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: Password12!
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
-            6.0.x
-            7.0.x
             8.0.x
+            10.0.x
       - name: Restore
         run: |
           dotnet restore ./src/HealthChecks.UI/HealthChecks.UI.csproj &&
@@ -78,6 +149,7 @@ jobs:
           dotnet restore ./src/HealthChecks.UI.MySql.Storage/HealthChecks.UI.MySql.Storage.csproj &&
           dotnet restore ./src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj &&
           dotnet restore ./src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj &&
+          dotnet restore ./src/HealthChecks.UI.SonnetDB.Storage/HealthChecks.UI.SonnetDB.Storage.csproj &&
           dotnet restore ./src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj &&
           dotnet restore ./src/HealthChecks.UI.K8s.Operator/HealthChecks.UI.K8s.Operator.csproj
 
@@ -95,6 +167,7 @@ jobs:
           dotnet format --no-restore --verify-no-changes --severity warn ./src/HealthChecks.UI.MySql.Storage/HealthChecks.UI.MySql.Storage.csproj || (echo "Run 'dotnet format' to fix issues" && exit 1) &&
           dotnet format --no-restore --verify-no-changes --severity warn ./src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj || (echo "Run 'dotnet format' to fix issues" && exit 1) &&
           dotnet format --no-restore --verify-no-changes --severity warn ./src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj || (echo "Run 'dotnet format' to fix issues" && exit 1) &&
+          dotnet format --no-restore --verify-no-changes --severity warn ./src/HealthChecks.UI.SonnetDB.Storage/HealthChecks.UI.SonnetDB.Storage.csproj || (echo "Run 'dotnet format' to fix issues" && exit 1) &&
           dotnet format --no-restore --verify-no-changes --severity warn ./src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj || (echo "Run 'dotnet format' to fix issues" && exit 1) &&
           dotnet format --no-restore --verify-no-changes --severity warn ./src/HealthChecks.UI.K8s.Operator/HealthChecks.UI.K8s.Operator.csproj || (echo "Run 'dotnet format' to fix issues" && exit 1)
 
@@ -112,6 +185,7 @@ jobs:
           dotnet build --no-restore ./src/HealthChecks.UI.MySql.Storage/HealthChecks.UI.MySql.Storage.csproj &&
           dotnet build --no-restore ./src/HealthChecks.UI.PostgreSQL.Storage/HealthChecks.UI.PostgreSQL.Storage.csproj &&
           dotnet build --no-restore ./src/HealthChecks.UI.SQLite.Storage/HealthChecks.UI.SQLite.Storage.csproj &&
+          dotnet build --no-restore ./src/HealthChecks.UI.SonnetDB.Storage/HealthChecks.UI.SonnetDB.Storage.csproj &&
           dotnet build --no-restore ./src/HealthChecks.UI.SqlServer.Storage/HealthChecks.UI.SqlServer.Storage.csproj &&
           dotnet build --no-restore ./src/HealthChecks.UI.K8s.Operator/HealthChecks.UI.K8s.Operator.csproj
 
@@ -140,7 +214,7 @@ jobs:
           --collect "XPlat Code Coverage"
           --results-directory .coverage
           --
-          DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+          DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover &&
           dotnet test
           ./test/HealthChecks.UI.Data.Tests/HealthChecks.UI.Data.Tests.csproj
           --no-restore
@@ -151,7 +225,17 @@ jobs:
           DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
       - name: Upload Coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v7
         with:
           flags: UI
           directory: .coverage
+
+  publish:
+    needs:
+      - release-scope
+      - build
+    if: ${{ needs.release-scope.outputs.is_tag == 'true' && needs.release-scope.outputs.should_run == 'true' }}
+    uses: ./.github/workflows/reusable_ui_cd_workflow.yml
+    secrets: inherit
+    with:
+      PACKAGE_VERSION: ${{ needs.release-scope.outputs.package_version }}
