@@ -9,19 +9,15 @@ namespace HealthChecks.Redis;
 /// </summary>
 public class RedisHealthCheck : IHealthCheck
 {
-    private static readonly ConcurrentDictionary<Func<CancellationToken, Task<string?>>, IConnectionMultiplexer> _connections = new();
-    private readonly Func<CancellationToken, Task<string?>>? _redisConnectionStringFactory;
+    private static readonly ConcurrentDictionary<string, IConnectionMultiplexer> _connections = new();
+    private readonly string? _redisConnectionString;
     private readonly IConnectionMultiplexer? _connectionMultiplexer;
-    private readonly Func<CancellationToken, Task<IConnectionMultiplexer>>? _connectionMultiplexerFactory;
+    private readonly Func<IConnectionMultiplexer>? _connectionMultiplexerFactory;
+    private readonly Func<CancellationToken, Task<IConnectionMultiplexer>>? _asyncConnectionMultiplexerFactory;
 
     public RedisHealthCheck(string redisConnectionString)
     {
-        _redisConnectionStringFactory = (_) => Task.FromResult<string?>(Guard.ThrowIfNull(redisConnectionString));
-    }
-
-    public RedisHealthCheck(Func<CancellationToken, Task<string?>> redisConnectionStringFactory)
-    {
-        _redisConnectionStringFactory = Guard.ThrowIfNull(redisConnectionStringFactory);
+        _redisConnectionString = Guard.ThrowIfNull(redisConnectionString);
     }
 
     public RedisHealthCheck(IConnectionMultiplexer connectionMultiplexer)
@@ -41,12 +37,12 @@ public class RedisHealthCheck : IHealthCheck
     /// </remarks>
     internal RedisHealthCheck(Func<IConnectionMultiplexer> connectionMultiplexerFactory)
     {
-        _connectionMultiplexerFactory = (ct) => Task.FromResult(connectionMultiplexerFactory());
+        _connectionMultiplexerFactory = Guard.ThrowIfNull(connectionMultiplexerFactory);
     }
 
     internal RedisHealthCheck(Func<CancellationToken, Task<IConnectionMultiplexer>> connectionMultiplexerFactory)
     {
-        _connectionMultiplexerFactory = connectionMultiplexerFactory;
+        _asyncConnectionMultiplexerFactory = Guard.ThrowIfNull(connectionMultiplexerFactory);
     }
 
     /// <inheritdoc />
@@ -54,19 +50,26 @@ public class RedisHealthCheck : IHealthCheck
     {
         try
         {
-            var connection = (_connectionMultiplexer, _connectionMultiplexerFactory) switch
-            {
-                (not null, _) => _connectionMultiplexer,
-                (null, { } factory) => await factory(cancellationToken).ConfigureAwait(false),
-                _ => null
-            };
+            IConnectionMultiplexer? connection = _connectionMultiplexer ?? _connectionMultiplexerFactory?.Invoke();
 
-            if (_redisConnectionStringFactory is not null && !_connections.TryGetValue(_redisConnectionStringFactory, out connection))
+            if (connection is null && _asyncConnectionMultiplexerFactory is not null)
             {
                 try
                 {
-                    var redisConnectionString = await _redisConnectionStringFactory(cancellationToken).ConfigureAwait(false);
-                    var connectionMultiplexerTask = ConnectionMultiplexer.ConnectAsync(redisConnectionString!);
+                    connection = Guard.ThrowIfNull(
+                        await _asyncConnectionMultiplexerFactory(cancellationToken).ConfigureAwait(false));
+                }
+                catch (OperationCanceledException)
+                {
+                    return new HealthCheckResult(context.Registration.FailureStatus, description: "Healthcheck timed out");
+                }
+            }
+
+            if (_redisConnectionString is not null && !_connections.TryGetValue(_redisConnectionString, out connection))
+            {
+                try
+                {
+                    var connectionMultiplexerTask = ConnectionMultiplexer.ConnectAsync(_redisConnectionString!);
                     connection = await TimeoutAsync(connectionMultiplexerTask, cancellationToken).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
@@ -74,11 +77,11 @@ public class RedisHealthCheck : IHealthCheck
                     return new HealthCheckResult(context.Registration.FailureStatus, description: "Healthcheck timed out");
                 }
 
-                if (!_connections.TryAdd(_redisConnectionStringFactory, connection))
+                if (!_connections.TryAdd(_redisConnectionString, connection))
                 {
                     // Dispose new connection which we just created, because we don't need it.
                     connection.Dispose();
-                    connection = _connections[_redisConnectionStringFactory];
+                    connection = _connections[_redisConnectionString];
                 }
             }
 
@@ -115,9 +118,9 @@ public class RedisHealthCheck : IHealthCheck
         }
         catch (Exception ex)
         {
-            if (_redisConnectionStringFactory is not null)
+            if (_redisConnectionString is not null)
             {
-                _connections.TryRemove(_redisConnectionStringFactory, out var connection);
+                _connections.TryRemove(_redisConnectionString, out var connection);
 #pragma warning disable IDISP007 // Don't dispose injected [false positive here]
                 connection?.Dispose();
 #pragma warning restore IDISP007 // Don't dispose injected

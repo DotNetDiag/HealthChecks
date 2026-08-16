@@ -233,6 +233,18 @@ public void ConfigureServices(IServiceCollection services)
 
 Each HealthCheck registration supports also name, tags, failure status and other optional parameters.
 
+For Redis connections that require asynchronous setup, use the async multiplexer factory and return a shared
+`IConnectionMultiplexer` instance:
+
+```csharp
+services.AddHealthChecks()
+    .AddRedis(async (_, cancellationToken) =>
+    {
+        // Resolve credentials and reuse the multiplexer in application code.
+        return await GetSharedRedisConnectionMultiplexerAsync(cancellationToken);
+    });
+```
+
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
