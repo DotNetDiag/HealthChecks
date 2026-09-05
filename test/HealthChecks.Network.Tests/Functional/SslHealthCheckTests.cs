@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Sockets;
 
 namespace HealthChecks.Network.Tests.Functional;
 
@@ -156,6 +157,38 @@ public class ssl_healthcheck_should
                 null,
                 timeout: null)
         }, new CancellationTokenSource(TimeSpan.FromSeconds(2)).Token);
+
+        result.Exception.ShouldBeOfType<OperationCanceledException>();
+    }
+
+    [Fact]
+    public async Task cancel_during_stalled_tls_handshake()
+    {
+        using var listener = new TcpListener(IPAddress.Loopback, 0);
+        listener.Start();
+        var port = ((IPEndPoint)listener.LocalEndpoint).Port;
+        var options = new SslHealthCheckOptions();
+        options.AddHost(IPAddress.Loopback.ToString(), port);
+        var sslHealthCheck = new SslHealthCheck(options);
+        using var cancellation = new CancellationTokenSource();
+        using var testTimeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+        var check = sslHealthCheck.CheckHealthAsync(new HealthCheckContext
+        {
+            Registration = new HealthCheckRegistration(
+                "ssl",
+                instance: sslHealthCheck,
+                failureStatus: HealthStatus.Degraded,
+                null,
+                timeout: null)
+        }, cancellation.Token);
+        using var connection = await listener.AcceptTcpClientAsync(testTimeout.Token);
+        var clientHello = new byte[1];
+        var bytesRead = await connection.GetStream().ReadAsync(clientHello, testTimeout.Token);
+        bytesRead.ShouldBe(1);
+
+        cancellation.Cancel();
+        var result = await check.WaitAsync(testTimeout.Token);
 
         result.Exception.ShouldBeOfType<OperationCanceledException>();
     }

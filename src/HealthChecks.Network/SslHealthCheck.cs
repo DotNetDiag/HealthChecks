@@ -41,7 +41,7 @@ public class SslHealthCheck : IHealthCheck
                     continue;
                 }
 
-                using var certificate = await GetSslCertificateAsync(tcpClient, host).ConfigureAwait(false);
+                using var certificate = await GetSslCertificateAsync(tcpClient, host, cancellationToken).ConfigureAwait(false);
 
                 if (certificate is null || !certificate.Verify())
                 {
@@ -71,7 +71,7 @@ public class SslHealthCheck : IHealthCheck
         }
     }
 
-    private async Task<X509Certificate2?> GetSslCertificateAsync(TcpClient client, string host)
+    private async Task<X509Certificate2?> GetSslCertificateAsync(TcpClient client, string host, CancellationToken cancellationToken)
     {
         // https://github.com/DotNetAnalyzers/IDisposableAnalyzers/issues/513
 #pragma warning disable IDISP004 // Don't ignore created IDisposable
@@ -80,9 +80,27 @@ public class SslHealthCheck : IHealthCheck
 
         try
         {
-            await ssl.AuthenticateAsClientAsync(host).ConfigureAwait(false);
+#if NET5_0_OR_GREATER
+            var clientAuthenticationOptions = new SslClientAuthenticationOptions
+            {
+                TargetHost = host
+            };
+            await ssl.AuthenticateAsClientAsync(clientAuthenticationOptions, cancellationToken).ConfigureAwait(false);
+#else
+            // WithCancellationTokenAsync would abandon the handshake to fault
+            // unobserved; disposing the stream cancels it instead.
+            using (cancellationToken.Register(static state => ((SslStream)state!).Dispose(), ssl))
+            {
+                await ssl.AuthenticateAsClientAsync(host).ConfigureAwait(false);
+            }
+#endif
+            cancellationToken.ThrowIfCancellationRequested();
             var cert = ssl.RemoteCertificate;
             return cert == null ? null : new X509Certificate2(cert);
+        }
+        catch (Exception) when (cancellationToken.IsCancellationRequested)
+        {
+            throw new OperationCanceledException(cancellationToken);
         }
         catch (Exception)
         {
