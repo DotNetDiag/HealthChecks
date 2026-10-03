@@ -1,7 +1,6 @@
 using Azure.Core;
 using HealthChecks.AzureDigitalTwin;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Rest;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -12,13 +11,14 @@ public static class AzureDigitalTwinHealthCheckBuilderExtensions
     private const string AZUREDIGITALTWININSTANCE_NAME = "azuredigitaltwininstance";
 
     /// <summary>
-    /// Add a health check for specified Azure Digital Twin liveness.
+    /// Add a health check that reads the specified Azure Digital Twins resource through Azure Resource Manager.
     /// </summary>
     /// <param name="builder">The <see cref="IHealthChecksBuilder"/>.</param>
     /// <param name="clientId">The azure digital twin client id.</param>
     /// <param name="clientSecret">The azure digital twin client secret.</param>
     /// <param name="tenantId">The azure digital twin tenant id.</param>
-    /// <param name="name">The health check name. Optional. If <c>null</c> the type name 'azureeventhub' will be used for the name.</param>
+    /// <param name="resourceId">The full Azure Resource Manager id of the Digital Twins resource.</param>
+    /// <param name="name">The health check name. Optional. If <c>null</c> 'azuredigitaltwin' will be used for the name.</param>
     /// <param name="failureStatus">
     /// The <see cref="HealthStatus"/> that should be reported when the health check fails. Optional. If <c>null</c> then
     /// the default status of <see cref="HealthStatus.Unhealthy"/> will be reported.
@@ -26,22 +26,23 @@ public static class AzureDigitalTwinHealthCheckBuilderExtensions
     /// <param name="tags">A list of tags that can be used to filter sets of health checks. Optional.</param>
     /// <param name="timeout">An optional System.TimeSpan representing the timeout of the check.</param>
     /// <returns>The <see cref="IHealthChecksBuilder"/>.</returns>
-    public static IHealthChecksBuilder AddAzureDigitalTwin(this IHealthChecksBuilder builder, string clientId, string clientSecret, string tenantId, string? name = default, HealthStatus? failureStatus = default, IEnumerable<string>? tags = default, TimeSpan? timeout = default)
+    public static IHealthChecksBuilder AddAzureDigitalTwin(this IHealthChecksBuilder builder, string clientId, string clientSecret, string tenantId, string resourceId, string? name = default, HealthStatus? failureStatus = default, IEnumerable<string>? tags = default, TimeSpan? timeout = default)
     {
         return builder.Add(new HealthCheckRegistration(
             name ?? AZUREDIGITALTWIN_NAME,
-            sp => new AzureDigitalTwinSubscriptionHealthCheck(clientId, clientSecret, tenantId),
+            sp => new AzureDigitalTwinSubscriptionHealthCheck(clientId, clientSecret, tenantId, resourceId),
             failureStatus,
             tags,
             timeout));
     }
 
     /// <summary>
-    /// Add a health check for specified Azure Digital Twin liveness.
+    /// Add a health check that reads the specified Azure Digital Twins resource through Azure Resource Manager.
     /// </summary>
     /// <param name="builder">The <see cref="IHealthChecksBuilder"/>.</param>
     /// <param name="credentials">The azure digital twin credentials.</param>
-    /// <param name="name">The health check name. Optional. If <c>null</c> the type name 'azureeventhub' will be used for the name.</param>
+    /// <param name="resourceId">The full Azure Resource Manager id of the Digital Twins resource.</param>
+    /// <param name="name">The health check name. Optional. If <c>null</c> 'azuredigitaltwin' will be used for the name.</param>
     /// <param name="failureStatus">
     /// The <see cref="HealthStatus"/> that should be reported when the health check fails. Optional. If <c>null</c> then
     /// the default status of <see cref="HealthStatus.Unhealthy"/> will be reported.
@@ -51,7 +52,8 @@ public static class AzureDigitalTwinHealthCheckBuilderExtensions
     /// <returns>The <see cref="IHealthChecksBuilder"/>.</returns>
     public static IHealthChecksBuilder AddAzureDigitalTwin(
         this IHealthChecksBuilder builder,
-        ServiceClientCredentials credentials,
+        TokenCredential credentials,
+        string resourceId,
         string? name = default,
         HealthStatus? failureStatus = default,
         IEnumerable<string>? tags = default,
@@ -59,7 +61,7 @@ public static class AzureDigitalTwinHealthCheckBuilderExtensions
     {
         return builder.Add(new HealthCheckRegistration(
             name ?? AZUREDIGITALTWIN_NAME,
-            sp => new AzureDigitalTwinSubscriptionHealthCheck(credentials),
+            sp => new AzureDigitalTwinSubscriptionHealthCheck(credentials, resourceId),
             failureStatus,
             tags,
             timeout));

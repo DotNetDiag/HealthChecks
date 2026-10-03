@@ -2,10 +2,7 @@ using System.Collections.Concurrent;
 using Azure.Core;
 using Azure.DigitalTwins.Core;
 using Azure.Identity;
-using Microsoft.Azure.Management.DigitalTwins;
-using Microsoft.Azure.Management.ResourceManager.Fluent;
-using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
-using Microsoft.Rest;
+using Azure.ResourceManager;
 
 namespace HealthChecks.AzureDigitalTwin;
 
@@ -17,7 +14,6 @@ public abstract class AzureDigitalTwinHealthCheck
         get
         {
             string? hash = ClientId
-                ?? ServiceClientCredentials?.GetHashCode().ToString()
                 ?? TokenCredential?.GetHashCode().ToString();
 
             return hash
@@ -25,14 +21,13 @@ public abstract class AzureDigitalTwinHealthCheck
         }
     }
 
-    protected static readonly ConcurrentDictionary<string, AzureDigitalTwinsManagementClient> ManagementClientConnections = new();
+    protected static readonly ConcurrentDictionary<string, ArmClient> ManagementClientConnections = new();
     protected static readonly ConcurrentDictionary<string, DigitalTwinsClient> DigitalTwinClientConnections = new();
 
     protected readonly string? ClientId;
     protected readonly string? ClientSecret;
     protected readonly string? TenantId;
 
-    protected readonly ServiceClientCredentials? ServiceClientCredentials;
     protected readonly TokenCredential? TokenCredential;
 
     public AzureDigitalTwinHealthCheck(string clientId, string clientSecret, string tenantId)
@@ -42,21 +37,16 @@ public abstract class AzureDigitalTwinHealthCheck
         TenantId = Guard.ThrowIfNull(tenantId, true);
     }
 
-    public AzureDigitalTwinHealthCheck(ServiceClientCredentials serviceClientCredentials)
-    {
-        ServiceClientCredentials = Guard.ThrowIfNull(serviceClientCredentials);
-    }
-
     public AzureDigitalTwinHealthCheck(TokenCredential tokenCredential)
     {
         TokenCredential = Guard.ThrowIfNull(tokenCredential);
     }
 
-    protected AzureDigitalTwinsManagementClient CreateManagementClient()
+    protected ArmClient CreateManagementClient()
     {
-        var credential = ServiceClientCredentials
-            ?? new AzureCredentialsFactory().FromServicePrincipal(ClientId, ClientSecret, TenantId, AzureEnvironment.AzureGlobalCloud);
-        return new AzureDigitalTwinsManagementClient(new Uri(MANAGEMENT_AZURE_URL), credential);
+        var credential = TokenCredential
+            ?? new ClientSecretCredential(TenantId, ClientId, ClientSecret);
+        return new ArmClient(credential);
     }
 
     protected DigitalTwinsClient CreateDigitalTwinClient(string hostName)

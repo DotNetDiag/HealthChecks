@@ -15,7 +15,7 @@ With all of the following examples, you can additionally add the following param
 - `name`: The health check name.
   <br/>Default for liveness if not specified is `azuredigitaltwin`.
   <br/>Default for model state if not specified is `azuredigitaltwinmodels`.
-  <br/>Default for model state if not specified is `azuredigitaltwininstance`.
+  <br/>Default for instance status if not specified is `azuredigitaltwininstance`.
 - `failureStatus`: The `HealthStatus` that should be reported when the health check fails. Default is `HealthStatus.Unhealthy`.
 - `tags`: A list of tags that can be used to filter sets of health checks.
 - `timeout`: A `System.TimeSpan` representing the timeout of the check.
@@ -42,13 +42,17 @@ dotnet add package DotNetDiag.HealthChecks.AzureDigitalTwin
 
 ## _Digital Twin Liveness Health Check_
 
-This health check provides the liveness status for the Azure Digital Twin resource client connection.
+This health check reads a specified Azure Digital Twins resource through Azure Resource Manager to verify authentication, connectivity, and access to that resource. The credential needs permission to read the resource, for example the Reader role assigned at the resource scope. This check does not verify model or twin instance availability at the data plane endpoint; use the model or instance health check for those checks.
+
+Pass the full Azure resource ID in this format: `/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.DigitalTwins/digitalTwinsInstances/{resourceName}`.
 
 ### Example Usage
 
 You can add health check with the default client arguments...
 
 ```cs
+using Microsoft.Extensions.DependencyInjection;
+
 public void ConfigureServices(IServiceCollection services)
 {
     services
@@ -56,22 +60,34 @@ public void ConfigureServices(IServiceCollection services)
         .AddAzureDigitalTwin(
             "MyDigitalTwinClientId",
             "MyDigitalTwinClientSecret",
-            "TenantId")
+            "TenantId",
+            "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.DigitalTwins/digitalTwinsInstances/my-digital-twins");
 }
 ```
 
-... or with the service client credentials flow that you want:
+... or with an Azure SDK `TokenCredential`, such as `DefaultAzureCredential`:
 
 ```cs
+using Azure.Core;
+using Azure.Identity;
+using Microsoft.Extensions.DependencyInjection;
+
 public void ConfigureServices(IServiceCollection services)
 {
-    ServiceClientCredentials myCredentials = <my_credentials_flow>;
+    TokenCredential credentials = new DefaultAzureCredential();
     services
         .AddHealthChecks()
         .AddAzureDigitalTwin(
-            myCredentials)
+            credentials,
+            "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.DigitalTwins/digitalTwinsInstances/my-digital-twins");
 }
 ```
+
+### Migration from the legacy management SDK
+
+The liveness check now uses `Azure.ResourceManager.DigitalTwins` instead of `Microsoft.Azure.Management.DigitalTwins` and the Fluent resource management SDK. It reads a specified resource instead of listing the provider's supported operations. Both `AddAzureDigitalTwin` overloads and the `AzureDigitalTwinSubscriptionHealthCheck` constructors now require a `resourceId`. The `clientId`, `clientSecret`, and `tenantId` registration remains available with this additional argument.
+
+This is a breaking API change: `ServiceClientCredentials` overloads and the protected `ServiceClientCredentials` field have been removed. Pass an `Azure.Core.TokenCredential` instead; for service principals, use `new ClientSecretCredential(tenantId, clientId, clientSecret)`. For custom derived health checks, the protected `ManagementClientConnections` dictionary now stores `Azure.ResourceManager.ArmClient` values, and `CreateManagementClient()` returns `ArmClient`.
 
 ---
 
@@ -89,6 +105,8 @@ If the health check detect an `out of sync` models return the data with those el
 You can also add health check with the default client arguments...
 
 ```cs
+using Microsoft.Extensions.DependencyInjection;
+
 public void ConfigureServices(IServiceCollection services)
 {
     services
@@ -98,22 +116,28 @@ public void ConfigureServices(IServiceCollection services)
             "MyDigitalTwinClientSecret",
             "TenantId",
             "https://my-awesome-dt-host",
-            ["my:dt:definition_a;1", "my:dt:definition_b;1", "my:dt:definition_c;1"])
+            ["my:dt:definition_a;1", "my:dt:definition_b;1", "my:dt:definition_c;1"]);
 }
 ```
 
 ... or with the token credentials flow that you want:
 
 ```cs
+using Azure.Core;
+using Azure.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+
 public void ConfigureServices(IServiceCollection services)
 {
-    TokenCredentials myCredentials = <my_credentials_flow>;
+    TokenCredential credentials = new DefaultAzureCredential();
     services
         .AddHealthChecks()
         .AddAzureDigitalTwinModels(
-            myCredentials,
+            credentials,
+            "https://my-awesome-dt-host",
             ["my:dt:definition_a;1", "my:dt:definition_b;1", "my:dt:definition_c;1"],
-            failureStatus: HealthStatus.Degraded)
+            failureStatus: HealthStatus.Degraded);
 }
 ```
 
@@ -149,6 +173,8 @@ This health check returns the status of a given instance.
 You can also add health check with the default client arguments...
 
 ```cs
+using Microsoft.Extensions.DependencyInjection;
+
 public void ConfigureServices(IServiceCollection services)
 {
     services
@@ -158,21 +184,25 @@ public void ConfigureServices(IServiceCollection services)
             "MyDigitalTwinClientSecret",
             "TenantId",
             "https://my-awesome-dt-host",
-            "my_dt_instance_name")
+            "my_dt_instance_name");
 }
 ```
 
 ... or with the token credentials flow that you want:
 
 ```cs
+using Azure.Core;
+using Azure.Identity;
+using Microsoft.Extensions.DependencyInjection;
+
 public void ConfigureServices(IServiceCollection services)
 {
-    TokenCredentials myCredentials = <my_credentials_flow>;
+    TokenCredential credentials = new DefaultAzureCredential();
     services
         .AddHealthChecks()
-        .AddAzureDigitalTwinModels(
-            myCredentials,
+        .AddAzureDigitalTwinInstance(
+            credentials,
             "https://my-awesome-dt-host",
-            "my_dt_instance_name")
+            "my_dt_instance_name");
 }
 ```
