@@ -55,8 +55,8 @@
     <PackageVersion Include="IBMMQDotnetClient" Version="10.0.0" Condition="'$(TargetFramework)' == 'net10.0'" />
     <PackageVersion Include="InfluxDB.Client" Version="5.1.0" />
     <PackageVersion Include="KubernetesClient" Version="19.0.2" />
-    <PackageVersion Include="MessagePack" Version="2.5.302" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
-    <PackageVersion Include="MessagePack" Version="3.1.7" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
+    <PackageVersion Include="MessagePack" Version="2.5.303" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+    <PackageVersion Include="MessagePack" Version="3.1.9" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
     <PackageVersion Include="Microsoft.ApplicationInsights" Version="3.1.2" />
     <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="3.1.2" />
     <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.61.0" />
