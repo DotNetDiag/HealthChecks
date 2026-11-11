@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" />
+    <PackageReference Include="MessagePack" Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
     <PackageReference Include="Testcontainers" />
   </ItemGroup>
 
