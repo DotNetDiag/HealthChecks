@@ -18,7 +18,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="Serilog.Extensions.Logging" />
-    <PackageReference Include="Serilog.Sinks.ColoredConsole" />
+    <PackageReference Include="Serilog.Sinks.Console" />
   </ItemGroup>
 
 </Project>

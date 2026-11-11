@@ -66,7 +66,7 @@ internal class Program
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .Enrich.WithProperty("Application", nameof(K8sOperator))
                 .Enrich.FromLogContext()
-                .WriteTo.ColoredConsole(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception:lj}")
+                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception:lj}")
                 .CreateLogger();
 
             Log.Logger = logger;

@@ -112,7 +112,7 @@
     <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="4.15.0" />
     <PackageVersion Include="SendGrid" Version="9.29.3" />
     <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
-    <PackageVersion Include="Serilog.Sinks.ColoredConsole" Version="3.0.1" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageVersion Include="SharpCompress" Version="0.49.1" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="SolrNet.Core" Version="1.2.1" />
