@@ -100,7 +100,7 @@
     <PackageVersion Include="OpenSearch.Client" Version="1.8.0" />
     <PackageVersion Include="OpenTelemetry.Api" Version="1.16.0" />
     <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="2.19.300" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
-    <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="23.26.200" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
+    <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="23.26.401" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
     <PackageVersion Include="prometheus-net" Version="8.2.1" />
     <PackageVersion Include="PublicApiGenerator" Version="11.5.4" />
     <PackageVersion Include="Qdrant.Client" Version="1.18.1" />
