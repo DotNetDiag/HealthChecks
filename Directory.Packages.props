@@ -62,7 +62,7 @@
     <PackageVersion Include="Microsoft.Azure.Devices" Version="1.41.0" />
     <PackageVersion Include="Microsoft.Azure.DocumentDB.Core" Version="2.22.0" />
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.*" />
-    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.2" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.1.2" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="8.0.*" Condition="'$(TargetFramework)' != 'net10.0'" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.*" Condition="'$(TargetFramework)' == 'net10.0'" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="8.5.0" />
